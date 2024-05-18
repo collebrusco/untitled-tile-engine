@@ -4,7 +4,7 @@
 #include <cstddef>
 #include "../lib/sw/Stopwatch.h"
 
-class GameDriver {
+class SceneDriver {
 protected:
 	void close();
 public:
