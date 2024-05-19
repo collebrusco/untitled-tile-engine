@@ -2,13 +2,14 @@
 #define DRIVER_H
 #include <stdint.h>
 #include <cstddef>
+#include <flgl.h>
 #include "../lib/sw/Stopwatch.h"
 
-class SceneDriver {
+
+class GameDriver {
 protected:
 	void close();
 public:
-    bool create();
     void start();
     void loop();
     GameDriver();
@@ -23,7 +24,7 @@ private:
 	Stopwatch _launch_timer;
     Stopwatch delta_timer;
     virtual void user_create() = 0;
-    virtual void user_update(size_t tick, float dt) = 0;
+    virtual void user_update(float dt, Keyboard const& kb, Mouse const& mouse) = 0;
     virtual void user_render() = 0;
     virtual void user_destroy() = 0;
     void exit();

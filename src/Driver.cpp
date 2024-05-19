@@ -7,7 +7,6 @@ LOG_MODULE(driver);
 GameDriver::GameDriver() :  dt(_dt), launch_timer(_launch_timer),
                             _close(false),
                             _dt(1.f/60.f),
-                            _ticks(0),
                             _launch_timer(SECONDS),
                             delta_timer(SECONDS)
 {}
@@ -16,21 +15,16 @@ void GameDriver::exit() {
     user_destroy();
 }
 
-bool GameDriver::create() { 
-    _launch_timer.start();
-    user_create();
-    return true;
-}
 #define min(x,y) ((x)<(y)?(x):(y))
 void GameDriver::loop() {
 
     if (_dt > 1.f/30.f) {
         while (_dt > 0.f) {
-            user_update(++_ticks, min(_dt, 1.f/60.f));
+            user_update(min(_dt, 1.f/60.f), window.keyboard, window.mouse);
             _dt -= 1.f/60.f;
         }
     } else {
-        user_update(++_ticks, _dt);
+        user_update(_dt, window.keyboard, window.mouse);
     }
 
     user_render();
@@ -44,10 +38,13 @@ void GameDriver::loop() {
 }
 
 void GameDriver::start() {
+    _launch_timer.start();
+    user_create();
+    LOG_INF("created, loop:");
     while (!_close && !window.should_close()) {
        loop();
     }
-    LOG_INF("driver out of loop, exiting...");
+    LOG_INF("out of loop, exiting...");
     exit();
 }
 
