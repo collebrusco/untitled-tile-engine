@@ -17,7 +17,3 @@ void Renderer::clear() {
 	gl.clear();
 }
 
-void Renderer::frame_finish() {
-	window.update();
-}
-

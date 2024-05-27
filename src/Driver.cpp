@@ -15,9 +15,12 @@ void GameDriver::exit() {
     user_destroy();
 }
 
+#define COMPLICATED_LOOP 0
+
 #define min(x,y) ((x)<(y)?(x):(y))
 void GameDriver::loop() {
 
+#if COMPLICATED_LOOP == 1
     if (_dt > 1.f/30.f) {
         while (_dt > 0.f) {
             user_update(min(_dt, 1.f/60.f), window.keyboard, window.mouse);
@@ -26,6 +29,9 @@ void GameDriver::loop() {
     } else {
         user_update(_dt, window.keyboard, window.mouse);
     }
+#else 
+    user_update(_dt, window.keyboard, window.mouse);
+#endif
 
     user_render();
 

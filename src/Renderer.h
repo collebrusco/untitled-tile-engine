@@ -12,7 +12,6 @@ struct Renderer {
 	static void context_init(std::string title, int w, int h);
 	static void context_close();
 	static void clear();
-	static void frame_finish();
 
 	// per-renderer logic
 	virtual void init() = 0;

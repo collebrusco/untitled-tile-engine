@@ -53,6 +53,7 @@ struct RegionRenderer : public Renderer {
 
 	static void static_init() {
 		tile_tex = Texture::from_file("spritesheet");
+		tile_tex.pixelate();
 		region_shader = Shader::from_source("mvp_vert", "region_frag");
 		vao.create(); vao.bind();
 		posbuff.create(); posbuff.bind();
@@ -60,14 +61,15 @@ struct RegionRenderer : public Renderer {
 		vao.attrib(0, 3, GL_FLOAT, 0, 0);
 		{
 			vector<vec3> poss;
-			vector<uint32_t> elems; uint32_t idx = 0;
+			vector<uint32_t> elems; 
+			uint32_t idx = 0;
 			for (size_t j = 0; j < REGION_SIZE; j++) {
 				for (size_t i = 0; i < REGION_SIZE; i++) {
 					float x = i, y = j;
 					poss.push_back({x  ,y  ,0.f});
 					poss.push_back({x  ,y+1,0.f});
 					poss.push_back({x+1,y+1,0.f});
-					poss.push_back({x  ,y  ,0.f});
+					poss.push_back({x+1,y  ,0.f});
 
 					elems.push_back(idx);
 					elems.push_back(idx+2);
@@ -99,15 +101,25 @@ struct RegionRenderer : public Renderer {
 		for (size_t j = 0; j < REGION_SIZE; j++) {
 			for (size_t i = 0; i < REGION_SIZE; i++) {
 				Tile& t = target->buffer[i+j*REGION_SIZE];
-				float x = 1. / (float)(t.img % 32);
-				float y = 1. / (float)(t.img / 32);
-				uvs.push_back({x,y+tsz});
-				uvs.push_back({x,y});
-				uvs.push_back({x+tsz,y});
+				float x = ((float)(t.img % 32)) / 32.f;
+				float y = ((float)(t.img / 32)) / 32.f;
+				uvs.push_back({x    ,y+tsz});
+				uvs.push_back({x    ,y    });
+				uvs.push_back({x+tsz,y    });
 				uvs.push_back({x+tsz,y+tsz});
+
+				// uvs.push_back({0.,0.});
+				// uvs.push_back({0.,1.});
+				// uvs.push_back({1.,1.});
+				// uvs.push_back({1.,0.});
 			}
 		}
-		uvbuff.bind(); uvbuff.buffer(uvs); uvbuff.unbind();
+		vao.bind();
+		uvbuff.bind(); 
+		vao.attrib(1, 2, GL_FLOAT, 0, 0);
+		uvbuff.buffer(uvs); 
+		uvbuff.unbind();
+		vao.unbind();
 	}
 
 	virtual void render() override final {
@@ -155,31 +167,35 @@ private:
 	RegionRenderer renderer;
 	OrthoCamera cam;
 
+	Stopwatch util; float putil;
+
 };
 
 WorldDriver::WorldDriver() : GameDriver(), 	
 							testr(), 
 							renderer(testr), 
-							cam({0.f,0.f,-1.f}, {0.f, 0.f, 1.f}, {0.f, 1.f, 0.f}, 0.001f, 10000.f, 64) {}
+							cam({0.f,0.f,1.f}, {0.f, 0.f, -1.f}, {0.f, 1.f, 0.f}, 0.001f, 10000.f, 64),
+							util(MICROSECONDS) {}
 
 void WorldDriver::user_create() {
 	testr = {
 		.reg_pos = {0,0}
 	};
-	for (size_t i = 0; i < 1024; i++)
-		testr.buffer[i].img = i+1;
+	for (size_t i = 0; i < (REGION_SIZE*REGION_SIZE); i++)
+		testr.buffer[i].img = i%1024;
 	Renderer::context_init("untitled", 1280, 720);
 	cam.update();
 	renderer.static_init();
 	renderer.init();
 }
 
-void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
+void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) { util.reset_start();
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * 2.f;
-	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * 2.f;
-	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * 2.f;
-	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * 2.f;
+	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
+	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
+	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
+	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f); bool wf = false;
+	if (kb[GLFW_KEY_K].pressed) {gl.wireframe(wf); wf = !wf;LOG_DBG("wf %d", wf);}
 	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 10.f;
 	cam.update();
 
@@ -187,6 +203,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	if (!(tg%64)) {
 		LOG_DBG("fps: %.1f", 1.f/dt);
 		LOG_DBG("cam pos: %.2f,%.2f", cam.readPos().x, cam.readPos().y);
+		LOG_DBG("dt util: %.1fus / %.1fus for %.1f %% util", putil, dt*(SECONDS/MICROSECONDS), 100.f*(putil/(dt*(SECONDS/MICROSECONDS))));
 	}
 
 }
@@ -196,7 +213,8 @@ void WorldDriver::user_render() {
 	renderer.prepare();
 	renderer.sync_shader(cam);
 	renderer.render();
-	Renderer::frame_finish();
+
+	putil = util.stop();
 }
 
 void WorldDriver::user_destroy() {
