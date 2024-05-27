@@ -1,6 +1,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <flgl/tools.h>
 #include <string>
 
 struct Renderer {

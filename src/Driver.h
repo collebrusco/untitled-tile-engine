@@ -20,7 +20,6 @@ public:
 private:
 	bool _close;
 	float _dt;
-    size_t _ticks;
 	Stopwatch _launch_timer;
     Stopwatch delta_timer;
     virtual void user_create() = 0;

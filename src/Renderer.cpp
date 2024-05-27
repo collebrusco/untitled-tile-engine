@@ -21,4 +21,3 @@ void Renderer::frame_finish() {
 	window.update();
 }
 
-
