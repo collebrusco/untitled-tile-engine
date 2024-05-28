@@ -1,23 +1,26 @@
 #ifndef WORLD_H
 #define WORLD_H
 #include <flgl/glm.h>
+#include "WorldGenerator.h"
+#include "WorldSave.h"
+#include "Region.h"
 
-typedef unsigned int sprite_t;
 
-#define REGION_SIZE_LOG (3)
-#define REGION_SIZE (1<<REGION_SIZE_LOG)
+#define WORLD_DIAMETER (16)
+struct World {
+    World(WorldSave& sv);
 
-struct Tile {
-	bool solid;
-	float friction;
-	sprite_t img;
-};
+    Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
 
-struct Region {
-	Tile buffer[REGION_SIZE*REGION_SIZE];
-	glm::ivec2 reg_pos; // world pos * REGION_SIZE
+    bool bounds(region_coords_t pos) const;
+    Region& region_at(region_coords_t pos);
+    Tile& tile_at(world_coords_t pos);
+    Tile& tile_at(glm::vec2 pos);
 
-	Tile& tile_at(int x, int y) {return buffer[x+y*REGION_SIZE];}
+private:
+
+    WorldGenerator gen;
+    WorldSave* save;
 
 };
 

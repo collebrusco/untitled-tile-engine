@@ -6,7 +6,7 @@
 #include <flgl/glm.h>
 
 struct RegionRenderer : public Renderer {
-	RegionRenderer(Region& r);
+	RegionRenderer();
 
 	static Texture tile_tex;
 	static VertexArray vao;
@@ -17,7 +17,7 @@ struct RegionRenderer : public Renderer {
 
 	Region* target;
 
-	void new_region(Region* reg);
+	void use_region(Region* reg);
 
 	static void sync_shader(Camera& cam);
 

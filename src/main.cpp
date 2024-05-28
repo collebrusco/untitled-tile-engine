@@ -15,6 +15,12 @@ using namespace std;
 
 
 
+class Scopetimer {
+    Stopwatch sw; string name;
+public:
+    Scopetimer(string n) : sw(MICROSECONDS), name(n) {sw.reset_start();}
+    ~Scopetimer() {float time = sw.stop(); LOG_DBG("%s time %.0fus", name.c_str(), time);}
+};
 
 
 
@@ -29,28 +35,41 @@ private:
     virtual void user_render() override final;
     virtual void user_destroy() override final;
 
-	Region testr;
-	RegionRenderer renderer;
+	// Region testr;
+	// RegionRenderer renderer;
+
+	MapWSave wsave;
+	World world;
+
+	RegionRenderer renderers[WORLD_DIAMETER*WORLD_DIAMETER];
+	
 	OrthoCamera cam;
 
 };
 
 WorldDriver::WorldDriver() : GameDriver(), 	
-							testr(), 
-							renderer(testr), 
+							// testr(), 
+							// renderer(testr), 
+							wsave(),
+							world(wsave),
 							cam({0.f,0.f,1.f}, {0.f, 0.f, -1.f}, {0.f, 1.f, 0.f}, 0.001f, 10000.f, 64)
-							{}
+							{
+							}
 
 void WorldDriver::user_create() {
-	testr = {
-		.reg_pos = {0,0}
-	};
-	for (size_t i = 0; i < (REGION_SIZE*REGION_SIZE); i++)
-		testr.buffer[i].img = i%1024;
+	// testr = {
+	// 	.pos = {0,0}
+	// };
+	// for (size_t i = 0; i < (REGION_SIZE*REGION_SIZE); i++)
+	// 	testr.buffer[i].img = i%1024;
 	Renderer::context_init("untitled", 1280, 720);
 	cam.update();
-	renderer.static_init();
-	renderer.init();
+	RegionRenderer::static_init();
+	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+		renderers[i].use_region(&(world.regions[i]));
+		renderers[i].init();
+		renderers[i].prepare();
+	}
 }
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
@@ -70,12 +89,15 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 
 }
 
-void WorldDriver::user_render() {
+void WorldDriver::user_render() { Scopetimer rtimer("render");
 	Renderer::clear();
-	renderer.prepare();
-
-	renderer.sync_shader(cam);
-	renderer.render();
+	RegionRenderer::sync_shader(cam);
+	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+		ivec2 const& rpos = world.regions[i].pos;
+		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam.readPos().x)) - REGION_SIZE/2 > (cam.readViewWidth())) continue;
+		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam.readPos().y)) - REGION_SIZE/2 > ((cam.readViewWidth()/window.aspect))) continue;
+		renderers[i].render();
+	}
 
 }
 

@@ -9,10 +9,10 @@ VertexBuffer<vec3> RegionRenderer::posbuff;
 ElementBuffer RegionRenderer::ibo;
 Shader RegionRenderer::region_shader;
 
-RegionRenderer::RegionRenderer(Region& r) : target(&r) {}
+RegionRenderer::RegionRenderer() : target(0) {}
 
 
-void RegionRenderer::new_region(Region* reg) {
+void RegionRenderer::use_region(Region* reg) {
     target = reg;
 }
 
@@ -92,9 +92,10 @@ void RegionRenderer::prepare() {
 }
 
 void RegionRenderer::render() {
-    mat4 model = genModelMat2d({target->reg_pos.x * 32.f, target->reg_pos.y * 32.f}, 0.f, {1.f,1.f});
+    mat4 model = genModelMat2d({target->pos.x * ((float)REGION_SIZE), target->pos.y * ((float)REGION_SIZE)}, 0.f, {1.f,1.f});
     region_shader.bind();
     region_shader.uMat4("uModel", model);
+    tile_tex.bind();
     vao.bind();
     gl.draw_vao_ibo(vao, ibo);
 }
