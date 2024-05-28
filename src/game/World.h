@@ -19,7 +19,7 @@ struct World {
 
 private:
 
-    WorldGenerator gen;
+    TestWorldGenerator gen;
     WorldSave* save;
 
 };

@@ -89,7 +89,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 
 }
 
-void WorldDriver::user_render() { Scopetimer rtimer("render");
+void WorldDriver::user_render() { //Scopetimer rtimer("render");
 	Renderer::clear();
 	RegionRenderer::sync_shader(cam);
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {

@@ -66,29 +66,25 @@ void RegionRenderer::init() {
 }
 
 void RegionRenderer::prepare() {
-    static bool upd = true;
-    if (upd) {
-        vector<vec2> uvs;
-        const float tsz = 1. / (32.f);
-        for (size_t j = 0; j < REGION_SIZE; j++) {
-            for (size_t i = 0; i < REGION_SIZE; i++) {
-                Tile& t = target->buffer[i+j*REGION_SIZE];
-                float x = ((float)(t.img % 32)) / 32.f;
-                float y = ((float)(t.img / 32)) / 32.f;
-                uvs.push_back({x    ,y+tsz});
-                uvs.push_back({x    ,y    });
-                uvs.push_back({x+tsz,y    });
-                uvs.push_back({x+tsz,y+tsz});
-            }
+    vector<vec2> uvs;
+    const double tsz = 1. / (32.);
+    for (size_t j = 0; j < REGION_SIZE; j++) {
+        for (size_t i = 0; i < REGION_SIZE; i++) {
+            Tile& t = target->buffer[i+j*REGION_SIZE];
+            double x = ((double)(t.img % 32)) / 32.f;
+            double y = ((double)(t.img / 32)) / 32.f;
+            uvs.push_back({x    ,y+tsz});
+            uvs.push_back({x    ,y    });
+            uvs.push_back({x+tsz,y    });
+            uvs.push_back({x+tsz,y+tsz});
         }
-        vao.bind();
-        uvbuff.bind(); 
-        vao.attrib(1, 2, GL_FLOAT, 0, 0);
-        uvbuff.buffer(uvs); 
-        uvbuff.unbind();
-        vao.unbind();
-        upd = false;
     }
+    vao.bind();
+    uvbuff.bind(); 
+    vao.attrib(1, 2, GL_FLOAT, 0, 0);
+    uvbuff.buffer(uvs); 
+    uvbuff.unbind();
+    vao.unbind();
 }
 
 void RegionRenderer::render() {
@@ -97,6 +93,8 @@ void RegionRenderer::render() {
     region_shader.uMat4("uModel", model);
     tile_tex.bind();
     vao.bind();
+    uvbuff.bind(); 
+    vao.attrib(1, 2, GL_FLOAT, 0, 0);
     gl.draw_vao_ibo(vao, ibo);
 }
 
