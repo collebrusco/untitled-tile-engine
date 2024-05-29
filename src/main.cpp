@@ -87,7 +87,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	if (prpos != cp) {
 		ivec2 delta = (cp) - prpos;
 		world.shift(delta.x, delta.y);
-		LOG_DBG("\n\tshifting %d,%d", delta.x, delta.y);
+		// LOG_DBG("\n\tshifting %d,%d", delta.x, delta.y);
 		prpos = cp;
 	}
 
@@ -97,16 +97,20 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	if (kb[GLFW_KEY_I].pressed) world.shift(-1,1);
 
 	{
-		vec4 ssm = {mouse.pos.x,mouse.pos.y,0.,1.};
-		ssm.x /= window.frame.x; ssm.y /= window.frame.y;
-		ssm.x *= 2.f; ssm.x -= 1.f;
-		ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f; 
-		mat4 iv = inverse(cam.view()); mat4 ip = inverse(cam.proj());
-		ssm = iv * (ip * ssm);
-		if (mouse.left.pressed) {
-			Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
-			LOG_DBG("ssm: %.1f,%.1f", ssm.x, ssm.y);
-			tile.img = 0;
+		if (mouse.left.down) {
+			static Tile ptile = {.img=1023}; static Tile const& prtile = ptile;
+			vec4 ssm = {mouse.pos.x,mouse.pos.y,0.,1.};
+			ssm.x /= window.frame.x; ssm.y /= window.frame.y;
+			ssm.x *= 2.f; ssm.x -= 1.f;
+			ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f; 
+			mat4 iv = inverse(cam.view()); mat4 ip = inverse(cam.proj());
+			ssm = iv * (ip * ssm);
+			Tile const& ctile = world.read_tile_at(ssm.xy());
+			if (true) {//mouse.left.pressed || !(ctile == prtile)) {
+				Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
+				// LOG_DBG("ssm: %.1f,%.1f", ssm.x, ssm.y);
+				tile.img = 99;
+			}
 		}
 	}
 

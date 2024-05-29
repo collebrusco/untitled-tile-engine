@@ -15,7 +15,7 @@ RegionRenderer::RegionRenderer() : target(0) {}
 
 
 void RegionRenderer::use_region(Region* reg) {
-    target = reg;
+    target = reg; target->raise_flag();
 }
 
 void RegionRenderer::sync_shader(Camera& cam) {
@@ -89,7 +89,7 @@ void RegionRenderer::prepare() {
     uvbuff.unbind();
     vao.unbind();
     target->clear_flag();
-    LOG_DBG("reloaded %d,%d", target->pos.x, target->pos.y);
+    // LOG_DBG("reloaded %d,%d", target->pos.x, target->pos.y);
 }
 
 void RegionRenderer::render() {

@@ -10,9 +10,12 @@ typedef glm::ivec2 tile_coords_t;
 #define REGION_SIZE (1<<REGION_SIZE_LOG)
 
 struct Tile {
+	uint16_t id;
 	bool solid;
 	float friction;
 	sprite_t img;
+	bool operator==(Tile const& a) const {return a.img==this->img;}
+	bool operator==(Tile& a) {return a.img==this->img;}
 };
 
 struct Region {
@@ -20,9 +23,15 @@ struct Region {
 	region_coords_t pos;
 
 	Tile& tile_at(int x, int y);
-	Tile const& read_tile_at(int x, int y);
+	Tile const& read_tile_at(int x, int y) const;
 	void clear_flag();
-	bool read_flag();
+	bool read_flag() const;
+	void raise_flag();
+
+	Region() = default;
+	Region(Region const& other);
+
+	Region& operator=(Region const& other);
 
 private:
 	bool flag;

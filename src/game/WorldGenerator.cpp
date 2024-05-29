@@ -34,7 +34,7 @@ void TestWorldGenerator::generate(int x, int y, Region* target) {
             default:
                 sp = 2; break;
             }
-            sp += 10;
+            
             target->tile_at(i,j) = {
                 .img = sp
             };
