@@ -16,9 +16,9 @@ using namespace std;
 
 
 class Scopetimer {
-    Stopwatch sw; string name;
+    Stopwatch sw; string name; size_t mod;
 public:
-    Scopetimer(string n) : sw(MICROSECONDS), name(n) {sw.reset_start();}
+    Scopetimer(string n, size_t m = 5) : sw(MICROSECONDS), name(n), mod(m) {sw.reset_start();}
     ~Scopetimer() {float time = sw.stop(); LOG_DBG("%s time %.0fus", name.c_str(), time);}
 };
 
@@ -82,23 +82,39 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 10.f;
 	cam.update();
 
-	static uint tg = 0; tg++;
-	if (!(tg%64)) {
-		LOG_DBG("fps: %.1f", 1.f/dt);
+	{
+		vec4 ssm = {mouse.pos.x,mouse.pos.y,0.,1.};
+		ssm.x /= window.frame.x; ssm.y /= window.frame.y;
+		ssm.x *= 2.f; ssm.x -= 1.f;
+		ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f; 
+		mat4 iv = inverse(cam.view()); mat4 ip = inverse(cam.proj());
+		ssm = iv * (ip * ssm);
+		if (mouse.left.pressed) {
+			Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
+			LOG_DBG("ssm: %.1f,%.1f", ssm.x, ssm.y);
+			tile.img = 0;
+		}
 	}
+
+	// static uint tg = 0; tg++;
+	// if (!(tg%64)) {
+	// 	LOG_DBG("fps: %.1f", 1.f/dt);
+	// }
 
 }
 
-void WorldDriver::user_render() { //Scopetimer rtimer("render");
+void WorldDriver::user_render() { size_t n = 0;
 	Renderer::clear();
 	RegionRenderer::sync_shader(cam);
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
 		ivec2 const& rpos = world.regions[i].pos;
-		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam.readPos().x)) - REGION_SIZE/2 > (cam.readViewWidth())) continue;
-		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam.readPos().y)) - REGION_SIZE/2 > ((cam.readViewWidth()/window.aspect))) continue;
+		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam.readPos().x)) - REGION_SIZE/2 > (0.5*cam.readViewWidth())) continue;
+		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam.readPos().y)) - REGION_SIZE/2 > ((0.5*cam.readViewWidth()/window.aspect))) continue;
+		renderers[i].prepare();
 		renderers[i].render();
+		n++;
 	}
-
+	// static int tog = 0; if (!(++tog%64)) LOG_DBG("%d renders", n);
 }
 
 void WorldDriver::user_destroy() {

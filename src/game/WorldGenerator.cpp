@@ -22,7 +22,7 @@ void TestWorldGenerator::generate(int x, int y, Region* target) {
 
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
-            int r = dis(gen) & 0xF;
+            int r = dis(gen) & 0x1F;
             sprite_t sp = 0;
             switch (r) {
             case 0:
@@ -34,6 +34,7 @@ void TestWorldGenerator::generate(int x, int y, Region* target) {
             default:
                 sp = 2; break;
             }
+            sp += 10;
             target->tile_at(i,j) = {
                 .img = sp
             };

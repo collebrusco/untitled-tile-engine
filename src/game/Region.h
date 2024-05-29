@@ -4,7 +4,7 @@
 
 typedef unsigned int sprite_t;
 typedef glm::ivec2 region_coords_t;
-typedef glm::ivec2 world_coords_t;
+typedef glm::ivec2 tile_coords_t;
 
 #define REGION_SIZE_LOG (4)
 #define REGION_SIZE (1<<REGION_SIZE_LOG)
@@ -20,7 +20,12 @@ struct Region {
 	region_coords_t pos;
 
 	Tile& tile_at(int x, int y);
+	Tile const& read_tile_at(int x, int y);
+	void clear_flag();
+	bool read_flag();
 
+private:
+	bool flag;
 };
 
 

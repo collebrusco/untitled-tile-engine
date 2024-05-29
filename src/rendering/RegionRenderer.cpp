@@ -1,7 +1,9 @@
 #include "RegionRenderer.h"
 #include <vector>
+#include <flgl/logger.h>
 using std::vector;
 using namespace glm;
+LOG_MODULE(rrend);
 
 Texture RegionRenderer::tile_tex;
 VertexArray RegionRenderer::vao;
@@ -66,6 +68,7 @@ void RegionRenderer::init() {
 }
 
 void RegionRenderer::prepare() {
+    if (!target->read_flag()) return;
     vector<vec2> uvs;
     const double tsz = 1. / (32.);
     for (size_t j = 0; j < REGION_SIZE; j++) {
@@ -73,10 +76,10 @@ void RegionRenderer::prepare() {
             Tile& t = target->buffer[i+j*REGION_SIZE];
             double x = ((double)(t.img % 32)) / 32.f;
             double y = ((double)(t.img / 32)) / 32.f;
-            uvs.push_back({x    ,y+tsz});
-            uvs.push_back({x    ,y    });
-            uvs.push_back({x+tsz,y    });
-            uvs.push_back({x+tsz,y+tsz});
+            uvs.push_back({x    +0.00001,y+tsz-0.00001});
+            uvs.push_back({x    +0.00001,y    +0.00001});
+            uvs.push_back({x+tsz-0.00001,y    +0.00001});
+            uvs.push_back({x+tsz-0.00001,y+tsz-0.00001});
         }
     }
     vao.bind();
@@ -85,6 +88,8 @@ void RegionRenderer::prepare() {
     uvbuff.buffer(uvs); 
     uvbuff.unbind();
     vao.unbind();
+    target->clear_flag();
+    LOG_DBG("reloaded %d,%d", target->pos.x, target->pos.y);
 }
 
 void RegionRenderer::render() {
