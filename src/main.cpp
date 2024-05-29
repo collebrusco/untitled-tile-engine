@@ -74,13 +74,27 @@ void WorldDriver::user_create() {
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
-	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
-	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
-	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * 2.f * ((kb[GLFW_KEY_LEFT_SHIFT].down+1.) * 3.f);
+	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	if (kb[GLFW_KEY_K].pressed) {static bool wf = 1;gl.wireframe(wf);wf = !wf;}
 	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 10.f;
 	cam.update();
+
+	static region_coords_t prpos;
+	ivec2 cp = ((ivec2)cam.readPos()) / REGION_SIZE;
+	if (prpos != cp) {
+		ivec2 delta = (cp) - prpos;
+		world.shift(delta.x, delta.y);
+		LOG_DBG("\n\tshifting %d,%d", delta.x, delta.y);
+		prpos = cp;
+	}
+
+	if (kb[GLFW_KEY_O].pressed) world.shift(1,1);
+	if (kb[GLFW_KEY_L].pressed) world.shift(1,-1);
+	if (kb[GLFW_KEY_K].pressed) world.shift(-1,-1);
+	if (kb[GLFW_KEY_I].pressed) world.shift(-1,1);
 
 	{
 		vec4 ssm = {mouse.pos.x,mouse.pos.y,0.,1.};

@@ -6,7 +6,7 @@
 #include "Region.h"
 
 
-#define WORLD_DIAMETER (8)
+#define WORLD_DIAMETER (16)
 struct World {
     World(WorldSave& sv);
 
@@ -16,8 +16,9 @@ struct World {
     Region& region_at(region_coords_t pos);
     Tile& tile_at(tile_coords_t pos);
     Tile& tile_at(glm::vec2 pos);
+    static region_coords_t pos_to_rpos(glm::vec2 pos);
 
-    void shift(int x, int y);
+    void shift(int dx, int dy);
 
 private:
 
@@ -26,7 +27,7 @@ private:
 
     region_coords_t center;
 
-    size_t rpos_to_idx(region_coords_t rpos) const;
+    static size_t rpos_to_idx(region_coords_t rpos);
 };
 
 

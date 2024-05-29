@@ -3,13 +3,17 @@
 using namespace glm;
 LOG_MODULE(wrld);
 
+#define index_mod(vec, m) \
+(ivec2((vec.x%m)<0?(vec.x%m)+m:vec.x%m, (vec.y%m)<0?(vec.y%m)+m:vec.y%m))
+
 World::World(WorldSave& sv) : 
 gen(0), save(&sv), center{0,0} {
     save->use_generator(&gen);
     for (int i = 0; i < WORLD_DIAMETER; i++) {
         for (int j = 0; j < WORLD_DIAMETER; j++) {
-            Region* tar = &regions[i+j*WORLD_DIAMETER];
-            save->load(i-(WORLD_DIAMETER/2), j-(WORLD_DIAMETER/2), tar);
+            ivec2 p(i-(WORLD_DIAMETER/2), j-(WORLD_DIAMETER/2));
+            Region* tar = &regions[rpos_to_idx(p)];
+            save->load(p.x, p.y, tar);
         }
     }
 }
@@ -21,8 +25,7 @@ bool World::bounds(region_coords_t pos) const {
 }
 
 Region& World::region_at(region_coords_t pos) {
-    pos += (WORLD_DIAMETER/2);
-    return regions[pos.x + pos.y * WORLD_DIAMETER];
+    return regions[rpos_to_idx(pos)];
 }
 
 Tile& World::tile_at(tile_coords_t pos) {
@@ -44,20 +47,42 @@ Tile& World::tile_at(glm::vec2 pos) {
     return tile_at(p);
 }
 
-#define index_mod(vec, m) \
-(ivec2(vec.x%m<0?(vec.x%m)+m:vec.x%m, vec.y%m<0?(vec.y%m)+m:vec.y%m))
-
-void World::shift(int x, int y) {
-    if (abs(x)>1 || abs(y)>1) {LOG_ERR("invalid shift %d,%d",x,y);return;}
-    center += ivec2(x,y);
+region_coords_t World::pos_to_rpos(vec2 pos) {
+    tile_coords_t p = (tile_coords_t)pos;
+    vec2 frpos = ((vec2)pos) / (float)(REGION_SIZE);
+    frpos = floor(frpos);
+    return (region_coords_t)frpos;
 }
 
-size_t World::rpos_to_idx(region_coords_t rpos) const {
-    rpos = rpos - center;
-    rpos += (REGION_SIZE/2);
-    if (rpos.x < 0 || rpos.y < 0 || 
-        rpos.x > REGION_SIZE-1 || rpos.y > REGION_SIZE-1) 
-            {LOG_ERR("invalid r2i %d,%d",rpos.x,rpos.y);return-1;}
-    ivec2 idxs;
-    return 0; // REPLACE
+void World::shift(int dx, int dy) {
+    if (abs(dx)>1 || abs(dy)>1) {LOG_ERR("invalid shift %d,%d",dx,dy);return;}
+    center.x += dx;
+    if (dx) {
+        int starty = center.y - (WORLD_DIAMETER/2);
+        for (int i = 0; i < WORLD_DIAMETER; i++) {
+            int y = starty + i;
+            int x = center.x + ((dx*(WORLD_DIAMETER/2)) - (dx>0));
+            size_t idx = rpos_to_idx(region_coords_t(x,y));
+            // LOG_DBG("repl %d,%d at %d with %d,%d", regions[idx].pos.x, regions[idx].pos.y, idx, x, y);
+            save->store(regions[idx]); save->load(x, y, &regions[idx]);
+        }
+    }
+    center.y += dy;
+    if (dy) {
+        int startx  = center.x - (WORLD_DIAMETER/2);
+        int endx    = center.x + (WORLD_DIAMETER/2);
+        for (int i = 0; i < WORLD_DIAMETER; i++) {
+            int x = startx + i;
+            int y = center.y + ((dy*(WORLD_DIAMETER/2)) - (dy>0));
+            size_t idx = rpos_to_idx(region_coords_t(x,y));
+            save->store(regions[idx]); save->load(x, y, &regions[idx]);
+        }
+    }
+}
+
+size_t World::rpos_to_idx(region_coords_t rpos) {
+    ivec2 idxs = index_mod(rpos, WORLD_DIAMETER);
+    size_t res = idxs.x + idxs.y * WORLD_DIAMETER;
+    // LOG_DBG("\timd %d,%d to %d,%d",rpos.x,rpos.y,idxs.x,idxs.y);
+    return res;
 }

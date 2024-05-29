@@ -19,7 +19,7 @@ WorldGenerator(sd), gen(seed), dis(0) {
 
 void TestWorldGenerator::generate(int x, int y, Region* target) {
     target->pos = {x,y};
-
+    
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
             int r = dis(gen) & 0x1F;
