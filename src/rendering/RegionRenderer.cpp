@@ -18,7 +18,7 @@ void RegionRenderer::use_region(Region* reg) {
     target = reg; target->raise_flag();
 }
 
-void RegionRenderer::sync_shader(Camera& cam) {
+void RegionRenderer::sync_camera(Camera& cam) {
     region_shader.uMat4("uView", cam.view());
     region_shader.uMat4("uProj", cam.proj());
 }

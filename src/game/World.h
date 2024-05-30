@@ -6,7 +6,7 @@
 #include "Region.h"
 
 
-#define WORLD_DIAMETER (4)
+#define WORLD_DIAMETER (8)
 struct World {
     World(WorldSave& sv);
 
@@ -25,6 +25,7 @@ struct World {
     static tile_coords_t rpos_to_tpos(region_coords_t rpos);
 
     void shift(int dx, int dy);
+    // TODO void move(region_coords_t newpos);
 
 private:
 

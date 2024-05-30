@@ -28,18 +28,17 @@ MapWSave::MapWSave() : WorldSave(true) {}
 void MapWSave::load(int x, int y, Region* target) {
     if (rmap.find({x,y}) == rmap.end()) {
         if (generator==0) {LOG_ERR("no generator for %d,%d", x, y); return;}
-        LOG_DBG("gen %d,%d", x, y);
+        // LOG_DBG("gen %d,%d", x, y);
         generator->generate(x, y, target);
-        store(*target); return;
+        return;
     }
     *target = rmap.at({x,y});
 }
 
 bool MapWSave::store(Region const& target) {
-    for (int i = 0; i < REGION_SIZE*REGION_SIZE; i++)
-        if (target.buffer[i].img == 99) LOG_DBG("storing 99 %d,%d", target.pos.x, target.pos.y);
+    // for (int i = 0; i < REGION_SIZE*REGION_SIZE; i++)
+    //     if (target.buffer[i].img == 99) LOG_DBG("storing 99 %d,%d", target.pos.x, target.pos.y);
     rmap.emplace(target.pos, target);
-    rmap.at(target.pos) = target;
     return true;
 }
 

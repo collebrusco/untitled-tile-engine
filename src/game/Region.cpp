@@ -16,14 +16,14 @@ void Region::clear_flag() {flag = 0;}
 bool Region::read_flag() const {return flag;}
 void Region::raise_flag() {flag = 1;}
 
-Region::Region(Region const& other) { LOG_DBG("cpy");
+Region::Region(Region const& other) {
     this->pos = other.pos;
     this->flag = 1;
     memcpy(buffer, other.buffer, sizeof(Tile) * REGION_SIZE * REGION_SIZE);
 }
 
 Region& Region::operator=(Region const& other) {
-    if (this!=&other) { LOG_DBG("=");
+    if (this!=&other) {
         this->pos = other.pos;
         memcpy(buffer, other.buffer, sizeof(Tile) * REGION_SIZE * REGION_SIZE);
     }

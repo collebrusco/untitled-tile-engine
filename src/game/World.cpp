@@ -84,7 +84,8 @@ void World::shift(int dx, int dy) {
             int y = starty + i;
             int x = center.x + ((dx*(WORLD_DIAMETER/2)) - (dx>0));
             size_t idx = rpos_to_idx(region_coords_t(x,y));
-            save->store(regions[idx]); save->load(x, y, &regions[idx]);
+            save->store(regions[idx]);
+            save->load(x, y, &regions[idx]);
         }
     }
     center.y += dy;
@@ -95,7 +96,8 @@ void World::shift(int dx, int dy) {
             int x = startx + i;
             int y = center.y + ((dy*(WORLD_DIAMETER/2)) - (dy>0));
             size_t idx = rpos_to_idx(region_coords_t(x,y));
-            save->store(regions[idx]); save->load(x, y, &regions[idx]);
+            save->store(regions[idx]);
+            save->load(x, y, &regions[idx]);
         }
     }
 }

@@ -7,6 +7,7 @@
 
 struct RegionRenderer : public Renderer {
 	RegionRenderer();
+	virtual ~RegionRenderer() = default;
 
 	static Texture tile_tex;
 	static VertexArray vao;
@@ -19,7 +20,7 @@ struct RegionRenderer : public Renderer {
 
 	void use_region(Region* reg);
 
-	static void sync_shader(Camera& cam);
+	static void sync_camera(Camera& cam);
 
 	static void static_init();
 	static void static_destroy();
