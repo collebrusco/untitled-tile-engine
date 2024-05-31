@@ -35,10 +35,14 @@ void MapWSave::load(int x, int y, Region* target, World* world) {
     *target = rmap.at({x,y});
 }
 
-bool MapWSave::store(Region const& target, World const& world) {
+void MapWSave::store(Region const& target, World const& world) {
     // for (int i = 0; i < REGION_SIZE*REGION_SIZE; i++)
     //     if (target.buffer[i].img == 99) LOG_DBG("storing 99 %d,%d", target.pos.x, target.pos.y);
     rmap.emplace(target.pos, target);
-    return true;
+}
+
+Region* MapWSave::read(int x, int y) {
+    if (rmap.find({x,y}) == rmap.end()) return 0;
+    return &(rmap[{x,y}]);
 }
 

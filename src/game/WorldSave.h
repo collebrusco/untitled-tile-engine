@@ -22,7 +22,8 @@ struct WorldSave {
     WorldGenerator* generator;
 
     virtual void load(int x, int y, Region* target, World* world) = 0;
-    virtual bool store(Region const& target, World const& world) = 0;
+    virtual void store(Region const& target, World const& world) = 0;
+    virtual Region* read(int x, int y) = 0;
     // in the future, save to file
 };
 
@@ -44,8 +45,8 @@ typedef std::unordered_map<glm::ivec2, Region> region_map_t;
 struct MapWSave : public WorldSave {
     MapWSave();
     virtual void load(int x, int y, Region* target, World* world) override final;
-    virtual bool store(Region const& target, World const& world) override final;
-
+    virtual void store(Region const& target, World const& world) override final;
+    virtual Region* read(int x, int y) override final;
 private:
     region_map_t rmap;
 };

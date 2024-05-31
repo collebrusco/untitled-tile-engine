@@ -82,7 +82,6 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 
 	if (mouse.left.down) {
 		vec2 ssm = world_mpos(mouse);
-		Tile const& ctile = world.read_tile_at(ssm.xy());
 		Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
 		tile.img = 99;
 	}

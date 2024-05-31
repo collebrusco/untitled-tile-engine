@@ -3,6 +3,8 @@
 using namespace glm;
 LOG_MODULE(wrld);
 
+#define WBUFSIZE (WORLD_DIAMETER*WORLD_DIAMETER)
+
 #define index_mod(vec, m) \
 (ivec2((vec.x%m)<0?(vec.x%m)+m:vec.x%m, (vec.y%m)<0?(vec.y%m)+m:vec.y%m))
 
@@ -19,17 +21,27 @@ gen(0), save(&sv), center{0,0} {
 }
 
 bool World::bounds(region_coords_t pos) const {
-    ivec2 l(pos.x-(WORLD_DIAMETER/2),   pos.y-(WORLD_DIAMETER/2)  );
-    ivec2 h(pos.x+(WORLD_DIAMETER/2)-1, pos.y+(WORLD_DIAMETER/2)-1);
-    return (pos.x < l.x || pos.y < l.y || pos.x > h.x || pos.y > h.y);
+    ivec2 l(center.x-(WORLD_DIAMETER/2),   center.y-(WORLD_DIAMETER/2)  );
+    ivec2 h(center.x+(WORLD_DIAMETER/2)-1, center.y+(WORLD_DIAMETER/2)-1);
+    return !(pos.x < l.x || pos.y < l.y || pos.x > h.x || pos.y > h.y);
 }
 
 Region& World::region_at(region_coords_t pos) {
-    return regions[rpos_to_idx(pos)];
+    if (bounds(pos)) {return regions[rpos_to_idx(pos)];}
+    Region* reg = save->read(pos.x, pos.y);
+    if (reg) return *reg;
+    Region temp;
+    save->load(pos.x, pos.y, &temp, this);
+    save->store(temp, *this); // TODO wasteful: extra memcpy (lazy)
+    return *(save->read(pos.x, pos.y));
 }
 
 Region const& World::read_region_at(region_coords_t pos) const {
-    return regions[rpos_to_idx(pos)];
+    if (bounds(pos)) return regions[rpos_to_idx(pos)];
+    Region* reg = save->read(pos.x, pos.y);
+    if (reg) return *reg;
+    LOG_ERR("invalid read reg (must be in wbuff) %d,%d", pos.x, pos.y);
+    return regions[0];
 }
 
 Tile& World::tile_at(tile_coords_t pos) {
