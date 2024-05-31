@@ -13,15 +13,15 @@ gen(0), save(&sv), center{0,0} {
         for (int j = 0; j < WORLD_DIAMETER; j++) {
             ivec2 p(i-(WORLD_DIAMETER/2), j-(WORLD_DIAMETER/2));
             Region* tar = &regions[rpos_to_idx(p)];
-            save->load(p.x, p.y, tar);
+            save->load(p.x, p.y, tar, this);
         }
     }
 }
 
 bool World::bounds(region_coords_t pos) const {
-    pos += (WORLD_DIAMETER/2);
-    return  (pos.x >= 0 && pos.x <= (WORLD_DIAMETER-1)) &&
-            (pos.y >= 0 && pos.y <= (WORLD_DIAMETER-1));
+    ivec2 l(pos.x-(WORLD_DIAMETER/2),   pos.y-(WORLD_DIAMETER/2)  );
+    ivec2 h(pos.x+(WORLD_DIAMETER/2)-1, pos.y+(WORLD_DIAMETER/2)-1);
+    return (pos.x < l.x || pos.y < l.y || pos.x > h.x || pos.y > h.y);
 }
 
 Region& World::region_at(region_coords_t pos) {
@@ -74,6 +74,16 @@ tile_coords_t World::rpos_to_tpos(region_coords_t rpos) {
     return rpos * 16;
 }
 
+void World::relocate(region_coords_t newpos) {
+    if (newpos == center) return;
+    if (abs(newpos.x - center.x) > 1 ||
+        abs(newpos.y - center.y) > 1) return; // TODO fix this garbo
+    shift(newpos.x - center.x, newpos.y - center.y);
+}
+
+void World::relocate(vec2 newpos) {
+    relocate(pos_to_rpos(newpos));
+}
 
 void World::shift(int dx, int dy) {
     if (abs(dx)>1 || abs(dy)>1) {LOG_ERR("invalid shift %d,%d",dx,dy);return;}
@@ -84,8 +94,8 @@ void World::shift(int dx, int dy) {
             int y = starty + i;
             int x = center.x + ((dx*(WORLD_DIAMETER/2)) - (dx>0));
             size_t idx = rpos_to_idx(region_coords_t(x,y));
-            save->store(regions[idx]);
-            save->load(x, y, &regions[idx]);
+            save->store(regions[idx], *this);
+            save->load(x, y, &regions[idx], this);
         }
     }
     center.y += dy;
@@ -96,10 +106,19 @@ void World::shift(int dx, int dy) {
             int x = startx + i;
             int y = center.y + ((dy*(WORLD_DIAMETER/2)) - (dy>0));
             size_t idx = rpos_to_idx(region_coords_t(x,y));
-            save->store(regions[idx]);
-            save->load(x, y, &regions[idx]);
+            save->store(regions[idx], *this);
+            save->load(x, y, &regions[idx], this);
         }
     }
+}
+
+void World::full_move(region_coords_t newpos) {
+    // for (int i = 0; i < WORLD_DIAMETER; i++) {
+    //     for (int j = 0; j < WORLD_DIAMETER; j++) {
+    //         Region* tar = &regions[i + j*WORLD_DIAMETER];
+    //         region_coords_t rpos = tar->pos;
+    //     }
+    // }
 }
 
 size_t World::rpos_to_idx(region_coords_t rpos) {

@@ -3,6 +3,8 @@
 #include "Region.h"
 #include "WorldGenerator.h"
 
+struct World;
+
 /*
     as far as the world save is concerned,
     coords are region scale (1 unit = 1 region)
@@ -19,8 +21,8 @@ struct WorldSave {
 
     WorldGenerator* generator;
 
-    virtual void load(int x, int y, Region* target) = 0;
-    virtual bool store(Region const& target) = 0;
+    virtual void load(int x, int y, Region* target, World* world) = 0;
+    virtual bool store(Region const& target, World const& world) = 0;
     // in the future, save to file
 };
 
@@ -29,8 +31,8 @@ namespace std {
     struct hash<glm::ivec2> {
         size_t operator()(glm::ivec2 vec) const noexcept {
             size_t result = 0;
-            size_t a = reinterpret_cast<int>(vec.x);
-            size_t b = reinterpret_cast<int>(vec.y);
+            size_t a = static_cast<size_t>(vec.x);
+            size_t b = static_cast<size_t>(vec.y);
             result = (a<<32) | b;
             return result;
         }
@@ -41,8 +43,8 @@ namespace std {
 typedef std::unordered_map<glm::ivec2, Region> region_map_t;
 struct MapWSave : public WorldSave {
     MapWSave();
-    virtual void load(int x, int y, Region* target) override final;
-    virtual bool store(Region const& target) override final;
+    virtual void load(int x, int y, Region* target, World* world) override final;
+    virtual bool store(Region const& target, World const& world) override final;
 
 private:
     region_map_t rmap;

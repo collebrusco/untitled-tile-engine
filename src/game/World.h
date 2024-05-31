@@ -24,10 +24,12 @@ struct World {
     static region_coords_t tpos_to_rpos(tile_coords_t tpos);
     static tile_coords_t rpos_to_tpos(region_coords_t rpos);
 
-    void shift(int dx, int dy);
-    // TODO void move(region_coords_t newpos);
+    void relocate(region_coords_t newpos);
+    void relocate(glm::vec2 newpos);
 
 private:
+    void shift(int dx, int dy);
+    void full_move(region_coords_t newpos);
 
     TestWorldGenerator gen;
     WorldSave* save;
