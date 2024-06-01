@@ -3,26 +3,18 @@
 using namespace glm;
 LOG_MODULE(wsave);
 
-WorldSave::WorldSave(bool iinf, size_t s) :
-isinf(iinf), size(s), generator(0) 
+WorldSave::WorldSave(std::unique_ptr<WorldGenerator> gen) :
+generator(std::move(gen)) 
 {
 }
 
 WorldSave::~WorldSave() {}
 
 bool WorldSave::bounds(int x, int y) const {
-    return isinf || (
-                        ((x + (int)(size/2)) >= 0)   &&
-                        ((x + (int)(size/2)) < size) &&
-                        ((y + (int)(size/2)) >= 0)   &&
-                        ((y + (int)(size/2)) < size) 
-                    );
+    return true;
 }
 
-void WorldSave::use_generator(WorldGenerator* gen) {generator = gen;}
-
-
-MapWSave::MapWSave() : WorldSave(true) {}
+MapWSave::MapWSave(std::unique_ptr<WorldGenerator> gen) : WorldSave(std::move(gen)) {}
 
 
 void MapWSave::load(int x, int y, Region* target, World* world) {

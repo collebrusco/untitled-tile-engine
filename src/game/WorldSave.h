@@ -1,5 +1,6 @@
 #ifndef WORLD_SAVE_H
 #define WORLD_SAVE_H
+#include <memory>
 #include "Region.h"
 #include "WorldGenerator.h"
 
@@ -12,14 +13,11 @@ struct World;
     for finite saves this ranges (-size/2 <= x,y < size/2)
 */
 struct WorldSave {
-    const bool isinf; 
-    const size_t size;
-    WorldSave(bool isinf, size_t size=0);
+    WorldSave(std::unique_ptr<WorldGenerator> gen);
     virtual ~WorldSave();
     bool bounds(int x, int y) const;
-    void use_generator(WorldGenerator* gen);
 
-    WorldGenerator* generator;
+    std::unique_ptr<WorldGenerator> generator;
 
     virtual void load(int x, int y, Region* target, World* world) = 0;
     virtual void store(Region const& target, World const& world) = 0;
@@ -43,7 +41,7 @@ namespace std {
 #include <unordered_map>
 typedef std::unordered_map<glm::ivec2, Region> region_map_t;
 struct MapWSave : public WorldSave {
-    MapWSave();
+    MapWSave(std::unique_ptr<WorldGenerator> gen);
     virtual void load(int x, int y, Region* target, World* world) override final;
     virtual void store(Region const& target, World const& world) override final;
     virtual Region* read(int x, int y) override final;

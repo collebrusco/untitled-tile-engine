@@ -46,7 +46,7 @@ private:
 };
 
 WorldDriver::WorldDriver() : GameDriver(),
-							world(std::make_unique<MapWSave>()),
+							world(std::make_unique<MapWSave>(std::make_unique<TestWorldGenerator>(0xFACEFACE))),
 							cam({0.f,0.f,1.f}, {0.f, 0.f, -1.f}, {0.f, 1.f, 0.f}, 0.001f, 10000.f, 64)
 							{
 							}

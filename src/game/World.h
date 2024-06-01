@@ -32,7 +32,7 @@ private:
     void shift(int dx, int dy);
     void full_move(region_coords_t newpos);
 
-    TestWorldGenerator gen;
+    std::unique_ptr<WorldGenerator> gen;
     std::unique_ptr<WorldSave> save;
 
     region_coords_t center;
