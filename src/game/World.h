@@ -1,5 +1,6 @@
 #ifndef WORLD_H
 #define WORLD_H
+#include <memory>
 #include <flgl/glm.h>
 #include "WorldGenerator.h"
 #include "WorldSave.h"
@@ -8,7 +9,7 @@
 
 #define WORLD_DIAMETER (8)
 struct World {
-    World(WorldSave& sv);
+    explicit World(std::unique_ptr<WorldSave> sv);
 
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
 
@@ -32,7 +33,7 @@ private:
     void full_move(region_coords_t newpos);
 
     TestWorldGenerator gen;
-    WorldSave* save;
+    std::unique_ptr<WorldSave> save;
 
     region_coords_t center;
 

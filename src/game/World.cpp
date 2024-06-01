@@ -8,8 +8,8 @@ LOG_MODULE(wrld);
 #define index_mod(vec, m) \
 (ivec2((vec.x%m)<0?(vec.x%m)+m:vec.x%m, (vec.y%m)<0?(vec.y%m)+m:vec.y%m))
 
-World::World(WorldSave& sv) : 
-gen(0), save(&sv), center{0,0} {
+World::World(std::unique_ptr<WorldSave> sv) : 
+gen(0), save(std::move(sv)), center{0,0} {
     save->use_generator(&gen);
     for (int i = 0; i < WORLD_DIAMETER; i++) {
         for (int j = 0; j < WORLD_DIAMETER; j++) {

@@ -37,7 +37,6 @@ private:
     virtual void user_render() override final;
     virtual void user_destroy() override final;
 
-	MapWSave wsave;
 	World world;
 
 	WorldRenderer wrenderer;
@@ -46,20 +45,19 @@ private:
 
 };
 
-WorldDriver::WorldDriver() : GameDriver(), 	
-							wsave(),
-							world(wsave),
+WorldDriver::WorldDriver() : GameDriver(),
+							world(std::make_unique<MapWSave>()),
 							cam({0.f,0.f,1.f}, {0.f, 0.f, -1.f}, {0.f, 1.f, 0.f}, 0.001f, 10000.f, 64)
 							{
 							}
 
 vec2 WorldDriver::world_mpos(Mouse const& m) {
-		vec4 ssm = {m.pos.x,m.pos.y,0.,1.};
-		ssm.x /= window.frame.x; ssm.y /= window.frame.y;
-		ssm.x *= 2.f; ssm.x -= 1.f;
-		ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f;
-		ssm = cam.iview() * (cam.iproj() * ssm);
-		return ssm;
+	vec4 ssm = {m.pos.x,m.pos.y,0.,1.};
+	ssm.x /= window.frame.x; ssm.y /= window.frame.y;
+	ssm.x *= 2.f; ssm.x -= 1.f;
+	ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f;
+	ssm = cam.iview() * (cam.iproj() * ssm);
+	return ssm;
 }
 
 void WorldDriver::user_create() {
