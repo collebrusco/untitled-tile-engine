@@ -11,8 +11,6 @@
 struct World {
     explicit World(std::unique_ptr<WorldSave> sv);
 
-    Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
-
     bool bounds(region_coords_t pos) const;
     Region& region_at(region_coords_t pos);
     Region const& read_region_at(region_coords_t pos) const;
@@ -28,11 +26,12 @@ struct World {
     void relocate(region_coords_t newpos);
     void relocate(glm::vec2 newpos);
 
+    Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
+
 private:
     void shift(int dx, int dy);
     void full_move(region_coords_t newpos);
 
-    std::unique_ptr<WorldGenerator> gen;
     std::unique_ptr<WorldSave> save;
 
     region_coords_t center;

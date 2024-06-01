@@ -4,14 +4,13 @@
 #include "Region.h"
 #include "WorldGenerator.h"
 
+// The world save is responsible for storing world state that goes out of range
+// of the fast circ buffer in the World struct. that buffer pulls from and
+// stores to this saver. This keeps the whole world in ram for now
+// but should eventually have the ability to write to disk (yikes)
+
 struct World;
 
-/*
-    as far as the world save is concerned,
-    coords are region scale (1 unit = 1 region)
-    and centered at 0,0
-    for finite saves this ranges (-size/2 <= x,y < size/2)
-*/
 struct WorldSave {
     WorldSave(std::unique_ptr<WorldGenerator> gen);
     virtual ~WorldSave();

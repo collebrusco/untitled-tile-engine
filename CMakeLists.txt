@@ -18,7 +18,8 @@ add_custom_target(c
     COMMENT "Removing untitled"
     COMMAND ${CMAKE_COMMAND} -E remove -f untitled
     COMMENT "Removing src files"
-    COMMAND rm -rf CMakeFiles/untitled.dir/src/*
+    COMMAND rm -rf CMakeFiles/untitled.dir/src/*.o
+    COMMAND rm -rf CMakeFiles/untitled.dir/src/**/*.o
     COMMENT "Cleaned application code"
 )
 
