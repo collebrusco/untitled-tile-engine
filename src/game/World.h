@@ -5,6 +5,7 @@
 #include "WorldGenerator.h"
 #include "WorldSave.h"
 #include "Region.h"
+#include "ECS.h"
 
 
 #define WORLD_DIAMETER (8)
@@ -27,6 +28,8 @@ struct World {
     void relocate(glm::vec2 newpos);
 
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
+
+    ECS ecs;
 
 private:
     void shift(int dx, int dy);
