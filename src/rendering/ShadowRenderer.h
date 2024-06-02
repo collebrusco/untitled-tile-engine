@@ -1,21 +1,19 @@
-#ifndef REGION_RENDERER_H
-#define REGION_RENDERER_H
+#ifndef SHADOW_RENDERER_H
+#define SHADOW_RENDERER_H
 #include "Renderer.h"
 #include "../game/World.h"
 #include <flgl.h>
 #include <flgl/glm.h>
 
-struct RegionRenderer : public Renderer {
-	RegionRenderer();
-	virtual ~RegionRenderer() = default;
+struct ShadowRenderer : public Renderer {
+	ShadowRenderer();
+	virtual ~ShadowRenderer() = default;
 
-	static Texture tile_tex;
+	static Shader shadow_shader;
 
-	static VertexArray t_vao;
-	static VertexBuffer<glm::vec3> t_posbuff;
-	static ElementBuffer t_ibo;
-	static Shader region_shader;
-	VertexBuffer<glm::vec2> t_uvbuff;
+	VertexArray sh_vao;
+	VertexBuffer<Vt_pn> sh_vbo;
+	ElementBuffer sh_ibo;
 
 	Region* target;
 

@@ -6,9 +6,9 @@ using namespace glm;
 LOG_MODULE(rrend);
 
 Texture RegionRenderer::tile_tex;
-VertexArray RegionRenderer::vao;
-VertexBuffer<vec3> RegionRenderer::posbuff;
-ElementBuffer RegionRenderer::ibo;
+VertexArray RegionRenderer::t_vao;
+VertexBuffer<vec3> RegionRenderer::t_posbuff;
+ElementBuffer RegionRenderer::t_ibo;
 Shader RegionRenderer::region_shader;
 
 RegionRenderer::RegionRenderer() : target(0) {}
@@ -27,10 +27,10 @@ void RegionRenderer::static_init() {
     tile_tex = Texture::from_file("spritesheet");
     tile_tex.pixelate();
     region_shader = Shader::from_source("mvp_vert", "region_frag");
-    vao.create(); vao.bind();
-    posbuff.create(); posbuff.bind();
-    ibo.create(); ibo.bind();
-    vao.attrib(0, 3, GL_FLOAT, 0, 0);
+    t_vao.create(); t_vao.bind();
+    t_posbuff.create(); t_posbuff.bind();
+    t_ibo.create(); t_ibo.bind();
+    t_vao.attrib(0, 3, GL_FLOAT, 0, 0);
     {
         vector<vec3> poss;
         vector<uint32_t> elems; 
@@ -52,43 +52,52 @@ void RegionRenderer::static_init() {
                 idx += 4;
             }
         }
-        posbuff.buffer(poss); ibo.buffer(elems);
+        t_posbuff.buffer(poss); t_ibo.buffer(elems);
     }
-    vao.unbind(); posbuff.unbind(); ibo.unbind();
+    t_vao.unbind(); t_posbuff.unbind(); t_ibo.unbind();
 }
 void RegionRenderer::static_destroy() {
-    vao.destroy(); ibo.destroy();
-    posbuff.destroy();
+    t_vao.destroy(); t_ibo.destroy();
+    t_posbuff.destroy();
     tile_tex.destroy();
     region_shader.destroy();
 }
 
 void RegionRenderer::init() {
-    uvbuff.create();
+    t_uvbuff.create();
+}
+
+static void uvpushback(vector<vec2>& uvs, sprite_t img) {
+    const double tsz = 1. / (32.);
+    double x = ((double)(img % 32)) / 32.f;
+    double y = ((double)(img / 32)) / 32.f;
+    uvs.push_back({x    +0.00001,y+tsz-0.00001});
+    uvs.push_back({x    +0.00001,y    +0.00001});
+    uvs.push_back({x+tsz-0.00001,y    +0.00001});
+    uvs.push_back({x+tsz-0.00001,y+tsz-0.00001});
 }
 
 void RegionRenderer::prepare() {
     if (!target->read_flag()) return;
-    vector<vec2> uvs;
-    const double tsz = 1. / (32.);
+
+    vector<vec2> uvs; vector<uint32_t> shis; vector<Vt_pn> shvs;
+    uint32_t shibase = 0;
     for (size_t j = 0; j < REGION_SIZE; j++) {
         for (size_t i = 0; i < REGION_SIZE; i++) {
             Tile& t = target->buffer[i+j*REGION_SIZE];
-            double x = ((double)(t.img % 32)) / 32.f;
-            double y = ((double)(t.img / 32)) / 32.f;
-            uvs.push_back({x    +0.00001,y+tsz-0.00001});
-            uvs.push_back({x    +0.00001,y    +0.00001});
-            uvs.push_back({x+tsz-0.00001,y    +0.00001});
-            uvs.push_back({x+tsz-0.00001,y+tsz-0.00001});
+            bool surf = t.surf.props.f.present;
+            sprite_t img = surf ? t.surf.img : t.terr.img;
+            uvpushback(uvs, img);
         }
     }
-    vao.bind();
-    uvbuff.bind(); 
-    vao.attrib(1, 2, GL_FLOAT, 0, 0);
-    uvbuff.buffer(uvs); 
-    uvbuff.unbind();
-    vao.unbind();
-    target->clear_flag();
+
+    t_vao.bind();
+    t_uvbuff.bind(); 
+    t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
+    t_uvbuff.buffer(uvs); 
+    t_uvbuff.unbind();
+    t_vao.unbind();
+
     // LOG_DBG("reloaded %d,%d", target->pos.x, target->pos.y);
 }
 
@@ -97,13 +106,14 @@ void RegionRenderer::render() {
     region_shader.bind();
     region_shader.uMat4("uModel", model);
     tile_tex.bind();
-    vao.bind();
-    uvbuff.bind(); 
-    vao.attrib(1, 2, GL_FLOAT, 0, 0);
-    gl.draw_vao_ibo(vao, ibo);
+    t_vao.bind();
+    t_uvbuff.bind(); 
+    t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
+    gl.draw_vao_ibo(t_vao, t_ibo);
+    t_vao.unbind();
 }
 
 void RegionRenderer::destroy() {
-    uvbuff.destroy();
+    t_uvbuff.destroy();
 }
 

@@ -3,6 +3,7 @@
 
 #include <flgl.h>
 #include "RegionRenderer.h"
+#include "ShadowRenderer.h"
 #include "game/World.h"
 
 struct WorldRenderer : public Renderer {
@@ -21,7 +22,8 @@ struct WorldRenderer : public Renderer {
 private:
     OrthoCamera* cam;
     World* world;
-	RegionRenderer renderers[WORLD_DIAMETER*WORLD_DIAMETER];
+	RegionRenderer rrenderers[WORLD_DIAMETER*WORLD_DIAMETER];
+	ShadowRenderer srenderers[WORLD_DIAMETER*WORLD_DIAMETER];
 };
 
 

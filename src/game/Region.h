@@ -21,18 +21,19 @@ struct SurfaceTile {
 	entID ent;
 	union {
 		struct {
+			bool present			: 1;
 			bool solid 				: 1;
 			bool blocks_light		: 1;
 			bool blocks_selflight	: 1;
-			bool __res				: 5;
+			bool __res				: 4;
 		} f; // lol as if this is a hw register
 		uint8_t val;
 	} props;
 };
 
 struct Tile {
-	TerrainTile terrain;
-	SurfaceTile surface;
+	TerrainTile terr;
+	SurfaceTile surf;
 };
 
 struct Region {

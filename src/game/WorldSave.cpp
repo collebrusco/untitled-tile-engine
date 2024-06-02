@@ -19,7 +19,7 @@ MapWSave::MapWSave(std::unique_ptr<WorldGenerator> gen) : WorldSave(std::move(ge
 
 void MapWSave::load(int x, int y, Region* target, World* world) {
     if (rmap.find({x,y}) == rmap.end()) {
-        generator->generate(x, y, target);
+        generator->generate(x, y, target, world);
         return;
     }
     *target = rmap.at({x,y});
