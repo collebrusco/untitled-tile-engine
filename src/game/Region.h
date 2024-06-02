@@ -1,21 +1,38 @@
 #ifndef REGION_H
 #define REGION_H
 #include <flgl/glm.h>
+#include "ECS.h"
 
-typedef unsigned int sprite_t;
+typedef unsigned short sprite_t;
 typedef glm::ivec2 region_coords_t;
 typedef glm::ivec2 tile_coords_t;
 
 #define REGION_SIZE_LOG (4)
 #define REGION_SIZE (1<<REGION_SIZE_LOG)
 
-struct Tile {
+struct TerrainTile {
 	uint16_t id;
-	bool solid;
 	float friction;
 	sprite_t img;
-	bool operator==(Tile const& a) const {return a.img==this->img;}
-	bool operator==(Tile& a) {return a.img==this->img;}
+};
+
+struct SurfaceTile {
+	sprite_t img;
+	entID ent;
+	union {
+		struct {
+			bool solid 				: 1;
+			bool blocks_light		: 1;
+			bool blocks_selflight	: 1;
+			bool __res				: 5;
+		} f; // lol as if this is a hw register
+		uint8_t val;
+	} props;
+};
+
+struct Tile {
+	TerrainTile terrain;
+	SurfaceTile surface;
 };
 
 struct Region {
