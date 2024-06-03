@@ -138,7 +138,7 @@ void ShadowRenderer::prepare() {
 
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
-                shibase += 6;
+                shibase += 4;
             }
             if (!surr.f.bot) {
                 vpb({{x   , y}, {0.,  0.}});
@@ -148,7 +148,7 @@ void ShadowRenderer::prepare() {
 
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
-                shibase += 6;
+                shibase += 4;
             }
             if (!surr.f.l) {
                 vpb({{x, y},    { 0.,  0.}});
@@ -158,7 +158,7 @@ void ShadowRenderer::prepare() {
 
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
-                shibase += 6;
+                shibase += 4;
             }
             if (!surr.f.r) {
                 vpb({{x+1, y},    { 0.,  0.}});
@@ -168,7 +168,7 @@ void ShadowRenderer::prepare() {
 
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
-                shibase += 6;
+                shibase += 4;
             }
         }
     }
