@@ -72,7 +72,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 		vec2 ssm = world.world_mpos(mouse.pos, window.frame, &cam);
 		Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
 		tile.surf = {
-			.img = 41,
+			.img = 3,
 			.props = {
 				.f.present = 1,
 				.f.blocks_light = 1,

@@ -35,7 +35,12 @@ bool World::bounds(region_coords_t pos) const {
 }
 
 Region& World::region_at(region_coords_t pos) {
-    if (bounds(pos)) {return regions[rpos_to_idx(pos)];}
+    if (bounds(pos)) {
+        Region& r = regions[rpos_to_idx(pos)];
+        r.raise_flag();
+        r.raise_sflag();
+        return r;
+    }
     Region* reg = save->read(pos.x, pos.y);
     if (reg) return *reg;
     Region temp;

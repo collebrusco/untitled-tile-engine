@@ -85,21 +85,27 @@ void WorldRenderer::render() {
 		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
 		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
 		srenderers[i].prepare();
+	}
+	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+		ivec2 const& rpos = world->regions[i].pos;
+		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
+		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
+        srenderers[i].prepare();
 		srenderers[i].render();
 	}
 
     glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
     gl.wireframe(0);
 
-    ShadowRenderer::use_shader(ShadowRenderer::base_shader);
-	ShadowRenderer::sync_camera(*cam);
-	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
-		ivec2 const& rpos = world->regions[i].pos;
-		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
-		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
-		srenderers[i].prepare();
-		srenderers[i].render();
-	}
+    // ShadowRenderer::use_shader(ShadowRenderer::base_shader);
+	// ShadowRenderer::sync_camera(*cam);
+	// for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+	// 	ivec2 const& rpos = world->regions[i].pos;
+	// 	if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
+	// 	if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
+	// 	srenderers[i].prepare();
+	// 	srenderers[i].render();
+	// }
 
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_EQUAL, 0, 0xFF);

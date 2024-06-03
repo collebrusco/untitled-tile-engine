@@ -35,6 +35,11 @@ struct Tile {
 	SurfaceTile surf;
 };
 
+struct regflags {
+	bool shad	: 1;
+	bool terr 	: 1;
+};
+
 struct Region {
 	Tile buffer[REGION_SIZE*REGION_SIZE];
 	region_coords_t pos;
@@ -44,6 +49,9 @@ struct Region {
 	void clear_flag();
 	bool read_flag() const;
 	void raise_flag();
+	void clear_sflag();
+	bool read_sflag() const;
+	void raise_sflag();
 
 	Region() = default;
 	Region(Region const& other);
@@ -51,7 +59,7 @@ struct Region {
 	Region& operator=(Region const& other);
 
 private:
-	bool flag;
+	regflags flags;
 };
 
 

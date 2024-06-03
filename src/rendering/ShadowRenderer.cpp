@@ -13,7 +13,7 @@ ShadowRenderer::ShadowRenderer() : target(0) {}
 
 
 void ShadowRenderer::use_region(Region* reg) {
-    target = reg; target->raise_flag();
+    target = reg; target->raise_sflag();
 }
 
 void ShadowRenderer::use_world(World& w) {
@@ -92,32 +92,11 @@ static surroundings_t get_tile_surr(int i, int j, Region* tar, World* world) {
     return surr;
 }
 
-// static void shadowpushback(vector<Vt_pn>& vs, 
-//             vector<uint32_t>& is, size_t i, size_t j, uint32_t& shb,
-//             surroundings_t surr) { 
-//     uint32_t oldvs = vs.size();
-//     vpb({{i+0.,  j+1., 0.}, {0,  !(surr.top), 0}});
-//     vpb({{i+1.,  j+1., 0.}, {0,  !(surr.top), 0}}); // sh
-//     vpb({{i+1.,  j+1., 0.}, {!(surr.r),  0, 0}});
-//     vpb({{i+1.,  j+0., 0.}, {!(surr.r),  0, 0}}); // sh
-//     vpb({{i+1.,  j+0., 0.}, {0, -(!(surr.bot)), 0}});
-//     vpb({{i+0.,  j+0., 0.}, {0, -(!(surr.bot)), 0}}); // sh
-//     vpb({{i+0.,  j+0., 0.}, {-(!(surr.l)), 0, 0}});
-//     vpb({{i+0.,  j+1., 0.}, {-(!(surr.l)), 0, 0}}); // sh
-//     uint32_t shbase = shb; shb += vs.size() - oldvs;
-//     ipb(shbase + 0); ipb(shbase + 1); ipb(shbase + 2);
-//     ipb(shbase + 2); ipb(shbase + 3); ipb(shbase + 4);
-//     ipb(shbase + 4); ipb(shbase + 5); ipb(shbase + 6);	
-//     ipb(shbase + 6); ipb(shbase + 7); ipb(shbase + 0);
-//     ipb(shbase + 0); ipb(shbase + 2); ipb(shbase + 6); 	
-//     ipb(shbase + 6); ipb(shbase + 2); ipb(shbase + 4);
-// }
-
 #define vpb shvs.push_back
 #define ipb shis.push_back
 
 void ShadowRenderer::prepare() {
-    if (!target->read_flag()) return;
+    if (!target->read_sflag()) return;
 
     vector<uint32_t> shis; vector<Vt_2p2n> shvs;
     uint32_t shibase = 0;
@@ -130,6 +109,10 @@ void ShadowRenderer::prepare() {
             if (!surf) continue;
             if (!t.surf.props.f.blocks_light) continue;
             surroundings_t surr = get_tile_surr(i, j, target, world);
+            if (j == REGION_SIZE-1) world->region_at(ivec2(target->pos.x, target->pos.y+1));
+            if (j == 0) world->region_at(ivec2(target->pos.x, target->pos.y-1));
+            if (i == 0) world->region_at(ivec2(target->pos.x-1, target->pos.y));
+            if (i == REGION_SIZE-1) world->region_at(ivec2(target->pos.x+1, target->pos.y));
             if (!surr.f.top) {
                 vpb({{x   , y+1.}, {0., 0.}});
                 vpb({{x   , y+1.}, {0., 1.}});
@@ -139,6 +122,7 @@ void ShadowRenderer::prepare() {
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
                 shibase += 4;
+            } else {
             }
             if (!surr.f.bot) {
                 vpb({{x   , y}, {0.,  0.}});
@@ -149,6 +133,7 @@ void ShadowRenderer::prepare() {
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
                 shibase += 4;
+            } else {
             }
             if (!surr.f.l) {
                 vpb({{x, y},    { 0.,  0.}});
@@ -159,6 +144,7 @@ void ShadowRenderer::prepare() {
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
                 shibase += 4;
+            } else {
             }
             if (!surr.f.r) {
                 vpb({{x+1, y},    { 0.,  0.}});
@@ -169,9 +155,12 @@ void ShadowRenderer::prepare() {
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 1);
                 ipb(shibase + 0); ipb(shibase + 2); ipb(shibase + 3);
                 shibase += 4;
+            } else {
             }
         }
     }
+
+    target->clear_sflag();
 
     sh_vbo.bind();
     sh_vbo.buffer(shvs);
