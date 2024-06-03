@@ -13,6 +13,10 @@ void WorldRenderer::use_world(World& w) {
     world = &w;
 }
 
+void WorldRenderer::give_mouse(glm::ivec2 mp) {
+    mpos = mp;
+}
+
 void WorldRenderer::twf() {wf = !wf;}
 
 void WorldRenderer::init() {
@@ -40,8 +44,11 @@ void WorldRenderer::init() {
     fbuf.attach_renderbuffer(fbrbuf, GL_DEPTH_STENCIL_ATTACHMENT);
     if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
     fbuf.unbind();
-    quad_shader = Shader::from_source("fullscreenv", "color");
+    quad_shader = Shader::from_source("fullscreenv", "tex");
     quad = DefaultMeshes::tile<Vt_classic>();
+    ol_shader = Shader::from_source("2Dmvp_vert", "color");
+    outline = Mesh<vec2>::from_vectors({{0.,0.}, {0.,1.}, {1.,1.}, {1.,0.}},
+                                        {0,1, 1,2, 2,3, 3,0});
 }
 
 void WorldRenderer::prepare() {
@@ -108,6 +115,18 @@ void WorldRenderer::render() {
         world->regions[i].clear_flag();
 	}
 
+    vec2 mp = world->world_mpos(mpos, pframe, cam);
+    ol_shader.bind();
+    ol_shader.uMat4("uView", cam->view());
+    ol_shader.uMat4("uProj", cam->proj());
+    mat4 model = genModelMat2d((vec2)(world->pos_to_tpos(mp)), 0., vec2(1.));
+    ol_shader.uMat4("uModel", model);
+    gl.draw_mesh(outline, GL_LINES);
+    model = genModelMat2d((vec2)(world->pos_to_rpos(mp) * REGION_SIZE), 0., vec2((float)REGION_SIZE));
+    ol_shader.uMat4("uModel", model);
+    outline.bind();
+    gl.draw_mesh(outline, GL_LINES);
+
     Framebuffer::bind_default();
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     quad.bind();
@@ -126,6 +145,8 @@ void WorldRenderer::destroy() {
 	}
     fbuf.destroy(); fbtex.destroy(); fbrbuf.destroy();
     quad_shader.destroy(); quad.destroy();
+    outline.destroy();
+    ol_shader.destroy();
 }
 
 

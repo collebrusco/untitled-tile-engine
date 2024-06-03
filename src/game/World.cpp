@@ -8,6 +8,15 @@ LOG_MODULE(wrld);
 #define index_mod(vec, m) \
 (ivec2((vec.x%m)<0?(vec.x%m)+m:vec.x%m, (vec.y%m)<0?(vec.y%m)+m:vec.y%m))
 
+vec2 World::world_mpos(ivec2 mpos, ivec2 frame, Camera* cam) {
+	vec4 ssm = {mpos.x,mpos.y,0.,1.};
+	ssm.x /= frame.x; ssm.y /= frame.y;
+	ssm.x *= 2.f; ssm.x -= 1.f;
+	ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f;
+	ssm = cam->iview() * (cam->iproj() * ssm);
+	return ssm;
+}
+
 World::World(std::unique_ptr<WorldSave> sv) : 
 save(std::move(sv)), center{0,0} {
     for (int i = 0; i < WORLD_DIAMETER; i++) {

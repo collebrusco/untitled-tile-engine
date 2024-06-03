@@ -30,7 +30,6 @@ class WorldDriver : public GameDriver {
 public:
 	WorldDriver();
 	virtual ~WorldDriver() = default;
-	vec2 world_mpos(Mouse const& m);
 private:
     virtual void user_create() override final;
     virtual void user_update(float dt, Keyboard const& kb, Mouse const& mouse) override final;
@@ -51,15 +50,6 @@ WorldDriver::WorldDriver() : GameDriver(),
 							{
 							}
 
-vec2 WorldDriver::world_mpos(Mouse const& m) {
-	vec4 ssm = {m.pos.x,m.pos.y,0.,1.};
-	ssm.x /= window.frame.x; ssm.y /= window.frame.y;
-	ssm.x *= 2.f; ssm.x -= 1.f;
-	ssm.y *= 2.f; ssm.y = 2.f - ssm.y; ssm.y -= 1.f;
-	ssm = cam.iview() * (cam.iproj() * ssm);
-	return ssm;
-}
-
 void WorldDriver::user_create() {
 	Renderer::context_init("untitled", 1280, 720);
 	cam.update();
@@ -79,7 +69,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	cam.update();
 
 	if (mouse.left.down) {
-		vec2 ssm = world_mpos(mouse);
+		vec2 ssm = world.world_mpos(mouse.pos, window.frame, &cam);
 		Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
 		tile.surf = {
 			.img = 41,
@@ -95,6 +85,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 }
 
 void WorldDriver::user_render() {
+	wrenderer.give_mouse(window.mouse.pos);
 	wrenderer.prepare();
 	wrenderer.render();
 }

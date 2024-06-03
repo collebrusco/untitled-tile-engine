@@ -14,7 +14,7 @@ struct ShadowRenderer : public Renderer {
 	static Shader* current_shader;
 
 	VertexArray sh_vao;
-	VertexBuffer<Vt_pn> sh_vbo;
+	VertexBuffer<Vt_2p2n> sh_vbo;
 	ElementBuffer sh_ibo;
 
 	World* world;

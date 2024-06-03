@@ -13,6 +13,7 @@ struct WorldRenderer : public Renderer {
     virtual ~WorldRenderer() = default;
 
     void use_camera(OrthoCamera& c);
+    void give_mouse(glm::ivec2 mp);
     void use_world(World& w);
     void twf();
 
@@ -30,9 +31,13 @@ private:
     Framebuffer fbuf;
     Texture fbtex;
     Renderbuffer fbrbuf;
-    glm::ivec2 pframe;
     Shader quad_shader;
     Mesh<Vt_classic> quad;
+    Mesh<glm::vec2> outline;
+    Shader ol_shader;
+
+    glm::ivec2 pframe;
+    glm::ivec2 mpos;
 
     bool wf;
 };

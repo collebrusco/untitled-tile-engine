@@ -2,6 +2,7 @@
 #define WORLD_H
 #include <memory>
 #include <flgl/glm.h>
+#include <flgl/tools.h>
 #include "WorldGenerator.h"
 #include "WorldSave.h"
 #include "Region.h"
@@ -26,6 +27,8 @@ struct World {
 
     void relocate(region_coords_t newpos);
     void relocate(glm::vec2 newpos);
+
+	glm::vec2 world_mpos(glm::ivec2 mpos, glm::ivec2 frame, Camera* cam);
 
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
 

@@ -2,12 +2,6 @@
 
 out vec4 outColor;
 
-uniform sampler2D utex;
-
-in vec2 iUV;
-in vec3 iPos;
-
 void main(){
-    outColor = vec4(1.);//texture(utex, iUV);
-    outColor = texture(utex, iUV);
+    outColor = vec4(vec3(0.4, 0., 0.4), 1.);
 }
