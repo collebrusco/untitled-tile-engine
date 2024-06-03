@@ -45,7 +45,17 @@ void WorldRenderer::init() {
 }
 
 void WorldRenderer::prepare() {
-
+    if (window.frame != pframe) {
+        pframe = window.frame;
+        fbtex.bind(); fbtex.pixelate();
+        fbtex.alloc_rgb(pframe.x, pframe.y);
+        fbuf.attach_texture(fbtex, GL_COLOR_ATTACHMENT0);
+        fbrbuf.bind();
+        fbrbuf.alloc(GL_DEPTH24_STENCIL8, pframe.x, pframe.y);
+        fbuf.attach_renderbuffer(fbrbuf, GL_DEPTH_STENCIL_ATTACHMENT);
+        if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
+        fbuf.unbind();
+    }
 }
 
 void WorldRenderer::render() {

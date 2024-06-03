@@ -63,16 +63,16 @@ struct surroundings {
 
 static void shadowpushback(vector<Vt_pn>& vs, 
             vector<uint32_t>& is, size_t i, size_t j, uint32_t& shb,
-            surroundings surr) {
+            surroundings surr) { 
     uint32_t oldvs = vs.size();
-    vpb({{i+0.,  j+1., 0.}, {0,  1, 0}});
-    vpb({{i+1.,  j+1., 0.}, {0,  1, 0}}); // sh
-    vpb({{i+1.,  j+1., 0.}, {1,  0, 0}});
-    vpb({{i+1.,  j+0., 0.}, {1,  0, 0}}); // sh
-    vpb({{i+1.,  j+0., 0.}, {0, -1, 0}});
-    vpb({{i+0.,  j+0., 0.}, {0, -1, 0}}); // sh
-    vpb({{i+0.,  j+0., 0.}, {-1, 0, 0}});
-    vpb({{i+0.,  j+1., 0.}, {-1, 0, 0}}); // sh
+    vpb({{i+0.,  j+1., 0.}, {0,  !(surr.top), 0}});
+    vpb({{i+1.,  j+1., 0.}, {0,  !(surr.top), 0}}); // sh
+    vpb({{i+1.,  j+1., 0.}, {!(surr.r),  0, 0}});
+    vpb({{i+1.,  j+0., 0.}, {!(surr.r),  0, 0}}); // sh
+    vpb({{i+1.,  j+0., 0.}, {0, -(!(surr.bot)), 0}});
+    vpb({{i+0.,  j+0., 0.}, {0, -(!(surr.bot)), 0}}); // sh
+    vpb({{i+0.,  j+0., 0.}, {-(!(surr.l)), 0, 0}});
+    vpb({{i+0.,  j+1., 0.}, {-(!(surr.l)), 0, 0}}); // sh
     uint32_t shbase = shb; shb += vs.size() - oldvs;
     ipb(shbase + 0); ipb(shbase + 1); ipb(shbase + 2);
     ipb(shbase + 2); ipb(shbase + 3); ipb(shbase + 4);

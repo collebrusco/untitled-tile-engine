@@ -95,6 +95,7 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 }
 
 void WorldDriver::user_render() {
+	wrenderer.prepare();
 	wrenderer.render();
 }
 
