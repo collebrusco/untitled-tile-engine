@@ -10,16 +10,22 @@ struct ShadowRenderer : public Renderer {
 	virtual ~ShadowRenderer() = default;
 
 	static Shader shadow_shader;
+	static Shader base_shader;
+	static Shader* current_shader;
 
 	VertexArray sh_vao;
 	VertexBuffer<Vt_pn> sh_vbo;
 	ElementBuffer sh_ibo;
 
+	World* world;
 	Region* target;
 
 	void use_region(Region* reg);
+	void use_world(World& w);
 
 	static void sync_camera(Camera& cam);
+
+	static void use_shader(Shader& sh);
 
 	static void static_init();
 	static void static_destroy();

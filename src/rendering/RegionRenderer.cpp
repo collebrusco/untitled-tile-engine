@@ -80,7 +80,8 @@ static void uvpushback(vector<vec2>& uvs, sprite_t img) {
 void RegionRenderer::prepare() {
     if (!target->read_flag()) return;
 
-    vector<vec2> uvs; vector<uint32_t> shis; vector<Vt_pn> shvs;
+    vector<vec2> uvs;
+    uvs.reserve(REGION_SIZE*REGION_SIZE*4);
     uint32_t shibase = 0;
     for (size_t j = 0; j < REGION_SIZE; j++) {
         for (size_t i = 0; i < REGION_SIZE; i++) {

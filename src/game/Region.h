@@ -24,8 +24,7 @@ struct SurfaceTile {
 			bool present			: 1;
 			bool solid 				: 1;
 			bool blocks_light		: 1;
-			bool blocks_selflight	: 1;
-			bool __res				: 4;
+			bool __res				: 5;
 		} f; // lol as if this is a hw register
 		uint8_t val;
 	} props;

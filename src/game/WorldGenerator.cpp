@@ -36,10 +36,6 @@ void TestWorldGenerator::generate(int x, int y, Region* target, World* world) {
                 sp = 2; break;
             }
 
-            // bool psnt = (r>62);
-            // SurfaceTile st = {.ent = 0, .img = static_cast<sprite_t>(41*psnt), 
-            //     .props = {.f.present = psnt, .f.solid = 1, .f.blocks_light = psnt}};
-            
             target->tile_at(i,j) = {
                 .terr = {.img = sp},
                 .surf = {.ent = 0, .img = 0, .props = {.val = 0}}

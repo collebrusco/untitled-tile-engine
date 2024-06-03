@@ -12,7 +12,7 @@ void main() {
     vec2 dlight = ulpos - vpos.xy;
     vec2 norm = anorm.xy;
     float dt = dot(dlight, norm);
-    if (dt<0) {
+    if (dt<0.) {
         vpos.xy -= 10000.f*normalize(dlight);
     }
 

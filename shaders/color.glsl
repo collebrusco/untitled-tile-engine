@@ -2,12 +2,12 @@
 
 out vec4 outColor;
 
+uniform sampler2D utex;
+
 in vec2 iUV;
 in vec3 iPos;
 
 void main(){
-    vec2 coord = iUV - vec2(0.5);
-    if(length(coord) > 0.5)
-        discard;
-    outColor = vec4(vec3(1.),0.);
+    outColor = vec4(1.);//texture(utex, iUV);
+    outColor = texture(utex, iUV);
 }
