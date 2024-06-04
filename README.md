@@ -1,7 +1,3 @@
-### untitled
+### untitled / Tile Engine
 
-tower defense / extraction gatherer
-
-dave inspired somewhat. A & B gameplay
-
-we'll see what happens
+I have some ideas for where this is going but for now I'm just developing a somewhat generic overhead tile based engine. Let's see where it goes!...
