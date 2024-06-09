@@ -67,6 +67,7 @@ typedef union {
 } surroundings_t;
 
 static surroundings_t get_tile_surr(int i, int j, Region* tar, World* world) {
+#ifdef __APPLE__
     surroundings_t surr = {
         .f.top = (j+1 > REGION_SIZE-1 ?
             world->read_region_at(region_coords_t(tar->pos.x, tar->pos.y+1))
@@ -89,6 +90,29 @@ static surroundings_t get_tile_surr(int i, int j, Region* tar, World* world) {
         :
             tar->buffer[i+1+j*REGION_SIZE]).surf.props.f.blocks_light
     };
+#else
+    surroundings_t surr;
+    surr.f.top = (j+1 > REGION_SIZE-1 ?
+        world->read_region_at(region_coords_t(tar->pos.x, tar->pos.y+1))
+            .buffer[i]
+    :
+        tar->buffer[i+(j+1)*REGION_SIZE]).surf.props.f.blocks_light;
+    surr.f.bot = (j-1 < 0 ?
+        world->read_region_at(region_coords_t(tar->pos.x, tar->pos.y-1))
+            .buffer[i+((REGION_SIZE-1)*REGION_SIZE)]
+    :
+        tar->buffer[i+(j-1)*REGION_SIZE]).surf.props.f.blocks_light;
+    surr.f.l = (i-1 < 0 ?
+        world->read_region_at(region_coords_t(tar->pos.x-1, tar->pos.y))
+            .buffer[REGION_SIZE-1+(j*REGION_SIZE)]
+    :
+        tar->buffer[i-1+j*REGION_SIZE]).surf.props.f.blocks_light;
+    surr.f.r = (i+1 > REGION_SIZE-1 ?
+        world->read_region_at(region_coords_t(tar->pos.x+1, tar->pos.y))
+            .buffer[(j*REGION_SIZE)]
+    :
+        tar->buffer[i+1+j*REGION_SIZE]).surf.props.f.blocks_light;
+#endif
     return surr;
 }
 
