@@ -39,6 +39,7 @@ private:
 	World world;
 
 	WorldRenderer wrenderer;
+	TextRenderer text_renderer;
 	
 	OrthoCamera cam;
 
@@ -56,6 +57,9 @@ void WorldDriver::user_create() {
 	wrenderer.use_camera(cam);
 	wrenderer.use_world(world);
 	wrenderer.init();
+	text_renderer.init_text_rendering();
+	text_renderer.init();
+	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls\npress L to turn on lighting (bad) (wip) %s", "");
 }
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
@@ -65,7 +69,11 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	if (kb[GLFW_KEY_K].pressed) {static bool wf = 1;wrenderer.twf();wf = !wf;}
+#ifdef __APPLE__
 	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 10.f;
+#else
+	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 100.f;
+#endif
 	cam.update();
 
 	if (mouse.left.down) {
@@ -85,12 +93,17 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 	}
 
 	world.relocate(cam.readPos().xy());
+
+	static size_t fpt = 0;
+	fpt++;
+	if (!(fpt % 60)) LOG_INF("fps: %.1f", 1./dt);
 }
 
 void WorldDriver::user_render() {
 	wrenderer.give_mouse(window.mouse.pos);
 	wrenderer.prepare();
 	wrenderer.render();
+	text_renderer.render(24, window.frame.y - 48, 4);
 }
 
 void WorldDriver::user_destroy() {

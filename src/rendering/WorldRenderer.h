@@ -6,6 +6,7 @@
 #include "RegionRenderer.h"
 #include "ShadowRenderer.h"
 #include "game/World.h"
+#include <Stopwatch.h>
 
 struct WorldRenderer : public Renderer {
 
@@ -23,6 +24,7 @@ struct WorldRenderer : public Renderer {
     virtual void destroy() override final;
 
 private:
+    Stopwatch timer;
     OrthoCamera* cam;
     World* world;
 	RegionRenderer rrenderers[WORLD_DIAMETER*WORLD_DIAMETER];
@@ -32,6 +34,7 @@ private:
     Texture fbtex;
     Renderbuffer fbrbuf;
     Shader quad_shader;
+    Shader quad_perlin;
     Mesh<Vt_classic> quad;
     Mesh<glm::vec2> outline;
     Shader ol_shader;

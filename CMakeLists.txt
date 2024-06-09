@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_subdirectory(lib/flgl)
 add_subdirectory(lib/ecs)
 
-include_directories(${PROJECT_SOURCE_DIR}/lib/flgl/inc ${PROJECT_SOURCE_DIR}/lib/ecs/inc ${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/lib/flgl/inc ${PROJECT_SOURCE_DIR}/lib/sw ${PROJECT_SOURCE_DIR}/lib/ecs/inc ${PROJECT_SOURCE_DIR}/src)
 
 file(GLOB_RECURSE PROJECT_SOURCES "src/*.cpp" "lib/sw/*.cpp")
 

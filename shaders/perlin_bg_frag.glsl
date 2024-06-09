@@ -1,18 +1,13 @@
 #version 410 core
 
 out vec4 outColor;
-
-uniform sampler2D utex;
-uniform float uAspect;
-uniform float uvw;
-
 in vec2 iUV;
 in vec3 iPos;
 
 uniform float uTime;
 uniform vec2 uRes;
+uniform float uAspect;
 uniform vec2 uCampos;
-uniform float ulightsw;
 
 vec2 n_res = gl_FragCoord.xy / uRes;
 vec2 i_res = vec2(n_res.x * uAspect, n_res.y);
@@ -134,17 +129,5 @@ vec4 bgcolor() {
 }
 
 void main(){
-    vec4 c = texture(utex, iUV);
-
-    vec2 i_res = vec2(iUV.x, iUV.y / uAspect);
-
-    float dist = distance(i_res, vec2(0.5, 0.5 / uAspect));
-    dist *= uvw;
-    dist /= 16.;
-
-    vec4 bg = bgcolor();
-
-    c = mix(c, bg, ulightsw * min(dist, 1.));
-
-    outColor = c;
+    outColor = bgcolor();
 }

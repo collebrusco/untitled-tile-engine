@@ -20,6 +20,8 @@ void WorldRenderer::give_mouse(glm::ivec2 mp) {
 void WorldRenderer::twf() {wf = !wf;}
 
 void WorldRenderer::init() {
+    timer.setUnit(SECONDS);
+    timer.reset_start();
     pframe = window.frame;
 	RegionRenderer::static_init();
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
@@ -49,6 +51,7 @@ void WorldRenderer::init() {
     ol_shader = Shader::from_source("2Dmvp_vert", "color");
     outline = Mesh<vec2>::from_vectors({{0.,0.}, {0.,1.}, {1.,1.}, {1.,0.}},
                                         {0,1, 1,2, 2,3, 3,0});
+    quad_perlin = Shader::from_source("fullscreenv", "perlin_bg_frag");
 }
 
 void WorldRenderer::prepare() {
@@ -67,17 +70,30 @@ void WorldRenderer::prepare() {
 
 void WorldRenderer::render() {
 
+    // setup to render into post process buffer
     fbuf.bind(); gl.viewport(window.frame.x, window.frame.y);
-    
-    glEnable(GL_STENCIL_TEST);
     glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
+    // render shadow perlin bg
+    glDisable(GL_STENCIL_TEST);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    quad_perlin.bind();
+    quad_perlin.uVec2("uRes", window.frame);
+    quad_perlin.uFloat("uTime", timer.read());
+    quad_perlin.uFloat("uAspect", window.aspect);
+    quad_perlin.uVec2("uCampos", cam->readPos().xy());
+    quad.bind();
+    gl.draw_mesh(quad);
+
+    // turn off color mask, setup to increment stencil
+    glEnable(GL_STENCIL_TEST);
     glStencilFunc(GL_ALWAYS, 0, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
     gl.wireframe(wf);
 
+    // render shadow geometry
     ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
 	ShadowRenderer::sync_camera(*cam);
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
@@ -94,23 +110,12 @@ void WorldRenderer::render() {
 		srenderers[i].render();
 	}
 
-    glStencilOp(GL_KEEP, GL_KEEP, GL_DECR);
-    gl.wireframe(0);
-
-    // ShadowRenderer::use_shader(ShadowRenderer::base_shader);
-	// ShadowRenderer::sync_camera(*cam);
-	// for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
-	// 	ivec2 const& rpos = world->regions[i].pos;
-	// 	if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
-	// 	if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
-	// 	srenderers[i].prepare();
-	// 	srenderers[i].render();
-	// }
-
+    // setup test to keep fragment if stencil == 0 (not in shadow)
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
     glStencilFunc(GL_EQUAL, 0, 0xFF);
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
+    // render terrain
 	RegionRenderer::sync_camera(*cam);
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
 		ivec2 const& rpos = world->regions[i].pos;
@@ -121,6 +126,9 @@ void WorldRenderer::render() {
         world->regions[i].clear_flag();
 	}
 
+    // render entities TODO
+
+    // render mouse hover tile outline
     vec2 mp = world->world_mpos(mpos, pframe, cam);
     ol_shader.bind();
     ol_shader.uMat4("uView", cam->view());
@@ -128,17 +136,28 @@ void WorldRenderer::render() {
     mat4 model = genModelMat2d((vec2)(world->pos_to_tpos(mp)), 0., vec2(1.));
     ol_shader.uMat4("uModel", model);
     gl.draw_mesh(outline, GL_LINES);
+    // render mouse hover region outline
     model = genModelMat2d((vec2)(world->pos_to_rpos(mp) * REGION_SIZE), 0., vec2((float)REGION_SIZE));
     ol_shader.uMat4("uModel", model);
     outline.bind();
     gl.draw_mesh(outline, GL_LINES);
 
+    // render post proc framebuffer to window framebuffer (no effects yet)
+    glDisable(GL_STENCIL_TEST);
     Framebuffer::bind_default();
-    glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);
     quad.bind();
     fbtex.bind();
     quad_shader.bind();
     quad_shader.uInt("utex", 0);
+    quad_shader.uFloat("uAspect", window.aspect);
+    quad_shader.uVec2("uRes", window.frame);
+    quad_shader.uFloat("uTime", timer.read());
+    quad_shader.uVec2("uCampos", cam->readPos().xy());
+    quad_shader.uFloat("uvw", cam->getViewWidth());
+    static bool l = 0;
+    if (window.keyboard[GLFW_KEY_L].pressed) l = !l;
+    quad_shader.uFloat("ulightsw", l);
     quad.bind();
     gl.draw_mesh(quad);
 }
@@ -151,6 +170,7 @@ void WorldRenderer::destroy() {
 	}
     fbuf.destroy(); fbtex.destroy(); fbrbuf.destroy();
     quad_shader.destroy(); quad.destroy();
+    quad_perlin.destroy();
     outline.destroy();
     ol_shader.destroy();
 }
