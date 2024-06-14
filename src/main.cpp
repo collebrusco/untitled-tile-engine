@@ -81,11 +81,11 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 		Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
 		tile.surf = {
 			.img = 3,
-			.props = {
-				.f.present = 1,
-				.f.blocks_light = 1,
-				.f.solid = 1
-			} // microsoft's compiler can't handle this (lame)
+			// .props = {
+			// 	.f.present = 1,
+			// 	.f.blocks_light = 1,
+			// 	.f.solid = 1
+			// } // microsoft's compiler can't handle this (lame)
 		};
 		tile.surf.props.f.present = 
 		tile.surf.props.f.blocks_light =
