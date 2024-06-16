@@ -5,6 +5,71 @@
 LOG_MODULE(wrend);
 using namespace glm;
 
+
+bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, float asp) {
+    static region_coords_t pcenter{0xFFFFFFFF, 0xFFFFFFFF};
+    int nx = ((int)ceil(camvw/(float)REGION_SIZE)+1)/2;
+    int ny = ((int)ceil((camvw/(float)REGION_SIZE)/asp)+1)/2;
+    // nx = glm::min(WORLD_DIAMETER/2, nx);
+    // ny = glm::min(WORLD_DIAMETER/2, ny);
+
+    bool needfbuff = false;
+    if (nx != w || ny != h) {
+        LOG_INF("\t%d,%d rad\t\t%dx%d regions", nx, ny, (nx*2)+1, (ny*2)+1);
+        needfbuff = true;
+    }
+    if (needfbuff || pcenter != center) {
+        region_viewer.setup(center, nx, ny);
+    }
+    w = nx; h = ny;
+    return needfbuff;
+}
+    
+void frame_manager_t::frame_region_view_t::setup(region_coords_t const& center, int w, int h) {
+    topleft  = center + glm::ivec2(-w, h);
+    botright = center + glm::ivec2(w, -h);
+}
+
+frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_region_view_t::begin() {
+    frame_region_iter it(topleft);
+    it.tl = &topleft; it.br = &botright;
+    return it;
+}
+
+frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_region_view_t::end() {
+    return frame_region_iter(glm::ivec2(botright.x+1, botright.y), 0);
+}
+
+frame_manager_t::frame_region_view_t::frame_region_iter::frame_region_iter(region_coords_t const& p, region_coords_t *b) : pos(p), br(b) {}
+bool frame_manager_t::frame_region_view_t::frame_region_iter::operator==(frame_region_iter const& other) const {
+    return (!this->br && !other.br) || (this->pos == other.pos);
+}
+bool frame_manager_t::frame_region_view_t::frame_region_iter::operator!=(frame_region_iter const& other) const {
+    return !this->operator==(other);
+}
+frame_manager_t::frame_region_view_t::frame_region_iter& frame_manager_t::frame_region_view_t::frame_region_iter::operator++() {
+    if (!br) return *this;
+    if (*br == pos) {
+        br = 0;
+        return *this;
+    }
+    pos.x++;
+    if (pos.x > br->x) {
+        pos.x = tl->x;
+        pos.y--;
+    }
+    return *this;
+}
+region_coords_t frame_manager_t::frame_region_view_t::frame_region_iter::operator*() const {
+    return pos;
+}
+
+
+frame_manager_t::frame_region_view_t frame_manager_t::regions_in_frame() const {
+    return region_viewer;
+}
+
+
 void WorldRenderer::use_camera(OrthoCamera& c) {
     cam = &c;
 }
@@ -19,7 +84,23 @@ void WorldRenderer::give_mouse(glm::ivec2 mp) {
 
 void WorldRenderer::twf() {wf = !wf;}
 
+uint32_t WorldRenderer::get_pix_width() const {
+    return (uint32_t)pixels;
+}
+
+void WorldRenderer::set_pix_width(uint32_t pix) {
+    pixels = (float)pix;
+    cam->setViewWidth((pixels) / 16.f);
+}
+
+void WorldRenderer::bump_pix_width(float bump) {
+    pixels += bump;
+    cam->setViewWidth(glm::floor(pixels) / 16.f);
+}
+
 void WorldRenderer::init() {
+    pixels = 32*REGION_SIZE*2;
+    set_pix_width(pixels);
     timer.setUnit(SECONDS);
     timer.reset_start();
     pframe = window.frame;
@@ -46,8 +127,16 @@ void WorldRenderer::init() {
     fbuf.attach_renderbuffer(fbrbuf, GL_DEPTH_STENCIL_ATTACHMENT);
     if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
     fbuf.unbind();
+
+    frame_manager.update_wh(world->get_center(), cam->getViewWidth(), window.aspect);
+
     quad_shader = Shader::from_source("fullscreenv", "tex");
-    quad = DefaultMeshes::tile<Vt_classic>();
+    quad = Mesh<Vt_2Dclassic>::from_vectors({{{-1.,-1.}, {0.,0.}},
+									    	 {{-1., 1.}, {0.,1.}},
+									    	 {{ 1., 1.}, {1.,1.}},
+									    	 {{ 1.,-1.}, {1.,0.}}}
+									    	 ,
+									    	 {0, 2, 1,	0, 2, 3});
     ol_shader = Shader::from_source("2Dmvp_vert", "color");
     outline = Mesh<vec2>::from_vectors({{0.,0.}, {0.,1.}, {1.,1.}, {1.,0.}},
                                         {0,1, 1,2, 2,3, 3,0});
@@ -66,6 +155,10 @@ void WorldRenderer::prepare() {
         if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
         fbuf.unbind();
     }
+    if (frame_manager.update_wh(world->get_center(), cam->readViewWidth(), window.aspect)) {
+
+    }
+
 }
 
 void WorldRenderer::render() {
@@ -96,16 +189,14 @@ void WorldRenderer::render() {
     // render shadow geometry
     ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
 	ShadowRenderer::sync_camera(*cam);
-	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+    for (auto pos : frame_manager.regions_in_frame()) {
+        size_t i = world->rpos_to_idx(pos);
 		ivec2 const& rpos = world->regions[i].pos;
-		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
-		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
 		srenderers[i].prepare();
 	}
-	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+    for (auto pos : frame_manager.regions_in_frame()) {
+        size_t i = world->rpos_to_idx(pos);
 		ivec2 const& rpos = world->regions[i].pos;
-		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
-		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
         srenderers[i].prepare();
 		srenderers[i].render();
 	}
@@ -117,14 +208,18 @@ void WorldRenderer::render() {
 
     // render terrain
 	RegionRenderer::sync_camera(*cam);
-	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
+    size_t ct = 0;
+    static size_t pct = 0;
+    for (auto pos : frame_manager.regions_in_frame()) {
+        ct++;
+        // LOG_INF("====ITER:==== %d, %d", pos.x, pos.y);
+        size_t i = world->rpos_to_idx(pos);
 		ivec2 const& rpos = world->regions[i].pos;
-		if (abs((((float)REGION_SIZE*rpos.x)+(REGION_SIZE/2)) - (cam->readPos().x)) - REGION_SIZE/2 > (0.5*cam->readViewWidth())) continue;
-		if (abs((((float)REGION_SIZE*rpos.y)+(REGION_SIZE/2)) - (cam->readPos().y)) - REGION_SIZE/2 > ((0.5*cam->readViewWidth()/window.aspect))) continue;
 		rrenderers[i].prepare();
 		rrenderers[i].render();
         world->regions[i].clear_flag();
 	}
+    if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities TODO
 

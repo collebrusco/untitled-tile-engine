@@ -64,16 +64,25 @@ void WorldDriver::user_create() {
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * (8.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	if (kb[GLFW_KEY_K].pressed) {static bool wf = 1;wrenderer.twf();wf = !wf;}
+	if (abs(mouse.scroll.y) > 0.1) {
 #ifdef __APPLE__
-	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 10.f;
+		float vwadd = dt * mouse.scroll.y * 100.f;
 #else
-	if (abs(mouse.scroll.y) > 0.1) cam.getViewWidth() += dt * mouse.scroll.y * 100.f;
+		float vwadd = dt * mouse.scroll.y * 1000.f;
 #endif
+		uint32_t oldpw = wrenderer.get_pix_width();
+		wrenderer.set_pix_width(
+				glm::clamp((int32_t)wrenderer.get_pix_width() + ((int32_t)(vwadd)), 2, 5*REGION_SIZE*16*(WORLD_DIAMETER-1))
+		);
+	}
+
+	if (kb[GLFW_KEY_DOWN].pressed) wrenderer.set_pix_width(wrenderer.get_pix_width()-1);
+
 	cam.update();
 
 	if (mouse.left.down) {
@@ -94,9 +103,9 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 
 	world.relocate(cam.readPos().xy());
 
-	static size_t fpt = 0;
-	fpt++;
-	if (!(fpt % 60)) LOG_INF("fps: %.1f", 1./dt);
+	// static size_t fpt = 0;
+	// fpt++;
+	// if (!(fpt % 60)) LOG_INF("fps: %.1f", 1./dt);
 }
 
 void WorldDriver::user_render() {

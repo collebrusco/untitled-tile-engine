@@ -110,6 +110,10 @@ void World::relocate(vec2 newpos) {
     relocate(pos_to_rpos(newpos));
 }
 
+region_coords_t World::get_center() const {
+    return center;
+}
+
 void World::shift(int dx, int dy) {
     if (abs(dx)>1 || abs(dy)>1) {LOG_ERR("invalid shift %d,%d",dx,dy);return;}
     center.x += dx;
