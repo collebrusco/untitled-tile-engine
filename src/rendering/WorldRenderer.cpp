@@ -40,13 +40,17 @@ frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_r
     return frame_region_iter(glm::ivec2(botright.x+1, botright.y), 0);
 }
 
-frame_manager_t::frame_region_view_t::frame_region_iter::frame_region_iter(region_coords_t const& p, region_coords_t *b) : pos(p), br(b) {}
+frame_manager_t::frame_region_view_t::frame_region_iter::
+frame_region_iter(region_coords_t const& p, region_coords_t *b) 
+: pos(p), br(b) {}
+
 bool frame_manager_t::frame_region_view_t::frame_region_iter::operator==(frame_region_iter const& other) const {
     return (!this->br && !other.br) || (this->pos == other.pos);
 }
 bool frame_manager_t::frame_region_view_t::frame_region_iter::operator!=(frame_region_iter const& other) const {
     return !this->operator==(other);
 }
+
 frame_manager_t::frame_region_view_t::frame_region_iter& frame_manager_t::frame_region_view_t::frame_region_iter::operator++() {
     if (!br) return *this;
     if (*br == pos) {
@@ -60,15 +64,16 @@ frame_manager_t::frame_region_view_t::frame_region_iter& frame_manager_t::frame_
     }
     return *this;
 }
+
 region_coords_t frame_manager_t::frame_region_view_t::frame_region_iter::operator*() const {
     return pos;
 }
-
 
 frame_manager_t::frame_region_view_t frame_manager_t::regions_in_frame() const {
     return region_viewer;
 }
 
+/* ==== World Renderer Defns ==== */
 
 void WorldRenderer::use_camera(OrthoCamera& c) {
     cam = &c;
@@ -104,13 +109,17 @@ void WorldRenderer::init() {
     timer.setUnit(SECONDS);
     timer.reset_start();
     pframe = window.frame;
+
+    // setup buffer of region renderers attached in pllel w world buffer
 	RegionRenderer::static_init();
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
 		rrenderers[i].use_region(&(world->regions[i]));
 		rrenderers[i].init();
 		rrenderers[i].prepare();
 	}
-	ShadowRenderer::static_init();
+
+    // setup buffer of shadow renderers attached in pllel w world buffer
+    ShadowRenderer::static_init();
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
 		srenderers[i].use_region(&(world->regions[i]));
 		srenderers[i].use_world(*world);
@@ -118,6 +127,7 @@ void WorldRenderer::init() {
 		srenderers[i].prepare();
 	}
 
+    // setup framebuffer TODO replace
     fbuf.create(); fbtex.create(); fbrbuf.create();
     fbtex.bind(); fbtex.pixelate();
     fbtex.alloc_rgb(pframe.x, pframe.y);
@@ -131,16 +141,18 @@ void WorldRenderer::init() {
     frame_manager.update_wh(world->get_center(), cam->getViewWidth(), window.aspect);
 
     quad_shader = Shader::from_source("fullscreenv", "tex");
+    quad_perlin = Shader::from_source("fullscreenv", "perlin_bg_frag");
+    ol_shader = Shader::from_source("2Dmvp_vert", "color");
+
     quad = Mesh<Vt_2Dclassic>::from_vectors({{{-1.,-1.}, {0.,0.}},
 									    	 {{-1., 1.}, {0.,1.}},
 									    	 {{ 1., 1.}, {1.,1.}},
 									    	 {{ 1.,-1.}, {1.,0.}}}
 									    	 ,
 									    	 {0, 2, 1,	0, 2, 3});
-    ol_shader = Shader::from_source("2Dmvp_vert", "color");
+    
     outline = Mesh<vec2>::from_vectors({{0.,0.}, {0.,1.}, {1.,1.}, {1.,0.}},
                                         {0,1, 1,2, 2,3, 3,0});
-    quad_perlin = Shader::from_source("fullscreenv", "perlin_bg_frag");
 }
 
 void WorldRenderer::prepare() {
