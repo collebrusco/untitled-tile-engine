@@ -12,6 +12,9 @@ struct frame_manager_t {
     int w, h;
     /* new w&h based on cam, return true if w or h changed */
     bool update_wh(region_coords_t const& center, float camvw, float asp);
+    glm::ivec2 get_fbuff_wh_pix() const;
+    glm::ivec2 get_fbuff_wh_tile() const;
+    glm::ivec2 get_fbuff_wh_region() const;
 
     struct frame_region_view_t {
         struct frame_region_iter;

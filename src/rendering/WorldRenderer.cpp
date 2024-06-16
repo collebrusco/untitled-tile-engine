@@ -10,12 +10,10 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
     static region_coords_t pcenter{0xFFFFFFFF, 0xFFFFFFFF};
     int nx = ((int)ceil(camvw/(float)REGION_SIZE)+1)/2;
     int ny = ((int)ceil((camvw/(float)REGION_SIZE)/asp)+1)/2;
-    // nx = glm::min(WORLD_DIAMETER/2, nx);
-    // ny = glm::min(WORLD_DIAMETER/2, ny);
 
     bool needfbuff = false;
     if (nx != w || ny != h) {
-        LOG_INF("\t%d,%d rad\t\t%dx%d regions", nx, ny, (nx*2)+1, (ny*2)+1);
+        // LOG_INF("\t%d,%d rad\t\t%dx%d regions", nx, ny, (nx*2)+1, (ny*2)+1);
         needfbuff = true;
     }
     if (needfbuff || pcenter != center) {
@@ -24,10 +22,34 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
     w = nx; h = ny;
     return needfbuff;
 }
+
+ivec2 frame_manager_t::get_fbuff_wh_pix() const {
+    return ivec2(
+        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE * 32,
+        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE * 32
+    );
+}
+
+glm::ivec2 frame_manager_t::get_fbuff_wh_tile() const {
+    return ivec2(
+        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE,
+        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE
+    );
+}
+
+glm::ivec2 frame_manager_t::get_fbuff_wh_region() const {
+    return ivec2(
+        region_viewer.botright.x - region_viewer.topleft.x + 1,
+        region_viewer.topleft.y - region_viewer.botright.y + 1
+    );
+}
     
 void frame_manager_t::frame_region_view_t::setup(region_coords_t const& center, int w, int h) {
-    topleft  = center + glm::ivec2(-w, h);
-    botright = center + glm::ivec2(w, -h);
+    topleft  = center + ivec2(-(min(WORLD_DIAMETER/2, w)), min((WORLD_DIAMETER/2)-1, h));
+    botright = center + ivec2(min((WORLD_DIAMETER/2)-1, w), -(min(WORLD_DIAMETER/2, h)));
+    // topleft  = center + glm::ivec2(-w, h);
+    // botright = center + glm::ivec2(w, -h);
+    // LOG_INF("expect %d,%d, getting %d,%d", min(2*w+1, WORLD_DIAMETER), min(2*h+1, WORLD_DIAMETER), botright.x - topleft.x + 1, topleft.y - botright.y + 1);
 }
 
 frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_region_view_t::begin() {
