@@ -5,101 +5,79 @@
 LOG_MODULE(wrend);
 using namespace glm;
 
+/* ============================== */
+/* ============================== */
+/* ============================== */
+/* ====   frame vao defns    ==== */
+/* ============================== */
+/* ============================== */
+/* ============================== */
+extern vec2 wcampos; extern float wcamvw; // TODO ...
 
-bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, float asp) {
-    static region_coords_t pcenter{0xFFFFFFFF, 0xFFFFFFFF};
-    int nx = ((int)ceil(camvw/(float)REGION_SIZE)+1)/2;
-    int ny = ((int)ceil((camvw/(float)REGION_SIZE)/asp)+1)/2;
 
-    bool needfbuff = false;
-    if (nx != w || ny != h) {
-        // LOG_INF("\t%d,%d rad\t\t%dx%d regions", nx, ny, (nx*2)+1, (ny*2)+1);
-        needfbuff = true;
-    }
-    if (needfbuff || pcenter != center) {
-        region_viewer.setup(center, nx, ny);
-    }
-    w = nx; h = ny;
-    return needfbuff;
+void frame_vao_t::create() {
+    vao.create(); posbuf.create(); uvbuf.create(); ibo.create();
+    vao.bind();
+    posbuf.bind();
+    vao.attrib(0, 2, GL_FLOAT, 0, 0);
+
+    posbuf.buffer<vec2>({{-1.,-1.},
+                         {-1., 1.},
+                         { 1., 1.},
+                         { 1.,-1.}});
+
+    uvbuf.bind();
+    vao.attrib(1, 2, GL_FLOAT, 0, 0);
+
+    ibo.bind();
+    ibo.buffer<uint32_t>({0, 2, 1,    0, 2, 3});
+
+    vao.unbind();
+    posbuf.unbind(); uvbuf.unbind(); ibo.unbind();
 }
 
-ivec2 frame_manager_t::get_fbuff_wh_pix() const {
-    return ivec2(
-        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE * 32,
-        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE * 32
+void frame_vao_t::destroy() {
+    vao.destroy(); posbuf.destroy(); uvbuf.destroy();
+}
+
+void frame_vao_t::prepare(glm::vec2 campos, float vw, float asp, ivec2 center, ivec2 framewh) {
+    // calc world pos of bot left tile of frame
+    tile_coords_t wposbl = center - framewh/2;
+    // use that to find cam pos relative to that tile
+    campos = campos - (vec2)wposbl;
+    // convert to 0,1 uv space
+    campos /= (vec2)(framewh*REGION_SIZE);
+    // buffer
+    uvbuf.bind();
+    uvbuf.buffer<vec2>(
+        {
+            campos + vec2(-(vw/2.f), -((vw/asp)/2.f)),
+            campos + vec2(-(vw/2.f),  ((vw/asp)/2.f)),
+            campos + vec2( (vw/2.f),  ((vw/asp)/2.f)),
+            campos + vec2( (vw/2.f), -((vw/asp)/2.f))
+        }
     );
+    uvbuf.unbind();
 }
 
-glm::ivec2 frame_manager_t::get_fbuff_wh_tile() const {
-    return ivec2(
-        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE,
-        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE
-    );
-}
 
-glm::ivec2 frame_manager_t::get_fbuff_wh_region() const {
-    return ivec2(
-        region_viewer.botright.x - region_viewer.topleft.x + 1,
-        region_viewer.topleft.y - region_viewer.botright.y + 1
-    );
-}
-    
-void frame_manager_t::frame_region_view_t::setup(region_coords_t const& center, int w, int h) {
-    topleft  = center + ivec2(-(min(WORLD_DIAMETER/2, w)), min((WORLD_DIAMETER/2)-1, h));
-    botright = center + ivec2(min((WORLD_DIAMETER/2)-1, w), -(min(WORLD_DIAMETER/2, h)));
-    // topleft  = center + glm::ivec2(-w, h);
-    // botright = center + glm::ivec2(w, -h);
-    // LOG_INF("expect %d,%d, getting %d,%d", min(2*w+1, WORLD_DIAMETER), min(2*h+1, WORLD_DIAMETER), botright.x - topleft.x + 1, topleft.y - botright.y + 1);
-}
 
-frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_region_view_t::begin() {
-    frame_region_iter it(topleft);
-    it.tl = &topleft; it.br = &botright;
-    return it;
-}
 
-frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_region_view_t::end() {
-    return frame_region_iter(glm::ivec2(botright.x+1, botright.y), 0);
-}
 
-frame_manager_t::frame_region_view_t::frame_region_iter::
-frame_region_iter(region_coords_t const& p, region_coords_t *b) 
-: pos(p), br(b) {}
 
-bool frame_manager_t::frame_region_view_t::frame_region_iter::operator==(frame_region_iter const& other) const {
-    return (!this->br && !other.br) || (this->pos == other.pos);
-}
-bool frame_manager_t::frame_region_view_t::frame_region_iter::operator!=(frame_region_iter const& other) const {
-    return !this->operator==(other);
-}
-
-frame_manager_t::frame_region_view_t::frame_region_iter& frame_manager_t::frame_region_view_t::frame_region_iter::operator++() {
-    if (!br) return *this;
-    if (*br == pos) {
-        br = 0;
-        return *this;
-    }
-    pos.x++;
-    if (pos.x > br->x) {
-        pos.x = tl->x;
-        pos.y--;
-    }
-    return *this;
-}
-
-region_coords_t frame_manager_t::frame_region_view_t::frame_region_iter::operator*() const {
-    return pos;
-}
-
-frame_manager_t::frame_region_view_t frame_manager_t::regions_in_frame() const {
-    return region_viewer;
-}
-
+/* ============================== */
+/* ============================== */
+/* ============================== */
 /* ==== World Renderer Defns ==== */
+/* ============================== */
+/* ============================== */
+/* ============================== */
 
-void WorldRenderer::use_camera(OrthoCamera& c) {
-    cam = &c;
-}
+WorldRenderer::WorldRenderer() : cam(&frame_manager) {}
+
+// void WorldRenderer::use_camera(OrthoCamera& c) {
+//     // cam = &c;
+// }
 
 void WorldRenderer::use_world(World& w) {
     world = &w;
@@ -111,23 +89,23 @@ void WorldRenderer::give_mouse(glm::ivec2 mp) {
 
 void WorldRenderer::twf() {wf = !wf;}
 
-uint32_t WorldRenderer::get_pix_width() const {
-    return (uint32_t)pixels;
-}
+// uint32_t WorldRenderer::get_pix_width() const {
+//     return (uint32_t)pixels;
+// }
 
-void WorldRenderer::set_pix_width(uint32_t pix) {
-    pixels = (float)pix;
-    cam->setViewWidth((pixels) / 16.f);
-}
+// void WorldRenderer::set_pix_width(uint32_t pix) {
+//     pixels = (float)pix;
+//     cam.setViewWidth((pixels) / 16.f);
+// }
 
-void WorldRenderer::bump_pix_width(float bump) {
-    pixels += bump;
-    cam->setViewWidth(glm::floor(pixels) / 16.f);
-}
+// void WorldRenderer::bump_pix_width(float bump) {
+//     pixels += bump;
+//     cam.setViewWidth(glm::floor(pixels) / 16.f);
+// }
 
 void WorldRenderer::init() {
     pixels = 32*REGION_SIZE*2;
-    set_pix_width(pixels);
+    // set_pix_width(pixels);
     timer.setUnit(SECONDS);
     timer.reset_start();
     pframe = window.frame;
@@ -160,7 +138,8 @@ void WorldRenderer::init() {
     if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
     fbuf.unbind();
 
-    frame_manager.update_wh(world->get_center(), cam->getViewWidth(), window.aspect);
+    // frame_manager.update_wh(world->get_center(), wcamvw, window.aspect);
+    this->prepare();
 
     quad_shader = Shader::from_source("fullscreenv", "tex");
     quad_perlin = Shader::from_source("fullscreenv", "perlin_bg_frag");
@@ -175,30 +154,50 @@ void WorldRenderer::init() {
     
     outline = Mesh<vec2>::from_vectors({{0.,0.}, {0.,1.}, {1.,1.}, {1.,0.}},
                                         {0,1, 1,2, 2,3, 3,0});
+    frame_vao.create();
 }
 
 void WorldRenderer::prepare() {
-    if (window.frame != pframe) {
-        pframe = window.frame;
+    // if (window.frame != pframe) {
+    //     pframe = window.frame;
+    //     fbtex.bind(); fbtex.pixelate();
+    //     fbtex.alloc_rgb(pframe.x, pframe.y);
+    //     fbuf.attach_texture(fbtex, GL_COLOR_ATTACHMENT0);
+    //     fbrbuf.bind();
+    //     fbrbuf.alloc(GL_DEPTH24_STENCIL8, pframe.x, pframe.y);
+    //     fbuf.attach_renderbuffer(fbrbuf, GL_DEPTH_STENCIL_ATTACHMENT);
+    //     if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
+    //     fbuf.unbind();
+    // }
+    if (frame_manager.update_wh(world->get_center(), wcamvw, window.aspect)) {
+        ivec2 dim = frame_manager.get_fbuff_wh_pix();
+        LOG_INF("RESIZING TO %d,%d", dim.x, dim.y);
+        fbuf.destroy(); fbtex.destroy(); fbrbuf.destroy();
+        fbuf.create(); fbtex.create(); fbrbuf.create();
         fbtex.bind(); fbtex.pixelate();
-        fbtex.alloc_rgb(pframe.x, pframe.y);
+        fbtex.alloc_rgb(dim.x, dim.y);
         fbuf.attach_texture(fbtex, GL_COLOR_ATTACHMENT0);
         fbrbuf.bind();
-        fbrbuf.alloc(GL_DEPTH24_STENCIL8, pframe.x, pframe.y);
+        fbrbuf.alloc(GL_DEPTH24_STENCIL8, dim.x, dim.y);
         fbuf.attach_renderbuffer(fbrbuf, GL_DEPTH_STENCIL_ATTACHMENT);
         if (!fbuf.complete()) LOG_ERR("framebuffer failed!");
         fbuf.unbind();
+        cam.getViewWidth() = frame_manager.get_fbuff_wh_tile().x;
     }
-    if (frame_manager.update_wh(world->get_center(), cam->readViewWidth(), window.aspect)) {
-
-    }
-
+    vec3 cp = vec3(world->rpos_to_tpos(world->get_center()).x + REGION_SIZE/2,
+                world->rpos_to_tpos(world->get_center()).y + REGION_SIZE/2, 0.f);
+    cam.getPos() = cp;
+    LOG_INF("wcam at %.0f,%.0f, moving cam to %.0f,%.0f", wcampos.x, wcampos.y, cp.x, cp.y);
 }
 
 void WorldRenderer::render() {
 
     // setup to render into post process buffer
-    fbuf.bind(); gl.viewport(window.frame.x, window.frame.y);
+    fbuf.bind(); 
+    {
+        ivec2 dim = frame_manager.get_fbuff_wh_pix();
+        gl.viewport(dim.x, dim.y);
+    }
     glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     // render shadow perlin bg
@@ -208,7 +207,7 @@ void WorldRenderer::render() {
     quad_perlin.uVec2("uRes", window.frame);
     quad_perlin.uFloat("uTime", timer.read());
     quad_perlin.uFloat("uAspect", window.aspect);
-    quad_perlin.uVec2("uCampos", cam->readPos().xy());
+    quad_perlin.uVec2("uCampos", cam.readPos().xy());
     quad.bind();
     gl.draw_mesh(quad);
 
@@ -222,7 +221,7 @@ void WorldRenderer::render() {
 
     // render shadow geometry
     ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
-	ShadowRenderer::sync_camera(*cam);
+	ShadowRenderer::sync_camera(cam);
     for (auto pos : frame_manager.regions_in_frame()) {
         size_t i = world->rpos_to_idx(pos);
 		ivec2 const& rpos = world->regions[i].pos;
@@ -241,7 +240,7 @@ void WorldRenderer::render() {
     glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
     // render terrain
-	RegionRenderer::sync_camera(*cam);
+	RegionRenderer::sync_camera(cam);
     size_t ct = 0;
     static size_t pct = 0;
     for (auto pos : frame_manager.regions_in_frame()) {
@@ -258,10 +257,10 @@ void WorldRenderer::render() {
     // render entities TODO
 
     // render mouse hover tile outline
-    vec2 mp = world->world_mpos(mpos, pframe, cam);
+    vec2 mp = world->world_mpos(mpos, pframe, &cam);
     ol_shader.bind();
-    ol_shader.uMat4("uView", cam->view());
-    ol_shader.uMat4("uProj", cam->proj());
+    ol_shader.uMat4("uView", cam.view());
+    ol_shader.uMat4("uProj", cam.proj());
     mat4 model = genModelMat2d((vec2)(world->pos_to_tpos(mp)), 0., vec2(1.));
     ol_shader.uMat4("uModel", model);
     gl.draw_mesh(outline, GL_LINES);
@@ -275,20 +274,26 @@ void WorldRenderer::render() {
     glDisable(GL_STENCIL_TEST);
     Framebuffer::bind_default();
     glClear(GL_COLOR_BUFFER_BIT);
-    quad.bind();
+    gl.viewport(window.frame.x, window.frame.y);
     fbtex.bind();
     quad_shader.bind();
     quad_shader.uInt("utex", 0);
-    quad_shader.uFloat("uAspect", window.aspect);
-    quad_shader.uVec2("uRes", window.frame);
+    quad_shader.uFloat("uAspect", frame_manager.get_fbuff_aspect());
+    quad_shader.uVec2("uRes", frame_manager.get_fbuff_wh_pix());
     quad_shader.uFloat("uTime", timer.read());
-    quad_shader.uVec2("uCampos", cam->readPos().xy());
-    quad_shader.uFloat("uvw", cam->getViewWidth());
+    quad_shader.uVec2("uCampos", wcampos);
+    quad_shader.uFloat("uvw", wcamvw);
     static bool l = 0;
     if (window.keyboard[GLFW_KEY_L].pressed) l = !l;
     quad_shader.uFloat("ulightsw", l);
-    quad.bind();
-    gl.draw_mesh(quad);
+
+    VertexArray::unbind();
+    frame_vao.prepare(wcampos, wcamvw, window.aspect, world->get_center(), frame_manager.get_fbuff_wh_region());
+
+    frame_vao.vao.bind();
+    gl.draw_vao_ibo(frame_vao.vao, frame_vao.ibo);
+    // quad.bind();
+    // gl.draw_mesh(quad);
 }
 
 void WorldRenderer::destroy() {
@@ -302,6 +307,7 @@ void WorldRenderer::destroy() {
     quad_perlin.destroy();
     outline.destroy();
     ol_shader.destroy();
+    frame_vao.destroy();
 }
 
 

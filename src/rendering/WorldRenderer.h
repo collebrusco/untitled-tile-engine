@@ -7,60 +7,41 @@
 #include "ShadowRenderer.h"
 #include "game/World.h"
 #include <Stopwatch.h>
+#include "frame_manager.h"
+#include "NWOcam.h"
 
-struct frame_manager_t {
-    int w, h;
-    /* new w&h based on cam, return true if w or h changed */
-    bool update_wh(region_coords_t const& center, float camvw, float asp);
-    glm::ivec2 get_fbuff_wh_pix() const;
-    glm::ivec2 get_fbuff_wh_tile() const;
-    glm::ivec2 get_fbuff_wh_region() const;
-
-    struct frame_region_view_t {
-        struct frame_region_iter;
-        region_coords_t topleft, botright;
-        void setup(region_coords_t const& center, int w, int h);
-
-        frame_region_iter begin();
-        frame_region_iter end();
-        struct frame_region_iter {
-            region_coords_t * tl, * br, pos;
-            frame_region_iter(region_coords_t const& p, region_coords_t *b=0);
-            bool operator==(frame_region_iter const& other) const;;;
-            bool operator!=(frame_region_iter const& other) const;;
-            frame_region_iter& operator++();
-            region_coords_t operator*() const;
-        };
-    };
-
-    frame_region_view_t region_viewer;
-    frame_region_view_t regions_in_frame() const;
+struct frame_vao_t {
+    VertexArray vao;
+    VertexBuffer<glm::vec2> posbuf;
+    VertexBuffer<glm::vec2> uvbuf;
+    ElementBuffer ibo;
+    void create();
+    void destroy();
+    void prepare(glm::vec2 campos, float vw, float asp, glm::ivec2 center, glm::ivec2 framewh);
 };
-
-
 
 struct WorldRenderer : public Renderer {
 
-    WorldRenderer() = default;
+    WorldRenderer();
     virtual ~WorldRenderer() = default;
 
-    void use_camera(OrthoCamera& c);
+    // void use_camera(OrthoCamera& c);
     void give_mouse(glm::ivec2 mp);
     void use_world(World& w);
     void twf();
 
-    uint32_t get_pix_width() const;
-    void set_pix_width(uint32_t pixels);
-    void bump_pix_width(float bump);
+    // uint32_t get_pix_width() const;
+    // void set_pix_width(uint32_t pixels);
+    // void bump_pix_width(float bump);
 
     virtual void init() override final;
     virtual void prepare() override final;
     virtual void render() override final;
     virtual void destroy() override final;
 
+    NWOcam cam;
 private:
     Stopwatch timer;
-    OrthoCamera* cam;
     World* world;
 	RegionRenderer rrenderers[WORLD_DIAMETER*WORLD_DIAMETER];
 	ShadowRenderer srenderers[WORLD_DIAMETER*WORLD_DIAMETER];
@@ -70,9 +51,10 @@ private:
     Renderbuffer fbrbuf;
     Shader quad_shader;
     Shader quad_perlin;
+    Shader ol_shader;
     Mesh<Vt_2Dclassic> quad;
     Mesh<glm::vec2> outline;
-    Shader ol_shader;
+    frame_vao_t frame_vao;
 
     glm::ivec2 pframe;
     glm::ivec2 mpos;

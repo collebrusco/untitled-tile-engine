@@ -92,14 +92,9 @@ void RegionRenderer::prepare() {
         }
     }
 
-    t_vao.bind();
     t_uvbuff.bind(); 
-    t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
     t_uvbuff.buffer(uvs); 
     t_uvbuff.unbind();
-    t_vao.unbind();
-
-    // LOG_DBG("reloaded %d,%d", target->pos.x, target->pos.y);
 }
 
 void RegionRenderer::render() {

@@ -136,15 +136,15 @@ vec4 bgcolor() {
 void main(){
     vec4 c = texture(utex, iUV);
 
-    vec2 i_res = vec2(iUV.x, iUV.y / uAspect);
+    // vec2 i_res = vec2(iUV.x, iUV.y / uAspect);
 
-    float dist = distance(i_res, vec2(0.5, 0.5 / uAspect));
-    dist *= uvw;
-    dist /= 16.;
+    // float dist = distance(i_res, vec2(0.5, 0.5 / uAspect));
+    // dist *= uvw;
+    // dist /= 16.;
 
-    vec4 bg = bgcolor();
+    // vec4 bg = bgcolor();
 
-    c = mix(c, bg, ulightsw * min(dist, 1.));
+    // c = mix(c, bg, ulightsw * min(dist, 1.));
 
     outColor = c;
 }

@@ -24,7 +24,8 @@ public:
 };
 
 
-
+vec2 wcampos {0.f,0.f};
+float wcamvw = REGION_SIZE*2;
 
 class WorldDriver : public GameDriver {
 public:
@@ -40,21 +41,20 @@ private:
 
 	WorldRenderer wrenderer;
 	TextRenderer text_renderer;
-	
-	OrthoCamera cam;
+
+	OrthoCamera& cam;
 
 };
 
 WorldDriver::WorldDriver() : GameDriver(),
 							world(std::make_unique<MapWSave>(std::make_unique<TestWorldGenerator>(0xFACEFACE))),
-							cam({0.f,0.f,1.f}, {0.f, 0.f, -1.f}, {0.f, 1.f, 0.f}, 0.001f, 10000.f, 64)
+							cam(wrenderer.cam)
 							{
 							}
 
 void WorldDriver::user_create() {
-	Renderer::context_init("untitled", 1280, 720);
+	Renderer::context_init("untitled", 720, 720);
 	cam.update();
-	wrenderer.use_camera(cam);
 	wrenderer.use_world(world);
 	wrenderer.init();
 	text_renderer.init_text_rendering();
@@ -64,10 +64,12 @@ void WorldDriver::user_create() {
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) cam.getPos().y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_A].down) cam.getPos().x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_S].down) cam.getPos().y -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_D].down) cam.getPos().x += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_W].down) wcampos.y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_A].down) wcampos.x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_S].down) wcampos.y -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_D].down) wcampos.x += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	world.relocate(wcampos);
+
 	if (kb[GLFW_KEY_K].pressed) {static bool wf = 1;wrenderer.twf();wf = !wf;}
 	if (abs(mouse.scroll.y) > 0.1) {
 #ifdef __APPLE__
@@ -75,13 +77,14 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 #else
 		float vwadd = dt * mouse.scroll.y * 1000.f;
 #endif
-		uint32_t oldpw = wrenderer.get_pix_width();
-		wrenderer.set_pix_width(
-				glm::clamp((int32_t)wrenderer.get_pix_width() + ((int32_t)(vwadd)), 2, 5*REGION_SIZE*16*(WORLD_DIAMETER-1))
-		);
+		// uint32_t oldpw = wrenderer.get_pix_width();
+		// wrenderer.set_pix_width(
+		// 		glm::clamp((int32_t)wrenderer.get_pix_width() + ((int32_t)(vwadd)), 2, 5*REGION_SIZE*16*(WORLD_DIAMETER-1))
+		// );
+		wcamvw += vwadd;
 	}
 
-	if (kb[GLFW_KEY_DOWN].pressed) wrenderer.set_pix_width(wrenderer.get_pix_width()-1);
+	// if (kb[GLFW_KEY_DOWN].pressed) wrenderer.set_pix_width(wrenderer.get_pix_width()-1);
 
 	cam.update();
 
@@ -101,11 +104,10 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 		tile.surf.props.f.solid = 1;
 	}
 
-	world.relocate(cam.readPos().xy());
 
-	// static size_t fpt = 0;
-	// fpt++;
-	// if (!(fpt % 60)) LOG_INF("fps: %.1f", 1./dt);
+	static size_t fpt = 0;
+	fpt++;
+	if (!(fpt % 60)) LOG_INF("fps: %.1f", 1./dt);
 }
 
 void WorldDriver::user_render() {
