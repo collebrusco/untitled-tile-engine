@@ -144,7 +144,7 @@ void main(){
 
     // vec4 bg = bgcolor();
 
-    // c = mix(c, bg, ulightsw * min(dist, 1.));
+    // c = vec4(iUV, 0., 1.); // mix(c, vec4(1.), ulightsw * min(distance(iUV, vec2(0.5, 0.5)), 1.));
 
     outColor = c;
 }

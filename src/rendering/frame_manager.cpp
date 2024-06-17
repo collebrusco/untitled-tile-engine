@@ -8,11 +8,13 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
     static region_coords_t pcenter{0xFFFFFFFF, 0xFFFFFFFF};
     int nx = ((int)ceil(camvw/(float)REGION_SIZE)+1)/2;
     int ny = ((int)ceil((camvw/(float)REGION_SIZE)/asp)+1)/2;
+    // LOG_INF("cvw %.1f", camvw);
 
     bool needfbuff = false;
     if (nx != w || ny != h) {
         LOG_INF("\t%dx%d regions", (nx*2)+1, (ny*2)+1);
         needfbuff = true;
+    // LOG_INF("from %d,%d to %d,%d", w, h, nx, ny);
     }
     if (needfbuff || pcenter != center) {
         region_viewer.setup(center, nx, ny);
@@ -22,10 +24,15 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
 }
 
 ivec2 frame_manager_t::get_fbuff_wh_pix() const {
-    return ivec2(
-        min((min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE) * 32, 8*16*32),
-        min((min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE) * 32, 8*16*32)
+    #define RES_LIMIT (1<<11)
+    ivec2 res = ivec2(
+        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE * 32,
+        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE * 32
     );
+    while (res.x > RES_LIMIT || res.y > RES_LIMIT) {
+        res /= 2;
+    }
+    return res;
 }
 
 glm::ivec2 frame_manager_t::get_fbuff_wh_tile() const {

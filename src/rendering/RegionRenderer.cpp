@@ -19,6 +19,7 @@ void RegionRenderer::use_region(Region* reg) {
 }
 
 void RegionRenderer::sync_camera(Camera& cam) {
+    region_shader.bind();
     region_shader.uMat4("uView", cam.view());
     region_shader.uMat4("uProj", cam.proj());
 }
@@ -107,6 +108,9 @@ void RegionRenderer::render() {
     t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
     gl.draw_vao_ibo(t_vao, t_ibo);
     t_vao.unbind();
+    tile_tex.unbind();
+    t_uvbuff.unbind();
+    t_posbuff.unbind();
 }
 
 void RegionRenderer::destroy() {
