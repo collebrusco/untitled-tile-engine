@@ -69,6 +69,7 @@ void WorldDriver::user_create() {
 }
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
+	lcam.frame.y = lcam.frame.x / window.aspect;
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
 	if (kb[GLFW_KEY_W].down) lcam.pos.y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	if (kb[GLFW_KEY_A].down) lcam.pos.x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));

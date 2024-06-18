@@ -19,7 +19,7 @@ struct frame_vao_t {
     ElementBuffer ibo;
     void create();
     void destroy();
-    void prepare(glm::vec2 campos, float vw, float asp, glm::ivec2 center, glm::ivec2 framewh);
+    void prepare(glm::vec2 campos, glm::vec2 lframe, glm::ivec2 blpos, glm::ivec2 framewh);
 };
 
 struct PostRenderer : public Renderer {

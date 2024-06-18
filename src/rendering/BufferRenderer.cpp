@@ -50,19 +50,20 @@ void BufferRenderer::init() {
 
 void BufferRenderer::prepare() {
     static region_coords_t pcenter{0xFFFFFFFF,0xFFFFFFFF};
+
+    bool new_size = frame_manager.update_wh(input.world->get_center(), input.lcam.frame.x, window.aspect);
+
     region_coords_t center = input.world->get_center();
-    if (pcenter != center) {
+    if (pcenter != center || new_size) {
         vec3 np = vec3(
-            (float)(input.world->rpos_to_tpos(center).x + (REGION_SIZE/2)) + 0.5f,
-            (float)(input.world->rpos_to_tpos(center).y + (REGION_SIZE/2)) + 0.5f,
+            (float)input.world->rpos_to_tpos(center).x + ((REGION_SIZE/2) * (frame_manager.get_fbuff_wh_region().x != WORLD_DIAMETER)),
+            (float)input.world->rpos_to_tpos(center).y + ((REGION_SIZE/2) * (frame_manager.get_fbuff_wh_region().y != WORLD_DIAMETER)),
             1.f
         );
         cam.getPos() = np;
-        LOG_INF("buf cam pos to %.0f,%.0f", cam.readPos().x, cam.readPos().y);
     }
     pcenter = center;
 
-    bool new_size = frame_manager.update_wh(input.world->get_center(), input.lcam.frame.x, window.aspect);
     if (new_size) {
         ivec2 dim = frame_manager.get_fbuff_wh_pix();
         // LOG_INF("RESIZING TO %d,%d", dim.x, dim.y);
@@ -106,33 +107,33 @@ void BufferRenderer::render() {
     quad.bind();
     gl.draw_mesh(quad);
 
-    // turn off color mask, setup to increment stencil
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_ALWAYS, 0, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    // // turn off color mask, setup to increment stencil
+    // glEnable(GL_STENCIL_TEST);
+    // glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    // glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
+    // glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-    gl.wireframe(wf);
+    // gl.wireframe(wf);
 
-    // render shadow geometry
-    ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
-	ShadowRenderer::sync_camera(cam);
-    for (auto pos : frame_manager.regions_in_frame()) {
-        size_t i = input.world->rpos_to_idx(pos);
-		ivec2 const& rpos = input.world->regions[i].pos;
-		srenderers[i].prepare();
-	}
-    for (auto pos : frame_manager.regions_in_frame()) {
-        size_t i = input.world->rpos_to_idx(pos);
-		ivec2 const& rpos = input.world->regions[i].pos;
-        srenderers[i].prepare();
-		srenderers[i].render();
-	}
+    // // render shadow geometry
+    // ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
+	// ShadowRenderer::sync_camera(cam);
+    // for (auto pos : frame_manager.regions_in_frame()) {
+    //     size_t i = input.world->rpos_to_idx(pos);
+	// 	ivec2 const& rpos = input.world->regions[i].pos;
+	// 	srenderers[i].prepare();
+	// }
+    // for (auto pos : frame_manager.regions_in_frame()) {
+    //     size_t i = input.world->rpos_to_idx(pos);
+	// 	ivec2 const& rpos = input.world->regions[i].pos;
+    //     srenderers[i].prepare();
+	// 	srenderers[i].render();
+	// }
 
-    // setup test to keep fragment if stencil == 0 (not in shadow)
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    glStencilFunc(GL_EQUAL, 0, 0xFF);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    // // setup test to keep fragment if stencil == 0 (not in shadow)
+    // glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    // glStencilFunc(GL_EQUAL, 0, 0xFF);
+    // glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
     // render terrain
 	RegionRenderer::sync_camera(cam);
@@ -147,7 +148,7 @@ void BufferRenderer::render() {
 		rrenderers[i].render();
         input.world->regions[i].clear_flag();
 	}
-    if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
+    // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities TODO
 
@@ -172,10 +173,12 @@ void BufferRenderer::render() {
 
 void BufferRenderer::write_output(postrender_details_t * output) {
     ivec2 blpos = ivec2(frame_manager.region_viewer.topleft.x, frame_manager.region_viewer.botright.y);
+    blpos = input.world->rpos_to_tpos(blpos);
+    blpos += frame_manager.get_fbuff_wh_tile()/2;
     (*output) = {
         .fbuf = this->fbuf,
         .fbtex = this->fbtex,
-        .frame_pix = frame_manager.get_fbuff_wh_pix(),
+        .frame_pix = frame_manager.get_fbuff_wh_tile(),
         .world_blpos = blpos,
         .local_cam = this->input.lcam
     };

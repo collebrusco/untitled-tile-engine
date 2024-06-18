@@ -12,7 +12,7 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
 
     bool needfbuff = false;
     if (nx != w || ny != h) {
-        LOG_INF("\t%dx%d regions", (nx*2)+1, (ny*2)+1);
+        // LOG_INF("\t%dx%d regions", (nx*2)+1, (ny*2)+1);
         needfbuff = true;
     // LOG_INF("from %d,%d to %d,%d", w, h, nx, ny);
     }
