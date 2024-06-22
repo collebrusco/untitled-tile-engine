@@ -19,6 +19,7 @@ void RegionRenderer::use_region(Region* reg) {
 }
 
 void RegionRenderer::sync_camera(Camera& cam) {
+    region_shader.bind();
     region_shader.uMat4("uView", cam.view());
     region_shader.uMat4("uProj", cam.proj());
 }
@@ -69,8 +70,8 @@ void RegionRenderer::init() {
 
 static void uvpushback(vector<vec2>& uvs, sprite_t img) {
     const double tsz = 1. / (32.);
-    double x = ((double)(img % 32)) / 32.f;
-    double y = ((double)(img / 32)) / 32.f;
+    double x = ((double)(img % TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
+    double y = ((double)(img / TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
     uvs.push_back({x    +0.00001,y+tsz-0.00001});
     uvs.push_back({x    +0.00001,y    +0.00001});
     uvs.push_back({x+tsz-0.00001,y    +0.00001});
@@ -92,14 +93,9 @@ void RegionRenderer::prepare() {
         }
     }
 
-    t_vao.bind();
     t_uvbuff.bind(); 
-    t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
     t_uvbuff.buffer(uvs); 
     t_uvbuff.unbind();
-    t_vao.unbind();
-
-    // LOG_DBG("reloaded %d,%d", target->pos.x, target->pos.y);
 }
 
 void RegionRenderer::render() {
@@ -112,6 +108,9 @@ void RegionRenderer::render() {
     t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
     gl.draw_vao_ibo(t_vao, t_ibo);
     t_vao.unbind();
+    tile_tex.unbind();
+    t_uvbuff.unbind();
+    t_posbuff.unbind();
 }
 
 void RegionRenderer::destroy() {

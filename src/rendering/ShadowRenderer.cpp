@@ -20,10 +20,10 @@ void ShadowRenderer::use_world(World& w) {
     world = &w;
 }
 
-void ShadowRenderer::sync_camera(Camera& cam) {
+void ShadowRenderer::give_data(Camera& cam, vec2 lightpos) {
     current_shader->uMat4("uView", cam.view());
     current_shader->uMat4("uProj", cam.proj());
-    current_shader->uVec2("ulpos", cam.readPos().xy());
+    current_shader->uVec2("ulpos", lightpos);
 }
 
 void ShadowRenderer::use_shader(Shader& sh) {

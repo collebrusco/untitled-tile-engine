@@ -1,5 +1,9 @@
-#ifndef WORLD_RENDERER_H
-#define WORLD_RENDERER_H
+// 
+// BufferRenderer.h
+// created 06/16/24 by frank collebrusco 
+//
+#ifndef BUFFER_RENDERER
+#define BUFFER_RENDERER
 
 #include <flgl.h>
 #include <flgl/glm.h>
@@ -7,43 +11,44 @@
 #include "ShadowRenderer.h"
 #include "game/World.h"
 #include <Stopwatch.h>
+#include "frame_manager.h"
+#include "NWOcam.h"
+#include "render_pipeline_structs.h"
 
-struct WorldRenderer : public Renderer {
+struct BufferRenderer : public Renderer {
 
-    WorldRenderer() = default;
-    virtual ~WorldRenderer() = default;
+    BufferRenderer();
+    virtual ~BufferRenderer() = default;
 
-    void use_camera(OrthoCamera& c);
-    void give_mouse(glm::ivec2 mp);
-    void use_world(World& w);
-    void twf();
+    inline buffrender_details_t* input_ptr() {return &input;}
+    void write_output(postrender_details_t * output);
 
     virtual void init() override final;
     virtual void prepare() override final;
     virtual void render() override final;
     virtual void destroy() override final;
 
+    NWOcam cam;
+    frame_manager_t frame_manager;
 private:
     Stopwatch timer;
-    OrthoCamera* cam;
-    World* world;
+    
+    buffrender_details_t input;
+
 	RegionRenderer rrenderers[WORLD_DIAMETER*WORLD_DIAMETER];
 	ShadowRenderer srenderers[WORLD_DIAMETER*WORLD_DIAMETER];
+    
 
     Framebuffer fbuf;
     Texture fbtex;
     Renderbuffer fbrbuf;
     Shader quad_shader;
     Shader quad_perlin;
-    Mesh<Vt_classic> quad;
-    Mesh<glm::vec2> outline;
     Shader ol_shader;
-
-    glm::ivec2 pframe;
-    glm::ivec2 mpos;
+    Mesh<Vt_2Dclassic> quad;
+    Mesh<glm::vec2> outline;
 
     bool wf;
 };
 
-
-#endif
+#endif /* BUFFER_RENDERER */

@@ -1,6 +1,7 @@
 #ifndef SHADOW_RENDERER_H
 #define SHADOW_RENDERER_H
 #include "Renderer.h"
+#include "render_pipeline_structs.h"
 #include "../game/World.h"
 #include <flgl.h>
 #include <flgl/glm.h>
@@ -23,8 +24,9 @@ struct ShadowRenderer : public Renderer {
 	void use_region(Region* reg);
 	void use_world(World& w);
 
-	static void sync_camera(Camera& cam);
+	static void give_data(Camera& cam, glm::vec2 lightpos);
 
+	/* TODO obsolete unless I change stenciling again */
 	static void use_shader(Shader& sh);
 
 	static void static_init();

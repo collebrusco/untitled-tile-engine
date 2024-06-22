@@ -7,9 +7,8 @@
 #include "WorldSave.h"
 #include "Region.h"
 #include "ECS.h"
+#include "constants.h"
 
-
-#define WORLD_DIAMETER (8)
 struct World {
     explicit World(std::unique_ptr<WorldSave> sv);
 
@@ -27,13 +26,13 @@ struct World {
 
     void relocate(region_coords_t newpos);
     void relocate(glm::vec2 newpos);
-
-	glm::vec2 world_mpos(glm::ivec2 mpos, glm::ivec2 frame, Camera* cam);
+    region_coords_t get_center() const;
 
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
 
     ECS ecs;
 
+    static size_t rpos_to_idx(region_coords_t rpos); // renderer needs this
 private:
     void shift(int dx, int dy);
     void full_move(region_coords_t newpos);
@@ -42,7 +41,6 @@ private:
 
     region_coords_t center;
 
-    static size_t rpos_to_idx(region_coords_t rpos);
 };
 
 
