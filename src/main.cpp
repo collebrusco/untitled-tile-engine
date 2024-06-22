@@ -4,7 +4,6 @@
 #include <flgl/logger.h>
 #include "Driver.h"
 #include "rendering/RegionRenderer.h"
-#include "rendering/WorldRenderer.h"
 #include "game/World.h"
 #include "render_pipeline_structs.h"
 #include "rendering/BufferRenderer.h"
