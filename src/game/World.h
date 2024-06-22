@@ -28,8 +28,6 @@ struct World {
     void relocate(glm::vec2 newpos);
     region_coords_t get_center() const;
 
-	glm::vec2 world_mpos(glm::ivec2 mpos, glm::ivec2 frame, Camera* cam);
-
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
 
     ECS ecs;

@@ -29,6 +29,7 @@ struct BufferRenderer : public Renderer {
     virtual void destroy() override final;
 
     NWOcam cam;
+    frame_manager_t frame_manager;
 private:
     Stopwatch timer;
     
@@ -48,7 +49,6 @@ private:
     Mesh<glm::vec2> outline;
 
     bool wf;
-    frame_manager_t frame_manager;
 };
 
 #endif /* BUFFER_RENDERER */

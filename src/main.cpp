@@ -9,6 +9,7 @@
 #include "render_pipeline_structs.h"
 #include "rendering/BufferRenderer.h"
 #include "rendering/PostRenderer.h"
+#include "game/State.h"
 LOG_MODULE(main);
 
 #include <iostream>
@@ -36,28 +37,29 @@ private:
     virtual void user_render() override final;
     virtual void user_destroy() override final;
 
-	World world;
+	vec2 world_mpos() const;
 
+	State state;
+
+	/* Rendering stuff to be moved to one container */
 	BufferRenderer brenderer;
 	PostRenderer prenderer;
 	TextRenderer text_renderer;
 
-	local_cam_t lcam;
 
 };
 
-WorldDriver::WorldDriver() : GameDriver(),
-							world(std::make_unique<MapWSave>(std::make_unique<TestWorldGenerator>(0xFACEFACE)))
+WorldDriver::WorldDriver() : GameDriver()
 							{
 							}
 
 void WorldDriver::user_create() {
 	Renderer::context_init("untitled", 720, 720);
-	lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
+	state.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
 	(*(brenderer.input_ptr())) = {
-		.world = &world,
-		.wmpos = vec2(0.f) /* TODO fuck */,
-		.lcam = this->lcam
+		.world = &state.world,
+		.wmpos = world_mpos(),
+		.lcam = this->state.lcam
 	};
 	brenderer.init();
 	prenderer.init();
@@ -68,14 +70,22 @@ void WorldDriver::user_create() {
 	LOG_DBG("user driver created");
 }
 
+vec2 WorldDriver::world_mpos() const {
+	vec2 res = vec2(window.mouse.pos / (vec2)window.frame);
+	res.y = 1.f - res.y;
+	res = res * state.lcam.frame; /* tile coords relative to mouse origin */
+	res += state.lcam.pos - (state.lcam.frame/2.f);
+	return res;
+}
+
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
-	lcam.frame.y = lcam.frame.x / window.aspect;
+	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) lcam.pos.y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_A].down) lcam.pos.x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_S].down) lcam.pos.y -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_D].down) lcam.pos.x += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	world.relocate(lcam.pos);
+	if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_A].down) state.lcam.pos.x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_S].down) state.lcam.pos.y -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_D].down) state.lcam.pos.x += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	state.world.relocate(state.lcam.pos);
 
 	if (abs(mouse.scroll.y) > 0.1) {
 #ifdef __APPLE__
@@ -83,15 +93,15 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 #else
 		float vwadd = dt * mouse.scroll.y * 1000.f;
 #endif
-		local_cam_setvw(lcam, glm::clamp(lcam.frame.x + vwadd, 8.f, REGION_SIZE*512.f));
+		local_cam_setvw(state.lcam, glm::clamp(state.lcam.frame.x + vwadd, 8.f, static_cast<float>(REGION_SIZE*WORLD_DIAMETER)));
 		// LOG_INF("changing vw to %.1f,%.1f", lcam.frame.x, lcam.frame.y);
 	}
 
 
 	// ugh TODO fix mouse
 	if (mouse.left.down) {
-		vec2 ssm = world.world_mpos(mouse.pos, window.frame, &brenderer.cam);
-		Tile& tile = world.tile_at(vec2(ssm.x, ssm.y));
+		vec2 ssm = world_mpos();
+		Tile& tile = state.world.tile_at(vec2(ssm.x, ssm.y));
 		tile.surf = {
 			.img = 3,
 			.props = {
@@ -114,9 +124,9 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 void WorldDriver::user_render() {
 	// input data from engine into buf renderer
 	(*(brenderer.input_ptr())) = {
-		.world = &world,
-		.wmpos = vec2(0.f) /* TODO fuck */,
-		.lcam = this->lcam
+		.world = &state.world,
+		.wmpos = world_mpos(),
+		.lcam = this->state.lcam
 	};
 	// buffer render to framebuffer
 	brenderer.prepare();

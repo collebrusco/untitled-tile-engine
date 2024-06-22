@@ -153,7 +153,7 @@ void BufferRenderer::render() {
     // render entities TODO
 
     // render mouse hover tile outline
-    vec2 mp = input.world->world_mpos(window.mouse.pos, window.frame, &cam); // TODO GET WORLD
+    vec2 mp = input.wmpos;
     ol_shader.bind();
     ol_shader.uMat4("uView", cam.view());
     ol_shader.uMat4("uProj", cam.proj());

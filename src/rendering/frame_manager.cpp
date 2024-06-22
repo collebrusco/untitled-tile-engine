@@ -1,6 +1,7 @@
 #include "frame_manager.h"
 #include "game/World.h"
 #include <flgl/logger.h>
+#include "constants.h"
 LOG_MODULE(fmngr);
 using namespace glm;
 
@@ -30,13 +31,13 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
  * do not use this for in game world size
  */
 ivec2 frame_manager_t::get_fbuff_wh_pix() const {
-    #define RES_LIMIT (1<<11)
     ivec2 res = ivec2(
         min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE * TILE_PIXELS,
         min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE * TILE_PIXELS
     );
-    while (res.x > window.frame.x || res.y > window.frame.y) {
-        res /= 2;
+    uint8_t ct = 0;
+    while (res.x > min(FBUF_RES_LIMIT, window.frame.x*2) || res.y > min(FBUF_RES_LIMIT, window.frame.y*2)) {
+        res /= 2; ct++;
     }
     return res;
 }
