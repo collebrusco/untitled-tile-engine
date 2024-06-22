@@ -19,6 +19,7 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
     }
     if (needfbuff || pcenter != center) {
         region_viewer.setup(center, nx, ny);
+        pcenter = center;
     }
     w = nx; h = ny;
     return needfbuff;
@@ -64,9 +65,6 @@ float frame_manager_t::get_fbuff_aspect() const {
 void frame_manager_t::frame_region_view_t::setup(region_coords_t const& center, int w, int h) {
     topleft  = center + ivec2(-(min(WORLD_DIAMETER/2, w)), min((WORLD_DIAMETER/2)-1, h));
     botright = center + ivec2(min((WORLD_DIAMETER/2)-1, w), -(min(WORLD_DIAMETER/2, h)));
-    // topleft  = center + glm::ivec2(-w, h);
-    // botright = center + glm::ivec2(w, -h);
-    // LOG_INF("expect %d,%d, getting %d,%d", min(2*w+1, WORLD_DIAMETER), min(2*h+1, WORLD_DIAMETER), botright.x - topleft.x + 1, topleft.y - botright.y + 1);
 }
 
 frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_region_view_t::begin() {

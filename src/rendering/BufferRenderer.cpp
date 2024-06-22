@@ -71,6 +71,8 @@ void BufferRenderer::prepare() {
         fbuf.destroy(); fbtex.destroy(); fbrbuf.destroy();
         fbuf.create(); fbtex.create(); fbrbuf.create();
         fbtex.bind(); fbtex.pixelate();
+        fbtex.paramI(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        fbtex.paramI(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         fbtex.alloc_rgb(dim.x, dim.y);
         fbuf.bind();
         fbuf.attach_texture(fbtex, GL_COLOR_ATTACHMENT0);
@@ -107,33 +109,33 @@ void BufferRenderer::render() {
     quad.bind();
     gl.draw_mesh(quad);
 
-    // // turn off color mask, setup to increment stencil
-    // glEnable(GL_STENCIL_TEST);
-    // glStencilFunc(GL_ALWAYS, 0, 0xFF);
-    // glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-    // glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    // turn off color mask, setup to increment stencil
+    glEnable(GL_STENCIL_TEST);
+    glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-    // gl.wireframe(wf);
+    gl.wireframe(wf);
 
-    // // render shadow geometry
-    // ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
-	// ShadowRenderer::sync_camera(cam);
-    // for (auto pos : frame_manager.regions_in_frame()) {
-    //     size_t i = input.world->rpos_to_idx(pos);
-	// 	ivec2 const& rpos = input.world->regions[i].pos;
-	// 	srenderers[i].prepare();
-	// }
-    // for (auto pos : frame_manager.regions_in_frame()) {
-    //     size_t i = input.world->rpos_to_idx(pos);
-	// 	ivec2 const& rpos = input.world->regions[i].pos;
-    //     srenderers[i].prepare();
-	// 	srenderers[i].render();
-	// }
+    // render shadow geometry
+    ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
+	ShadowRenderer::give_data(cam, input.lcam.pos);
+    for (auto pos : frame_manager.regions_in_frame()) {
+        size_t i = input.world->rpos_to_idx(pos);
+		ivec2 const& rpos = input.world->regions[i].pos;
+		srenderers[i].prepare();
+	}
+    for (auto pos : frame_manager.regions_in_frame()) {
+        size_t i = input.world->rpos_to_idx(pos);
+		ivec2 const& rpos = input.world->regions[i].pos;
+        srenderers[i].prepare();
+		srenderers[i].render();
+	}
 
-    // // setup test to keep fragment if stencil == 0 (not in shadow)
-    // glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    // glStencilFunc(GL_EQUAL, 0, 0xFF);
-    // glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    // setup test to keep fragment if stencil == 0 (not in shadow)
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_EQUAL, 0, 0xFF);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
     // render terrain
 	RegionRenderer::sync_camera(cam);

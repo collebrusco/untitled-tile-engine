@@ -81,10 +81,10 @@ vec2 WorldDriver::world_mpos() const {
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_A].down) state.lcam.pos.x -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_S].down) state.lcam.pos.y -= dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_D].down) state.lcam.pos.x += dt * (.1f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_A].down) state.lcam.pos.x -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_S].down) state.lcam.pos.y -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	if (kb[GLFW_KEY_D].down) state.lcam.pos.x += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	state.world.relocate(state.lcam.pos);
 
 	if (abs(mouse.scroll.y) > 0.1) {
@@ -93,7 +93,8 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 #else
 		float vwadd = dt * mouse.scroll.y * 1000.f;
 #endif
-		local_cam_setvw(state.lcam, glm::clamp(state.lcam.frame.x + vwadd, 8.f, static_cast<float>(REGION_SIZE*WORLD_DIAMETER)));
+		local_cam_setvw(state.lcam, glm::clamp(state.lcam.frame.x + vwadd, 8.f, static_cast<float>(REGION_SIZE*(WORLD_DIAMETER-1))));
+		// local_cam_setvw(state.lcam, state.lcam.frame.x + vwadd);
 		// LOG_INF("changing vw to %.1f,%.1f", lcam.frame.x, lcam.frame.y);
 	}
 
@@ -137,7 +138,7 @@ void WorldDriver::user_render() {
 	prenderer.prepare();
 	prenderer.render();
 
-	text_renderer.render(24, window.frame.y - 48, 4);
+	// text_renderer.render(24, window.frame.y - 48, 4);
 }
 
 void WorldDriver::user_destroy() {
