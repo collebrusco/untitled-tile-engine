@@ -1,14 +1,12 @@
 #ifndef REGION_H
 #define REGION_H
 #include <flgl/glm.h>
+#include "constants.h"
 #include "ECS.h"
 
 typedef unsigned short sprite_t;
 typedef glm::ivec2 region_coords_t;
 typedef glm::ivec2 tile_coords_t;
-
-#define REGION_SIZE_LOG (4)
-#define REGION_SIZE (1<<REGION_SIZE_LOG)
 
 struct TerrainTile {
 	uint16_t id;

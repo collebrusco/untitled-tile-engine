@@ -7,9 +7,8 @@
 #include "WorldSave.h"
 #include "Region.h"
 #include "ECS.h"
+#include "constants.h"
 
-
-#define WORLD_DIAMETER (16)
 struct World {
     explicit World(std::unique_ptr<WorldSave> sv);
 

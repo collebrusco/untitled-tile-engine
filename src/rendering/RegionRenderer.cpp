@@ -70,8 +70,8 @@ void RegionRenderer::init() {
 
 static void uvpushback(vector<vec2>& uvs, sprite_t img) {
     const double tsz = 1. / (32.);
-    double x = ((double)(img % 32)) / 32.f;
-    double y = ((double)(img / 32)) / 32.f;
+    double x = ((double)(img % TILE_PIXELS)) / TILE_PIXELS_F;
+    double y = ((double)(img / TILE_PIXELS)) / TILE_PIXELS_F;
     uvs.push_back({x    +0.00001,y+tsz-0.00001});
     uvs.push_back({x    +0.00001,y    +0.00001});
     uvs.push_back({x+tsz-0.00001,y    +0.00001});

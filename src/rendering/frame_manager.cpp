@@ -23,13 +23,19 @@ bool frame_manager_t::update_wh(region_coords_t const& center, float camvw, floa
     return needfbuff;
 }
 
+/* TODO maybe pass this in in a smarter way or not */
+#include <flgl.h>
+/**
+ * get framebuffer current actual size in pixels
+ * do not use this for in game world size
+ */
 ivec2 frame_manager_t::get_fbuff_wh_pix() const {
     #define RES_LIMIT (1<<11)
     ivec2 res = ivec2(
-        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE * 32,
-        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE * 32
+        min((region_viewer.botright.x - region_viewer.topleft.x + 1), WORLD_DIAMETER) * REGION_SIZE * TILE_PIXELS,
+        min((region_viewer.topleft.y - region_viewer.botright.y + 1), WORLD_DIAMETER) * REGION_SIZE * TILE_PIXELS
     );
-    while (res.x > RES_LIMIT || res.y > RES_LIMIT) {
+    while (res.x > window.frame.x || res.y > window.frame.y) {
         res /= 2;
     }
     return res;
