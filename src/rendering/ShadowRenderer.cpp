@@ -129,7 +129,7 @@ void ShadowRenderer::prepare() {
             Tile& t = target->buffer[i+j*REGION_SIZE];
             bool surf = t.surf.props.f.present;
             float x = i; float y = j;
-            sprite_t img = surf ? t.surf.img : t.terr.img;
+            tile_sprite_t img = surf ? t.surf.img : t.terr.img;
             if (!surf) continue;
             if (!t.surf.props.f.blocks_light) continue;
             surroundings_t surr = get_tile_surr(i, j, target, world);

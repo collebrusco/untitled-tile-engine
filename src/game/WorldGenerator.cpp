@@ -6,7 +6,7 @@ void WorldGenerator::generate(int x, int y, Region* target, World* world) {
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
             target->tile_at(i,j) = {
-                .terr = {.img = (sprite_t)(i+j*REGION_SIZE)},
+                .terr = {.img = (tile_sprite_t)(i+j*REGION_SIZE)},
                 .surf = {.img = 0, .ent = 0, .props = {.val = 0}}
             };
         }
@@ -24,7 +24,7 @@ void TestWorldGenerator::generate(int x, int y, Region* target, World* world) {
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
             int r = dis(gen) & 0x3F;
-            sprite_t sp = 0;
+            tile_sprite_t sp = 0;
             switch (r) {
             case 0:
                 sp = 0; break;

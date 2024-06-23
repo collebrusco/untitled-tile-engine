@@ -9,6 +9,7 @@
 #include "rendering/BufferRenderer.h"
 #include "rendering/PostRenderer.h"
 #include "game/State.h"
+#include "game/Engine.h"
 LOG_MODULE(main);
 
 #include <iostream>
@@ -37,6 +38,7 @@ private:
     virtual void user_destroy() override final;
 
 	vec2 world_mpos() const;
+	vec2 world_mdelt() const;
 
 	State state;
 
@@ -45,6 +47,7 @@ private:
 	PostRenderer prenderer;
 	TextRenderer text_renderer;
 
+	Engine engine;
 
 };
 
@@ -53,7 +56,8 @@ WorldDriver::WorldDriver() : GameDriver()
 							}
 
 void WorldDriver::user_create() {
-	Renderer::context_init("untitled", 720, 720);
+	engine.init(&state);
+	Renderer::context_init("untitled", 980, 720);
 	state.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
 	(*(brenderer.input_ptr())) = {
 		.world = &state.world,
@@ -72,12 +76,22 @@ void WorldDriver::user_create() {
 vec2 WorldDriver::world_mpos() const {
 	vec2 res = vec2(window.mouse.pos / (vec2)window.frame);
 	res.y = 1.f - res.y;
-	res = res * state.lcam.frame; /* tile coords relative to mouse origin */
+	res = res * state.lcam.frame; /* tile coords relative to origin */
 	res += state.lcam.pos - (state.lcam.frame/2.f);
 	return res;
 }
 
+vec2 WorldDriver::world_mdelt() const {
+	vec2 del = vec2(window.mouse.delta / (vec2)window.frame);
+	del.y = 1.f - del.y;
+	del = del * state.lcam.frame; /* tile coords */
+	return del;
+}
+
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
+
+	engine.step(dt, &state, kb, mouse, world_mpos(), world_mdelt());
+
 	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
 	if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
@@ -137,10 +151,11 @@ void WorldDriver::user_render() {
 	prenderer.prepare();
 	prenderer.render();
 
-	// text_renderer.render(24, window.frame.y - 48, 4);
+	text_renderer.render(24, window.frame.y - 48, 2 * window.frame_to_window);
 }
 
 void WorldDriver::user_destroy() {
+	engine.destroy(&state);
 	Renderer::context_close();
 }
 

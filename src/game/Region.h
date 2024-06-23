@@ -4,18 +4,18 @@
 #include "constants.h"
 #include "ECS.h"
 
-typedef unsigned short sprite_t;
+typedef unsigned short tile_sprite_t;
 typedef glm::ivec2 region_coords_t;
 typedef glm::ivec2 tile_coords_t;
 
 struct TerrainTile {
 	uint16_t id;
 	float friction;
-	sprite_t img;
+	tile_sprite_t img;
 };
 
 struct SurfaceTile {
-	sprite_t img;
+	tile_sprite_t img;
 	entID ent;
 	union {
 		struct {

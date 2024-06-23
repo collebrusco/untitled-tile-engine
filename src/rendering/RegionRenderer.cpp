@@ -68,7 +68,7 @@ void RegionRenderer::init() {
     t_uvbuff.create();
 }
 
-static void uvpushback(vector<vec2>& uvs, sprite_t img) {
+static void uvpushback(vector<vec2>& uvs, tile_sprite_t img) {
     const double tsz = 1. / (32.);
     double x = ((double)(img % TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
     double y = ((double)(img / TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
@@ -88,7 +88,7 @@ void RegionRenderer::prepare() {
         for (size_t i = 0; i < REGION_SIZE; i++) {
             Tile& t = target->buffer[i+j*REGION_SIZE];
             bool surf = t.surf.props.f.present;
-            sprite_t img = surf ? t.surf.img : t.terr.img;
+            tile_sprite_t img = surf ? t.surf.img : t.terr.img;
             uvpushback(uvs, img);
         }
     }
