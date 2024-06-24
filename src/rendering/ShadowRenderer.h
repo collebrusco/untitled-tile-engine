@@ -6,7 +6,7 @@
 #include <flgl.h>
 #include <flgl/glm.h>
 
-struct ShadowRenderer : public Renderer {
+struct ShadowRenderer {
 	ShadowRenderer();
 	virtual ~ShadowRenderer() = default;
 
@@ -31,14 +31,11 @@ struct ShadowRenderer : public Renderer {
 
 	static void static_init();
 	static void static_destroy();
-
-	virtual void init() override final;
-
-	virtual void prepare() override final;
-
-	virtual void render() override final;
-
-	virtual void destroy() override final;
+	
+	void init();
+	void prepare();
+	void render();
+	void destroy();
 
 
 };

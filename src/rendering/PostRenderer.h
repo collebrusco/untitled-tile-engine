@@ -22,7 +22,7 @@ struct frame_vao_t {
     void prepare(glm::vec2 campos, glm::vec2 lframe, glm::ivec2 blpos, glm::ivec2 framewh);
 };
 
-struct PostRenderer : public Renderer {
+struct PostRenderer {
 
     PostRenderer();
     virtual ~PostRenderer() = default;
@@ -31,10 +31,10 @@ struct PostRenderer : public Renderer {
 
     inline postrender_details_t* input_ptr() {return &details;}
 
-    virtual void init() override final;
-    virtual void prepare() override final;
-    virtual void render() override final;
-    virtual void destroy() override final;
+    void init();
+    void prepare();
+    void render();
+    void destroy();
 
 private:
     Stopwatch timer;

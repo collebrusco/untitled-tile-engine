@@ -38,7 +38,7 @@ private:
     public:
         inline system_t operator*() {return list.systems[i];}
         inline bool operator==(SystemIt const& other) const {return this->i == other.i && this->done == other.done;}
-        inline bool operator!=(SystemIt const& other) const {return this->i != other.i && this->done == other.done;}
+        inline bool operator!=(SystemIt const& other) const {return this->i != other.i && this->done != other.done;}
         SystemIt& operator++();
     };
 public:

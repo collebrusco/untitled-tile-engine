@@ -10,6 +10,7 @@ void BufferRenderer::init() {
     timer.setUnit(SECONDS);
     timer.reset_start();
 
+
     // setup buffer of region renderers attached in pllel w world buffer
 	RegionRenderer::static_init();
 	for (int i = 0; i < WORLD_DIAMETER*WORLD_DIAMETER; i++) {
@@ -27,12 +28,13 @@ void BufferRenderer::init() {
 		srenderers[i].init();
 		srenderers[i].prepare();
 	}
+    
+    erenderer.init();
 
-    // setup framebuffer TODO 
-
-    // frame_manager.update_wh(input.world->get_center(), input.lcam.frame.x, window.aspect);
     this->prepare();
 
+    tile_tex = Texture::from_file("spritesheet");
+    tile_tex.pixelate();
     quad_shader = Shader::from_source("fullscreenv", "tex");
     quad_perlin = Shader::from_source("fullscreenv", "perlin_bg_frag");
     ol_shader = Shader::from_source("2Dmvp_vert", "color");
@@ -147,12 +149,14 @@ void BufferRenderer::render() {
         size_t i = input.world->rpos_to_idx(pos);
 		// ivec2 const& rpos = input.world->regions[i].pos;
 		rrenderers[i].prepare();
-		rrenderers[i].render();
+		rrenderers[i].render(tile_tex);
         input.world->regions[i].clear_flag();
 	}
     // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities TODO
+    erenderer.prepare(&input.world->ecs, &cam);
+    erenderer.render(tile_tex);
 
     // render mouse hover tile outline
     vec2 mp = input.wmpos;
@@ -193,11 +197,13 @@ void BufferRenderer::destroy() {
 		rrenderers[i].destroy();
 		srenderers[i].destroy();
 	}
+    erenderer.destroy();
     fbuf.destroy(); fbtex.destroy(); fbrbuf.destroy();
     quad_shader.destroy(); quad.destroy();
     quad_perlin.destroy();
     outline.destroy();
     ol_shader.destroy();
+    tile_tex.destroy();
 }
 
 

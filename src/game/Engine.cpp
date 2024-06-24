@@ -1,9 +1,13 @@
 #include "Engine.h"
+#include <flgl/logger.h>
+LOG_MODULE(eng);
 using namespace glm;
 
 void Engine::init(State* state) {
     for (system_t system : syslist) {
-        if (system.init) system.init(state);
+        if (system.init) {
+            system.init(state);
+        }
     }
 }
 

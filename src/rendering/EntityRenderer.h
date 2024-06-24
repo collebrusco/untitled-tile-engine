@@ -1,23 +1,26 @@
-// 
-// EntityRenderer.h
-// created 06/01/24 by frank collebrusco 
-//
-#ifndef ENTITY_RENDERER
-#define ENTITY_RENDERER
-#include "Renderer.h"
+/** 
+ * EntityRenderer.h
+ * created 06/24/24 by frank collebrusco 
+ */
+#ifndef ENTITY_RENDERER_H
+#define ENTITY_RENDERER_H
+#include <flgl.h>
+#include <flgl/tools.h>
 #include "ECS.h"
 
-struct EntityRenderer : public Renderer {
-    explicit EntityRenderer(ECS& h);
+struct EntityRenderer {
+    void init();
+    void prepare(ECS* ecs, Camera* cam);
+    void render(Texture tile_tex);
+    void destroy();
+private:
+    ECS* ecs;
 
-    entID target;
-    ECS* home;
+    VertexArray vao;
+    VertexBuffer<Vt_2Dclassic> vbo;
+    ElementBuffer ibo;
 
-    virtual void init() override;
-    virtual void prepare() override;
-    virtual void render() override;
-    virtual void destroy() override;
+    Shader atlas_shader;
 };
 
-
-#endif /* ENTITY_RENDERER */
+#endif /* ENTITY_RENDERER_H */

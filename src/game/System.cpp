@@ -1,4 +1,6 @@
 #include "System.h"
+#include <flgl/logger.h>
+LOG_MODULE(sys);
 
 SystemList::SystemList() {
     memset(systems, 0x00, MAX_SYSTEMS * sizeof(system_t));

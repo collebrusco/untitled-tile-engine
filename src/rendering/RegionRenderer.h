@@ -5,11 +5,9 @@
 #include <flgl.h>
 #include <flgl/glm.h>
 
-struct RegionRenderer : public Renderer {
+struct RegionRenderer {
 	RegionRenderer();
 	virtual ~RegionRenderer() = default;
-
-	static Texture tile_tex;
 
 	static VertexArray t_vao;
 	static VertexBuffer<glm::vec3> t_posbuff;
@@ -26,13 +24,10 @@ struct RegionRenderer : public Renderer {
 	static void static_init();
 	static void static_destroy();
 
-	virtual void init() override final;
-
-	virtual void prepare() override final;
-
-	virtual void render() override final;
-
-	virtual void destroy() override final;
+	void init();
+	void prepare();
+	void render(Texture tile_tex);
+	void destroy();
 
 
 };

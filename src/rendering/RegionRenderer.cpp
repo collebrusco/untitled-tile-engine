@@ -5,7 +5,6 @@ using std::vector;
 using namespace glm;
 LOG_MODULE(rrend);
 
-Texture RegionRenderer::tile_tex;
 VertexArray RegionRenderer::t_vao;
 VertexBuffer<vec3> RegionRenderer::t_posbuff;
 ElementBuffer RegionRenderer::t_ibo;
@@ -25,8 +24,6 @@ void RegionRenderer::sync_camera(Camera& cam) {
 }
 
 void RegionRenderer::static_init() {
-    tile_tex = Texture::from_file("spritesheet");
-    tile_tex.pixelate();
     region_shader = Shader::from_source("mvp_vert", "region_frag");
     t_vao.create(); t_vao.bind();
     t_posbuff.create(); t_posbuff.bind();
@@ -60,7 +57,6 @@ void RegionRenderer::static_init() {
 void RegionRenderer::static_destroy() {
     t_vao.destroy(); t_ibo.destroy();
     t_posbuff.destroy();
-    tile_tex.destroy();
     region_shader.destroy();
 }
 
@@ -70,8 +66,8 @@ void RegionRenderer::init() {
 
 static void uvpushback(vector<vec2>& uvs, tile_sprite_t img) {
     const double tsz = 1. / (TILE_SPRITESHEET_DIM_F);
-    double x = ((double)(img % TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
-    double y = ((double)(img / TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
+    double x = ((double)(img % TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM_F;
+    double y = ((double)(img / TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM_F;
     uvs.push_back({x    +0.00001,y+tsz-0.00001});
     uvs.push_back({x    +0.00001,y    +0.00001});
     uvs.push_back({x+tsz-0.00001,y    +0.00001});
@@ -98,7 +94,7 @@ void RegionRenderer::prepare() {
     t_uvbuff.unbind();
 }
 
-void RegionRenderer::render() {
+void RegionRenderer::render(Texture tile_tex) {
     mat4 model = genModelMat2d({target->pos.x * ((float)REGION_SIZE), target->pos.y * ((float)REGION_SIZE)}, 0.f, {1.f,1.f});
     region_shader.bind();
     region_shader.uMat4("uModel", model);

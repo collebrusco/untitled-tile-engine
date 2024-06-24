@@ -10,6 +10,7 @@
 #include "rendering/PostRenderer.h"
 #include "game/State.h"
 #include "game/Engine.h"
+#include "game/system_player.h"
 LOG_MODULE(main);
 
 #include <iostream>
@@ -56,8 +57,12 @@ WorldDriver::WorldDriver() : GameDriver()
 							}
 
 void WorldDriver::user_create() {
+	/* ENGINE */
+	engine.syslist.next_system() = PLAYER_SYSTEM_STRUCT;
 	engine.init(&state);
-	Renderer::context_init("untitled", 980, 720);
+
+	/* RENDERING */
+	gl.init(); window.create("untitled", 980, 720);
 	state.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
 	(*(brenderer.input_ptr())) = {
 		.world = &state.world,
@@ -91,6 +96,10 @@ vec2 WorldDriver::world_mdelt() const {
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 
 	engine.step(dt, &state, kb, mouse, world_mpos(), world_mdelt());
+
+	/**
+	 * TODO: remove ALL of this into engine
+	 */
 
 	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
@@ -129,7 +138,6 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 		tile.surf.props.f.solid = 1;
 	}
 
-
 	static size_t fpt = 0;
 	fpt++;
 	if (!(fpt % 1024)) LOG_INF("fps: %.1f", 1./dt);
@@ -156,7 +164,7 @@ void WorldDriver::user_render() {
 
 void WorldDriver::user_destroy() {
 	engine.destroy(&state);
-	Renderer::context_close();
+	gl.destroy();
 }
 
 
