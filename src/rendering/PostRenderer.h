@@ -8,7 +8,6 @@
 #include <flgl.h>
 #include <flgl/glm.h>
 #include "Stopwatch.h"
-#include "Renderer.h"
 #include "NWOcam.h"
 #include "render_pipeline_structs.h"
 

@@ -9,6 +9,7 @@
 #include "game/System.h"
 
 void player_system_init(State* state);
+entID player_system_get_player();
 void player_system_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
 
 #define PLAYER_SYSTEM_STRUCT ((system_t){.init = player_system_init, .step = player_system_step, .dest = 0})

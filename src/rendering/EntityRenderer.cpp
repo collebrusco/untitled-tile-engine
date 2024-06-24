@@ -56,8 +56,6 @@ void EntityRenderer::render(Texture tile_tex) {
         verts[2] = {{ 0.5, 0.5}, {atl.uvs.tr.x, atl.uvs.tr.y}};
         verts[3] = {{ 0.5,-0.5}, {atl.uvs.tr.x, atl.uvs.bl.y}};
 
-        LOG_INF("uv from %.3f,%.3f to %.3f,%.3f", atl.uvs.bl.x, atl.uvs.bl.y, atl.uvs.tr.x, atl.uvs.tr.y);
-
         vbo.bind();
         vbo.buffer_data(4, verts);
         vbo.unbind();

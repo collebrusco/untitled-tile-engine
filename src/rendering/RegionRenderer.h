@@ -1,6 +1,5 @@
 #ifndef REGION_RENDERER_H
 #define REGION_RENDERER_H
-#include "Renderer.h"
 #include "../game/World.h"
 #include <flgl.h>
 #include <flgl/glm.h>

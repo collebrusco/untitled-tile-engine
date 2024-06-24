@@ -11,6 +11,7 @@
 #include "game/State.h"
 #include "game/Engine.h"
 #include "game/system_player.h"
+#include "game/components.h"
 LOG_MODULE(main);
 
 #include <iostream>
@@ -103,10 +104,12 @@ void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) 
 
 	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_A].down) state.lcam.pos.x -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_S].down) state.lcam.pos.y -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	if (kb[GLFW_KEY_D].down) state.lcam.pos.x += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	// if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	// if (kb[GLFW_KEY_A].down) state.lcam.pos.x -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	// if (kb[GLFW_KEY_S].down) state.lcam.pos.y -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	// if (kb[GLFW_KEY_D].down) state.lcam.pos.x += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+	auto& ppos = state.world.ecs.getComp<c_Object>(player_system_get_player()).pos;
+	state.lcam.pos += 0.1f * (ppos - state.lcam.pos);
 	state.world.relocate(state.lcam.pos);
 
 	if (abs(mouse.scroll.y) > 0.1) {
