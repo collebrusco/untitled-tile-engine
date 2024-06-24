@@ -69,7 +69,7 @@ void RegionRenderer::init() {
 }
 
 static void uvpushback(vector<vec2>& uvs, tile_sprite_t img) {
-    const double tsz = 1. / (32.);
+    const double tsz = 1. / (TILE_SPRITESHEET_DIM_F);
     double x = ((double)(img % TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
     double y = ((double)(img / TILE_SPRITESHEET_DIM)) / TILE_SPRITESHEET_DIM;
     uvs.push_back({x    +0.00001,y+tsz-0.00001});
