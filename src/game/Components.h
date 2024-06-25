@@ -22,10 +22,10 @@ struct c_StaticAtlas {
     
     static inline c_StaticAtlas from_sheet(glm::vec2 sheetblpos, glm::vec2 size) {
         sheetblpos.y = TILE_SPRITESHEET_DIM_F - sheetblpos.y; size.y *= -1.f;
-        return (c_StaticAtlas) {
-            .uvs.bl = sheetblpos / TILE_SPRITESHEET_DIM_F,
-            .uvs.tr = (sheetblpos + size) / TILE_SPRITESHEET_DIM_F
-        };
+        c_StaticAtlas c;
+        c.uvs.bl = sheetblpos / TILE_SPRITESHEET_DIM_F;
+        c.uvs.tr = (sheetblpos + size) / TILE_SPRITESHEET_DIM_F;
+        return c;
     }
 };
 
