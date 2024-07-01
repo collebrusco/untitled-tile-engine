@@ -75,7 +75,7 @@ void WorldDriver::user_create() {
 	LOG_DBG("renderers init");
 	text_renderer.init_text_rendering();
 	text_renderer.init();
-	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls\npress L to turn on lighting (bad) (wip) %s", "");
+	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls%s","");//\npress L to turn on lighting (bad) (wip) %s", "");
 	LOG_DBG("user driver created");
 }
 
