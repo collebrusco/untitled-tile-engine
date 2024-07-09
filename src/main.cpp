@@ -21,14 +21,6 @@ using namespace std;
 
 
 
-
-class Scopetimer {
-    Stopwatch sw; string name; size_t mod;
-public:
-    Scopetimer(string n, size_t m = 5) : sw(MICROSECONDS), name(n), mod(m) {sw.reset_start();}
-    ~Scopetimer() {float time = sw.stop(); LOG_DBG("%s time %.0fus", name.c_str(), time);}
-};
-
 class WorldDriver : public GameDriver {
 public:
 	WorldDriver();
