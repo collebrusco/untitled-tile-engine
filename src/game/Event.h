@@ -12,13 +12,21 @@
 #define MAX_EVENT_SUBS (32)
 
 #define EVENT_DECLARE(name) struct name##EventData; extern Event<name##EventData> name##Event; struct name##EventData 
-#define EVENT_DEFINE(name) Event<name##EventData> name##Event;
+#define EVENT_DEFINE(name) Event<name##EventData> name##Event
+
+struct __EventIdGetter {
+    static uint16_t id_ct;
+    template <typename EventInput_t>
+    static uint16_t inline get_eid() {static uint16_t id = id_ct++; return id;}
+};
 
 template <typename Input_t>
 class Event {
     void logw(const char* msg) const;
     void loge(const char* msg) const;
+    uint16_t _id;
 public:
+    uint16_t inline id() const {return _id;}
     void (*subscribers[MAX_EVENT_SUBS])(Input_t*);
     struct {
         uint32_t data[MAX_EVENT_SUBS];
@@ -28,6 +36,7 @@ public:
     Event() {
         sub_top = 0;
         freestack.top = 0;
+        _id = __EventIdGetter::get_eid<Input_t>();
         memset(subscribers, 0, MAX_EVENT_SUBS * sizeof(uintptr_t));
         memset(freestack.data, 0, MAX_EVENT_SUBS * sizeof(uint32_t));
     }

@@ -14,6 +14,7 @@ EVENT_DEFINE(ActorMove);
 
 
 
+uint16_t __EventIdGetter::id_ct = 0;
 
 template <typename Input_t>
 void Event<Input_t>::loge(const char* msg) const {
@@ -26,8 +27,6 @@ void Event<Input_t>::logw(const char* msg) const {
 
 /* hacked little test main \/ */
 
-// #include <flgl/logger.h>
-// LOG_MODULE(event_test);
 // int subfs[8];
 
 // void s0(ActorMoveEventData* d) {
@@ -80,7 +79,15 @@ void Event<Input_t>::logw(const char* msg) const {
 //     }
 //     LOG_ERR("\n");
 // }
+// struct A {int a;}; struct B {int b;}; struct C {float c;};
+// void idcheck() {
+//     Event<A> aevent;
+//     Event<B> bevent;
+//     Event<C> cevent;
+//     LOG_ERR("a = %d, b = %d, c = %d", aevent.id(), bevent.id(), cevent.id());
+// }
 // int main() {
+//     idcheck();
 //     fns[(void*)s0] = "s0";
 //     fns[(void*)s1] = "s1";
 //     fns[(void*)s2] = "s2";
