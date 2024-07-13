@@ -7,6 +7,20 @@
 #include "game/World.h"
 #include "render_pipeline_structs.h"
 
+/*****
+ * this is kinda stupid 
+ * state is kinda tied to systems so why not let them own it and include e/o's headers?
+ * have i reinvented oop..
+ * 
+ * this is opposed to class System {
+ *  virtual init, up(dt), dest
+ *  // getters for needed data for other sys's...
+ *  // no other controls?
+ *  // then how do they get eos instances
+ * only one sys instance per game anyway 
+ * }
+ */
+
 struct State {
     State();
 

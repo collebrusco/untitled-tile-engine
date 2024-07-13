@@ -8,11 +8,13 @@
 #define ENGINE_H
 #include <flgl.h>
 #include <flgl/glm.h>
+#include "Stopwatch.h"
 #include "game/State.h"
 #include "game/System.h"
 
 struct Engine {
     SystemList syslist;
+    Stopwatch timer;
     void init(State* state);
     void step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
     void destroy(State* state);

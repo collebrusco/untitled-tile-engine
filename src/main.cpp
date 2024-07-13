@@ -87,55 +87,15 @@ vec2 WorldDriver::world_mdelt() const {
 }
 
 void WorldDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
-
-	engine.step(dt, &state, kb, mouse, world_mpos(), world_mdelt());
+	if (kb[GLFW_KEY_ESCAPE].down) this->close();
+	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
 
 	/**
-	 * TODO: remove ALL of this into engine
+	 * STEP ENGINE
+	 * this currently just runs through the systems
 	 */
+	engine.step(dt, &state, kb, mouse, world_mpos(), world_mdelt());
 
-	state.lcam.frame.y = state.lcam.frame.x / window.aspect;	/* TODO: make automatic */
-	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-	// if (kb[GLFW_KEY_W].down) state.lcam.pos.y += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	// if (kb[GLFW_KEY_A].down) state.lcam.pos.x -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	// if (kb[GLFW_KEY_S].down) state.lcam.pos.y -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	// if (kb[GLFW_KEY_D].down) state.lcam.pos.x += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-	auto& ppos = state.world.ecs.getComp<c_Object>(player_system_get_player()).pos;
-	state.lcam.pos += 0.1f * (ppos - state.lcam.pos);
-	state.world.relocate(state.lcam.pos);
-
-	if (abs(mouse.scroll.y) > 0.1) {
-#ifdef __APPLE__
-		float vwadd = dt * mouse.scroll.y * 100.f;
-#else
-		float vwadd = dt * mouse.scroll.y * 1000.f;
-#endif
-		local_cam_setvw(state.lcam, glm::clamp(state.lcam.frame.x + vwadd, 8.f, static_cast<float>(REGION_SIZE*(WORLD_DIAMETER-1))));
-		// local_cam_setvw(state.lcam, state.lcam.frame.x + vwadd);
-		// LOG_INF("changing vw to %.1f,%.1f", lcam.frame.x, lcam.frame.y);
-	}
-
-
-	// ugh TODO fix mouse
-	if (mouse.left.down) {
-		vec2 ssm = world_mpos();
-		Tile& tile = state.world.tile_at(vec2(ssm.x, ssm.y));
-		tile.surf = {
-			.img = 3,
-			// .props = {
-			// 	.f.present = 1,
-			// 	.f.blocks_light = 1,
-			// 	.f.solid = 1
-			// } // microsoft's compiler can't handle this (lame)
-		};
-		tile.surf.props.f.present = 
-		tile.surf.props.f.blocks_light =
-		tile.surf.props.f.solid = 1;
-	}
-
-	static size_t fpt = 0;
-	fpt++;
-	if (!(fpt % 1024)) LOG_INF("fps: %.1f", 1./dt);
 }
 
 void WorldDriver::user_render() {

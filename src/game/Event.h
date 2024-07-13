@@ -10,6 +10,7 @@
 #include "game/System.h"
 
 #define MAX_EVENT_SUBS (32)
+#define EVENT_BUF_DEP (64)
 
 #define EVENT_DECLARE(name) struct name##EventData; extern Event<name##EventData> name##Event; struct name##EventData 
 #define EVENT_DEFINE(name) Event<name##EventData> name##Event
@@ -59,7 +60,21 @@ public:
         freestack.data[freestack.top++] = sid;
         subscribers[sid] = 0;
     }
+    
+    struct {
+        Input_t data[EVENT_BUF_DEP];
+        uint32_t top;
+    } event_stack;
 
+    void push(Input_t input) {
+        if (top >= EVENT_BUF_DEP) {
+            loge("event overflow");
+            return;
+        }
+        data[top++] = input;
+    }
+
+    // dep...
     void fire(Input_t input) {
         for (uint32_t i = 0; i < sub_top; i++) {
             if (subscribers[i]) {
