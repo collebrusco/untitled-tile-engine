@@ -12,10 +12,6 @@ void Engine::init(State* state) {
     }
 }
 
-/**
- * TODO:
- * this is not even checking for the systems pd
- */
 void Engine::step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, vec2 wmpos, vec2 wmdelt) {
     for (system_t& system : syslist) {
         if (system.step && (timer.read(SECONDS) - system.last_time_s) > system.period_s) {
