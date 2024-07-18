@@ -31,7 +31,6 @@ SystemList::SystemIt SystemList::end() {
 
 
 
-abstract_linear_objpool<System> opool(1024);
 
 
 System::System(float pd) : period(_pd), _pd(pd), _t(0.f) {}

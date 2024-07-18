@@ -114,8 +114,6 @@ public:
     SystemIt end();
 };
 
-#include <util/abstract_linear_objpool.h>
-
 class System {
 public:
     System(float pd);

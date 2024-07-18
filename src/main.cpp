@@ -21,6 +21,8 @@ using namespace std;
 
 
 
+#include <util/abstract_linear_objpool.h>
+abstract_linear_objpool<System> alop(1024);
 class WorldDriver : public GameDriver {
 public:
 	WorldDriver();
