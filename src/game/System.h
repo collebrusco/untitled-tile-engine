@@ -114,5 +114,23 @@ public:
     SystemIt end();
 };
 
+#include <util/abstract_linear_objpool.h>
+
+class System {
+public:
+    System(float pd);
+    inline virtual ~System() {}
+    void init(State* state);
+    void destroy(State* state);
+    void step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
+protected:
+    float const& period;
+private:
+    float _pd;
+    float _t;
+    virtual void intr_init(State* state) = 0;
+    virtual void intr_destroy(State* state) = 0;
+    virtual void intr_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt) = 0;
+};
 
 #endif /* SYSTEM_H */

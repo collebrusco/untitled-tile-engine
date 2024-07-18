@@ -3,7 +3,22 @@
 #include <stdint.h>
 #include <cstddef>
 #include <flgl.h>
-#include "../lib/sw/Stopwatch.h"
+#include "Stopwatch.h"
+
+// typedef void(*driver_init_f)(void); 
+// typedef void(*driver_update_f)(void);
+// typedef void(*driver_render_f)(void);
+// typedef void(*driver_destroy_f)(void);
+// typedef void(*driver_update_f)(float dt, Keyboard const& kb, Mouse const& mouse);
+
+// struct Driver {
+//     driver_init_f init;
+//     driver_update_f update;
+//     driver_render_f render;
+//     driver_destroy_f destroy;
+// };
+
+
 
 
 class GameDriver {

@@ -8,26 +8,26 @@
 
 #define MAX_ACTOR_SIZE (64)
 
-class Actor {
-public:
-    virtual void perform(float dt) = 0;
-};
+// class Actor {
+// public:
+//     virtual void perform(float dt) = 0;
+// };
 
-struct ActorBuffer {
-    alignas(Actor) char mem[MAX_ACTOR_SIZE];
-    void allocActor() {
-        Actor* actor = new (this->mem) ActorEg();
-    }
-    Actor* getActor() {
-        return (Actor*) this->mem;
-    }
-};
+// struct ActorBuffer {
+//     alignas(Actor) char mem[MAX_ACTOR_SIZE];
+//     void allocActor() {
+//         Actor* actor = new (this->mem) ActorEg();
+//     }
+//     Actor* getActor() {
+//         return (Actor*) this->mem;
+//     }
+// };
 
-class ActorEg : public Actor {
-public:
-    virtual void perform(float dt) override final {}
-};
-static_assert(sizeof(ActorEg) <= MAX_ACTOR_SIZE);
+// class ActorEg : public Actor {
+// public:
+//     virtual void perform(float dt) override final {}
+// };
+// static_assert(sizeof(ActorEg) <= MAX_ACTOR_SIZE);
 
 
 void actor_system_init(State* state);

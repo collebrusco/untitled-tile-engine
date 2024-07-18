@@ -16,7 +16,7 @@
  *  virtual init, up(dt), dest
  *  // getters for needed data for other sys's...
  *  // no other controls?
- *  // then how do they get eos instances
+ *  // then how do they get eos instances <-----
  * only one sys instance per game anyway 
  * }
  */

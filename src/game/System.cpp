@@ -28,3 +28,23 @@ SystemList::SystemIt SystemList::end() {
     return SystemIt(*this, 1);
 }
 
+
+
+
+abstract_linear_objpool<System> opool(1024);
+
+
+System::System(float pd) : period(_pd), _pd(pd), _t(0.f) {}
+
+void System::init(State* state) {
+    intr_init(state);
+}
+
+void System::destroy(State* state) {
+    intr_destroy(state);
+}
+
+void System::step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt) {
+    
+}
+
