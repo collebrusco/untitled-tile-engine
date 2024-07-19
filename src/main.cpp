@@ -52,7 +52,7 @@ WorldDriver::WorldDriver() : GameDriver()
 
 void WorldDriver::user_create() {
 	/* ENGINE */
-	engine.syslist.next_system() = PLAYER_SYSTEM_STRUCT;
+	engine.systems.push<PlayerSystem>();
 	engine.init(&state);
 
 	/* RENDERING */

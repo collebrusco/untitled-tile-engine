@@ -3,26 +3,23 @@
 LOG_MODULE(eng);
 using namespace glm;
 
+Engine::Engine() : systems(SYSLIST_SIZE_BYTES) {}
+
 void Engine::init(State* state) {
     timer.reset_start();
-    for (system_t& system : syslist) {
-        if (system.init) {
-            system.init(state);
-        }
+    for (System* sys : systems) {
+        sys->init(state);
     }
 }
 
 void Engine::step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, vec2 wmpos, vec2 wmdelt) {
-    for (system_t& system : syslist) {
-        if (system.step && (timer.read(SECONDS) - system.last_time_s) > system.period_s) {
-            system.step(dt, state, kb, mouse, wmpos, wmdelt);
-            system.last_time_s = timer.read(SECONDS);
-        }
+    for (System* sys : systems) {
+        sys->step(dt, state, kb, mouse, wmpos, wmdelt, timer.read());
     }
 }
 
 void Engine::destroy(State* state) {
-    for (system_t& system : syslist) {
-        if (system.dest) system.dest(state);
+    for (System* sys : systems) {
+        sys->destroy(state);
     }
 }

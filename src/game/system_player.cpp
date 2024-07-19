@@ -6,14 +6,15 @@
 LOG_MODULE(plyr);
 using namespace glm;
 
-static entID player = ~0;
-
 #define WRLD state->world
 #define ESYS state->world.ecs
 
-entID player_system_get_player() {return player;}
+PlayerSystem::PlayerSystem() : System(0.f)
+{
+}
 
-void player_spawn(State* state, vec2) {
+void PlayerSystem::intr_init(State *state)
+{
     player = ESYS.newEntity();
     auto& pobj = ESYS.addComp<c_Object>(player);
     pobj.pos = vec2(0.f);
@@ -23,11 +24,12 @@ void player_spawn(State* state, vec2) {
     ESYS.addComp<c_StaticAtlas>(player) = c_StaticAtlas::from_sheet({63.f + 3.f/16.f, 3.f/16.f}, vec2(10.f/16.f));
 }
 
-void player_system_init(State* state) {
-    player_spawn(state, vec2(0.f));
+void PlayerSystem::intr_destroy(State *state)
+{
 }
 
-void player_system_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt) {
+void PlayerSystem::intr_step(float dt, State *state, Keyboard const &kb, Mouse const &mouse, glm::vec2 wmpos, glm::vec2 wmdelt, float t)
+{
     auto& pobj = ESYS.getComp<c_Object>(player);
     if (kb[GLFW_KEY_W].down) pobj.pos.y += dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
 	if (kb[GLFW_KEY_A].down) pobj.pos.x -= dt * (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
@@ -38,5 +40,3 @@ void player_system_step(float dt, State* state, Keyboard const& kb, Mouse const&
 
     pobj.rot = vectorToAngle(wmpos - pobj.pos);
 }
-
-

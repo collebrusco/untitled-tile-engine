@@ -74,61 +74,22 @@
  * 
  */
 
-typedef void(*system_init_f)(State* state);
-typedef void(*system_dest_f)(State* state);
-typedef void(*system_step_f)(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
-
-struct system_t {
-    system_init_f init;
-    system_step_f step;
-    system_dest_f dest;
-    float period_s;
-    float last_time_s;
-};
-
-#define MAX_SYSTEMS_LOG (4)
-#define MAX_SYSTEMS (1<<MAX_SYSTEMS_LOG)
-
-
-class SystemList {
-public:
-    SystemList();
-    system_t systems[MAX_SYSTEMS];
-    system_t& next_system();
-private:
-    size_t top  : MAX_SYSTEMS_LOG;
-    class SystemIt {
-        friend class SystemList;
-        SystemIt(SystemList& l, bool d = 0);
-        SystemList& list;
-        size_t i    : MAX_SYSTEMS_LOG;
-        bool done   : 1;
-    public:
-        inline system_t& operator*() {return list.systems[i];}
-        inline bool operator==(SystemIt const& other) const {return this->i == other.i && this->done == other.done;}
-        inline bool operator!=(SystemIt const& other) const {return this->i != other.i && this->done != other.done;}
-        SystemIt& operator++();
-    };
-public:
-    SystemIt begin();
-    SystemIt end();
-};
-
 class System {
 public:
     System(float pd);
     inline virtual ~System() {}
     void init(State* state);
     void destroy(State* state);
-    void step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
+    void step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt, float t);
 protected:
-    inline float period() {return _pd;};
+    inline float get_period() {return _pd;};
+    inline void set_period(float pd) {_pd = pd;};
 private:
     float _pd;
     float _t;
     virtual void intr_init(State* state) = 0;
     virtual void intr_destroy(State* state) = 0;
-    virtual void intr_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt) = 0;
+    virtual void intr_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt, float t) = 0;
 };
 
 #endif /* SYSTEM_H */

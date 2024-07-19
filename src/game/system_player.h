@@ -8,10 +8,14 @@
 #include "game/Engine.h"
 #include "game/System.h"
 
-void player_system_init(State* state);
-entID player_system_get_player();
-void player_system_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
-
-#define PLAYER_SYSTEM_STRUCT ((system_t){.init = player_system_init, .step = player_system_step, .dest = 0, .period_s = 0.f, .last_time_s = 0.f})
+class PlayerSystem : public System {
+public:
+    entID player;
+    PlayerSystem();
+private:
+    virtual void intr_init(State* state) override final;
+    virtual void intr_destroy(State* state) override final;
+    virtual void intr_step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt, float t) override final;
+};
 
 #endif /* SYSTEM_PLAYER_H */

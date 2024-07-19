@@ -31,7 +31,7 @@ public:
         uint16_t jump = sizeof(Sub) + sizeof(base->next_size);
         top += jump;
         if (top > size) {
-            loge("overflow"); return;
+            printf("[ERROR alop]: overflow\n");
         }
         base->next_size = (uint16_t)jump;
         new (&base->entry) Sub(args...);
@@ -48,7 +48,7 @@ public:
         abstract_linear_objpool& alop;
         inline alop_it(abstract_linear_objpool* home, unsigned int idx = 0) : i(idx), alop(*home) {}
     public:
-        inline Base* operator*() {return (Base*) ( &(( (abstract_linear_objpool::buf_entry_t*)(alop.buf + i) )->entry) );}
+        inline Base* operator*() {return (i==-1) ? 0 : (Base*) ( &(( (abstract_linear_objpool::buf_entry_t*)(alop.buf + i) )->entry) );}
         inline bool operator==(alop_it const& other) const {return other.i == this->i;}
         inline bool operator!=(alop_it const& other) const {return other.i != this->i;}
         alop_it& operator++() {
@@ -59,7 +59,12 @@ public:
         }
     };
 
-    inline alop_it begin() {return alop_it(this);}
+    alop_it begin() {
+        if (((buf_entry_t*)(buf))->entry == 0) {
+            return this->end();
+        }
+        return alop_it(this);
+    }
     inline alop_it end() {return alop_it(this, -1);}
 
     inline unsigned int get_top() const {return top;}
@@ -80,7 +85,9 @@ private:
         uint16_t next_size;
         uint32_t entry;
     };
-    static void loge(const char* msg);
 };
+
+template <typename T>
+using alop_t = abstract_linear_objpool<T>;
 
 #endif /* ABSTRACT_LINEAR_OBJPOOL_H */
