@@ -33,7 +33,7 @@ SystemList::SystemIt SystemList::end() {
 
 
 
-System::System(float pd) : period(_pd), _pd(pd), _t(0.f) {}
+System::System(float pd) : _pd(pd), _t(0.f) {}
 
 void System::init(State* state) {
     intr_init(state);

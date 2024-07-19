@@ -62,6 +62,9 @@ public:
     inline alop_it begin() {return alop_it(this);}
     inline alop_it end() {return alop_it(this, -1);}
 
+    inline unsigned int get_top() const {return top;}
+    inline unsigned int get_size() const {return size;}
+
 private:
     void destroy() {
         top = 0;
@@ -72,6 +75,7 @@ private:
     char* buf;
     unsigned int top;
     unsigned int size;
+    /* TODO could add a pop by keeping a u16 for size of top of stack. dk if needed */
     struct __attribute__((packed)) buf_entry_t {
         uint16_t next_size;
         uint32_t entry;

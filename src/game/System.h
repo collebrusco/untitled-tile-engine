@@ -122,7 +122,7 @@ public:
     void destroy(State* state);
     void step(float dt, State* state, Keyboard const& kb, Mouse const& mouse, glm::vec2 wmpos, glm::vec2 wmdelt);
 protected:
-    float const& period;
+    inline float period() {return _pd;};
 private:
     float _pd;
     float _t;
