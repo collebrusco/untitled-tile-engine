@@ -30,7 +30,11 @@ static inline float local_cam_asp(local_cam_t& cam) {
 }
 
 static inline void local_cam_setvw(local_cam_t& lcam, float vw) {
-    lcam.frame.x = vw; lcam.frame.y = vw / window.aspect;
+    lcam.frame.x = vw;
+}
+
+static inline void local_cam_upf(local_cam_t& lcam) {
+    lcam.frame.y = lcam.frame.x / window.aspect;
 }
 
 struct buffrender_details_t {

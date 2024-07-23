@@ -154,7 +154,7 @@ void BufferRenderer::render() {
 	}
     // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
-    // render entities TODO
+    // render entities 
     erenderer.prepare(&input.world->ecs, &cam);
     erenderer.render(tile_tex);
 

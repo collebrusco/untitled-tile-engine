@@ -7,7 +7,6 @@
 #include <flgl.h>
 #include <flgl/glm.h>
 #include "game/State.h"
-#include "game/System.h"
 
 #define MAX_EVENT_SUBS (32)
 

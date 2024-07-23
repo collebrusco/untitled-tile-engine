@@ -19,7 +19,7 @@
 // };
 
 
-
+#define DRIVER_MAIN_FUNCTION(Classname) int main() {Classname driver; driver.start(); return 0;}
 
 class GameDriver {
 protected:

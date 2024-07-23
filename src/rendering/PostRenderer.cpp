@@ -89,11 +89,6 @@ void PostRenderer::render() {
     details.fbtex.bind();
     post_shader.bind();
     post_shader.uInt("utex", 0);
-    // post_shader.uFloat("uAspect", window.aspect);
-    // post_shader.uVec2("uRes", window.frame);
-    // post_shader.uFloat("uTime", timer.read());
-    // post_shader.uVec2("uCampos", details.local_cam.pos);
-    // post_shader.uFloat("uvw", details.local_cam.frame.x);
     // static bool l = 0;
     // if (window.keyboard[GLFW_KEY_L].pressed) l = !l;
     // post_shader.uFloat("ulightsw", l);

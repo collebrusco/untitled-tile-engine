@@ -13,6 +13,10 @@ template <size_t bufsize>
 class stack_bumpalloc_t {
 public:
     inline stack_bumpalloc_t() {memset(data, 0, bufsize); top = 0;}
+    stack_bumpalloc_t(stack_bumpalloc_t const& to_copy) = delete;
+    stack_bumpalloc_t(stack_bumpalloc_t && to_move) = delete;
+    stack_bumpalloc_t& operator=(stack_bumpalloc_t const& other) = delete;
+    stack_bumpalloc_t& operator=(stack_bumpalloc_t && other) = delete;
 
     inline void reset() {top = 0;}
     void* alloc(size_t bytes) {
@@ -34,6 +38,10 @@ public:
         memset(data, 0, bufsize); top = 0;
     }
     ~heap_bumpalloc_t() {free(data);}
+    heap_bumpalloc_t(heap_bumpalloc_t const& to_copy) = delete;
+    heap_bumpalloc_t(heap_bumpalloc_t && to_move) = delete;
+    heap_bumpalloc_t operator=(heap_bumpalloc_t const& other) = delete;
+    heap_bumpalloc_t operator=(heap_bumpalloc_t && other) = delete;
 
     inline void reset() {top = 0;}
     void* alloc(size_t bytes) {
