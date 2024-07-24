@@ -37,7 +37,7 @@ file(GLOB UNITTEST_SOURCES "src/tests/*.cpp")
 # Add a custom target for unit tests without the ALL keyword
 add_custom_target(unittest
     COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}_unittest
-    COMMAND cd ${CMAKE_CURRENT_LIST_DIR} && ./build/${PROJECT_NAME}_unittest && rm ./build/${PROJECT_NAME}_unittest && rm -rf ./build/CMakeFiles/${PROJECT_NAME}_unittest.dir/
+    COMMAND cd ${CMAKE_CURRENT_LIST_DIR} && ./build/${PROJECT_NAME}_unittest && rm ./build/${PROJECT_NAME}_unittest
 )
 
 # Create the executable for unit tests only when the unittest target is built

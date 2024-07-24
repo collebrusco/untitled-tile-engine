@@ -8,6 +8,7 @@
 #include "util/abstract_freelist_objpool.h"
 
 struct Action {
+    inline virtual ~Action() {}
     virtual void perform() = 0;
 };
 

@@ -44,7 +44,7 @@ public:
 };
 
 class TSub3 : public TBase {
-    size_t arr[256];
+    char arr[256];
 public:
     TSub3(int b) {
         LOG_INF("tsub3 construct w %d", b);
@@ -58,7 +58,7 @@ public:
 };
 
 
-void run_alop_test() {
+static void run_alop_test() {
     abstract_linear_objpool<TBase> opool(4096*4);
 
     LOG_INF("sizeof Base %d", sizeof(TBase));
@@ -91,8 +91,49 @@ void run_alop_test() {
 /**
  * ================ FREE ================
  */
+#define SLOTS 8
+using afop = abstract_freelist_objpool<TBase, (1<<9)-1, SLOTS>;
 
-void run_afop_test() {
+static void psubs(afop& pool) {
+    uint16_t i = 0;
+    while (i < SLOTS) {
+        LOG_INF("sub[%d](%d) = %p", i, pool.is_valid(i), pool.at(i));
+        i++;
+    }
+}
+#define NL(...) LOG_INF("");
+static void run_afop_test() {
+    afop pool;
+    psubs(pool);
+    NL();
+    TBase *a, *b, *c, *d, *e, *f;
+    a = pool.push<TSub0>();
+    b = pool.push<TSub1>();
+    c = pool.push<TSub1>();
+    d = pool.push<TSub2>();
+    e = pool.push<TSub3>(99);
+
+    psubs(pool); NL();
+
+    for (auto* b : pool) {
+        LOG_INF("iter!(%d): %p", pool.get_i(b), b);
+        b->func();
+    }
+
+    pool.remove(c); pool.remove(d);
+
+    psubs(pool); NL();
+
+    pool.push<TSub2>(); pool.push<TSub2>(); pool.push<TSub2>();
+
+    psubs(pool); NL();
+
+    for (auto* b : pool) {
+        LOG_INF("iter!(%d): %p", pool.get_i(b), b);
+        b->func();
+    }
+
+    LOG_INF("scope end:");
 
 }
 
@@ -100,6 +141,6 @@ void run_afop_test() {
 
 
 int main() {
-    run_alop_test();
+    // run_alop_test(); LOG_INF("");
     run_afop_test();
 }
