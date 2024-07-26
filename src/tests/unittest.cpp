@@ -138,9 +138,10 @@ static void run_afop_test() {
 }
 
 
-
+#include "tests/ecs_test.h"
 
 int main() {
     // run_alop_test(); LOG_INF("");
-    run_afop_test();
+    // run_afop_test();
+    ecs_testmain();
 }
