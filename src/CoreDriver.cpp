@@ -7,12 +7,6 @@ LOG_MODULE(main);
 using namespace glm;
 using namespace std;
 
-#ifdef UNITTEST
-	DRIVER_MAIN_FUNCTION(app_main, CoreDriver);
-#else
-	DRIVER_MAIN_FUNCTION(main, CoreDriver);
-#endif
-
 CoreDriver::CoreDriver() : GameDriver()
 							{
 							}
@@ -79,3 +73,8 @@ void CoreDriver::user_destroy() {
 	gl.destroy();
 }
 
+#ifdef UNITTEST
+	DRIVER_MAIN_FUNCTION(app_main, CoreDriver);
+#else
+	DRIVER_MAIN_FUNCTION(main, CoreDriver);
+#endif

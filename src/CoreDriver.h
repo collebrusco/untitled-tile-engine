@@ -28,6 +28,7 @@
 #include "game/State.h"
 #include "game/components.h"
 #include "game/LCamControl.h"
+#include "game/Actor.h"
 
 
 class CoreDriver final : public GameDriver {
