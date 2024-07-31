@@ -93,7 +93,6 @@ struct abstract_freelist_objpool {
     public:
         bool operator==(afop_it const& other) const {return this->i == other.i;}
         bool operator!=(afop_it const& other) const {
-            printf("this %d and %d\n", this->i, other.i);
             return this->i != other.i;}
         afop_it const& operator++() {
             if (i >= slots) return *this;

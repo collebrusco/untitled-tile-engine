@@ -5,14 +5,16 @@
 #ifndef STATE_H
 #define STATE_H
 #include "game/World.h"
+#include "game/Actor.h"
 #include "render_pipeline_structs.h"
-
 
 struct State {
     State();
 
     World world;
     local_cam_t lcam;
+
+    ActionPool actions;
 
     /**
      * TODO: more things like money, player data, etc. anything in game 

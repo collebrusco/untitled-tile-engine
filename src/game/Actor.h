@@ -8,7 +8,7 @@
 #include "util/abstract_freelist_objpool.h"
 
 #define ACTION_MAX_ACTIONS  1024
-#define ACTION_MAX_SIZE     64
+#define ACTION_MAX_SIZE     64-1
 #define ACTOR_MAX_SIZE      64
 
 struct Action;
@@ -51,7 +51,7 @@ static_assert(sizeof(ActorType) <= ACTOR_MAX_SIZE);
         return this->emplace(args...);
     }
 
-    static void step(ECS* ecs, ActionPool* apool);
+    static void take_all_turns(ECS* ecs, ActionPool* apool);
 
 private:
     alignas(Actor) char data[ACTOR_MAX_SIZE];

@@ -1,3 +1,7 @@
+#include "config.h"
+#ifdef BENCHMARK
+#include "util/debug_buf.h"
+#endif
 #include "CoreDriver.h"
 #include <flgl/logger.h>
 LOG_MODULE(main);
@@ -47,26 +51,50 @@ vec2 CoreDriver::world_mdelt() const {
 void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
     lcam_control.update(state.lcam, dt);
-
+	c_Actor::take_all_turns(&state.world.ecs, &state.actions);
+	for (auto* action : state.actions) {
+		action->perform();
+		if (action->complete()) {
+			state.actions.remove(action);
+		}
+	}
 }
 
 void CoreDriver::user_render() {
-	// input data from engine into buf renderer
+	/* input data from engine into buf renderer */
 	(*(brenderer.input_ptr())) = {
 		.world = &state.world,
 		.wmpos = world_mpos(),
 		.lcam = this->state.lcam
 	};
-	// buffer render to framebuffer
+	/* buffer render to framebuffer */
+#ifdef BENCHMARK 
+static Stopwatch sw(MICROSECONDS); sw.reset_start(); static debug_buf<float, 5> dbuf0, dbuf1, dbuf2;
+#endif
 	brenderer.prepare();
 	brenderer.render();
-	// transfer buf render output to post render input
+#ifdef BENCHMARK
+dbuf0.push(sw.stop());
+if (dbuf0.ready()) {LOG_INF("\tfbuf rend %.1fus", dbuf0.get());}
+sw.reset_start();
+#endif
+	/* transfer buf render output to post render input */
 	brenderer.write_output(prenderer.input_ptr());
-	// world frame to window
+	/* world frame to window */
 	prenderer.prepare();
 	prenderer.render();
+#ifdef BENCHMARK
+dbuf1.push(sw.stop());
+if (dbuf1.ready()) {LOG_INF("\tpost rend %.1fus", dbuf1.get());}
+sw.reset_start();
+#endif
 
 	text_renderer.render(24, window.frame.y - 48, 2 * window.frame_to_window);
+#ifdef BENCHMARK
+dbuf2.push(sw.stop());
+if (dbuf2.ready()) {LOG_INF("\ttext rend %.1fus", dbuf2.get());}
+sw.reset_start();
+#endif
 }
 
 void CoreDriver::user_destroy() {
