@@ -11,4 +11,7 @@ Currently, we have:
      
 ![screenshot](pics/sc.png)
       
-
+### How to build
+CMake! Here's [my gfx lib's guide](https://github.com/collebrusco/flgl/tree/main/user#readme) for building projects that use it.    
+If you're not new to this, it'll build like any typical CMake project.     
+`mkdir build && cd build && cmake .. && make && cd .. && ./build/untitled`
