@@ -8,7 +8,7 @@
 #include "util/abstract_freelist_objpool.h"
 
 #define ACTION_MAX_ACTIONS  1024
-#define ACTION_MAX_SIZE     64-1
+#define ACTION_MAX_SIZE     (64-1)
 #define ACTOR_MAX_SIZE      64
 
 struct Action;

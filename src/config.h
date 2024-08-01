@@ -6,7 +6,7 @@
 #define CONFIG_H
 
 
-#define BENCHMARK
+// #define BENCHMARK
 
 
 #endif /* CONFIG_H */
