@@ -9,8 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-
-#define IS_POW2(num) ( !(num & (num-1)) )
+#include "util/misc.h"
 
 /**
  * this structure stores a pool of objects inheriting from the same base.
@@ -33,13 +32,14 @@ struct abstract_freelist_objpool {
     }
     ~abstract_freelist_objpool() {
         for (Base* ent : *this) {
-            printf("dest(i:%d,v:%d): %p\n", get_i(ent), is_valid(get_i(ent)), ent);
+            // printf("dest(i:%d,v:%d): %p\n", get_i(ent), is_valid(get_i(ent)), ent);
             ent->~Base();
             set_valid(get_i(ent), 0);
         }
         printf("out of dest of alop\n");
         free(data);
     }
+    NO_COPY_OR_MOVE(abstract_freelist_objpool);
 
     inline uint32_t size_bytes() const {return (slot_size * slots) + slots;}
     /** unprotected, just buffer + offset */

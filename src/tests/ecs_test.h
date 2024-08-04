@@ -22,6 +22,7 @@ struct TD {
 
 struct Tag {}; struct Tag0 {};
 
+Archetype<TA, Tag0> atype;
 
 void ecs_testmain() {
     ECS ecs;
@@ -58,6 +59,11 @@ void ecs_testmain() {
 
     printf("all:\n\n");
     for (auto e : ecs.view<>()) {
+        printf("e = %llx\n", e);
+    }
+
+    printf("atype:\n\n");
+    for (auto e : ecs.view(atype)) {
         printf("e = %llx\n", e);
     }
 

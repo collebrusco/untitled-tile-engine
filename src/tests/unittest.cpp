@@ -59,7 +59,7 @@ public:
 
 
 static void run_alop_test() {
-    abstract_linear_objpool<TBase> opool(4096*4);
+    abstract_linear_objpool<TBase, 4096*4> opool;
 
     LOG_INF("sizeof Base %d", sizeof(TBase));
     LOG_INF("sizeof Sub0 %d", sizeof(TSub0));

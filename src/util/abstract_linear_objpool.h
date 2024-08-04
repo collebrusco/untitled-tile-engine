@@ -9,13 +9,16 @@
 #ifndef ABSTRACT_LINEAR_OBJPOOL_H
 #define ABSTRACT_LINEAR_OBJPOOL_H
 #include <stdlib.h>
+#include <stddef.h>
 #include <cstring>
+#include "util/misc.h"
 
 #include <stdio.h>
-template <typename Base>
+template <typename Base, size_t size>
 class abstract_linear_objpool {
+static_assert(IS_POW2(size));
 public:
-    abstract_linear_objpool(unsigned int _size) : size(_size) {
+    abstract_linear_objpool() {
         buf = (char*)malloc(size); 
         memset(buf, 0, size); 
         top = 0;
@@ -24,6 +27,7 @@ public:
         this->destroy();
         free(buf);
     }
+    NO_COPY_OR_MOVE(abstract_linear_objpool);
 
     template <typename Sub, typename ...Args>
     void push(Args... args) {
@@ -79,7 +83,6 @@ private:
     }
     char* buf;
     unsigned int top;
-    unsigned int size;
     /* TODO could add a pop by keeping a u16 for size of top of stack. dk if needed */
     struct __attribute__((packed)) buf_entry_t {
         uint16_t next_size;
@@ -87,7 +90,7 @@ private:
     };
 };
 
-template <typename T>
-using alop_t = abstract_linear_objpool<T>;
+template <typename T, size_t s>
+using alop_t = abstract_linear_objpool<T, s>;
 
 #endif /* ABSTRACT_LINEAR_OBJPOOL_H */
