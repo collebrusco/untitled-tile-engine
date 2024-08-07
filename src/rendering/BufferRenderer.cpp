@@ -128,12 +128,10 @@ void BufferRenderer::render() {
 	ShadowRenderer::give_data(cam, input.lcam.pos);
     for (auto pos : frame_manager.regions_in_frame()) {
         size_t i = input.world->rpos_to_idx(pos);
-		ivec2 const& rpos = input.world->regions[i].pos;
 		srenderers[i].prepare();
 	}
     for (auto pos : frame_manager.regions_in_frame()) {
         size_t i = input.world->rpos_to_idx(pos);
-		ivec2 const& rpos = input.world->regions[i].pos;
         srenderers[i].prepare();
 		srenderers[i].render();
 	}
@@ -146,7 +144,7 @@ void BufferRenderer::render() {
     // render terrain
 	RegionRenderer::sync_camera(cam);
     size_t ct = 0;
-    static size_t pct = 0;
+    // static size_t pct = 0;
     for (auto pos : frame_manager.regions_in_frame()) {
         ct++;
         // LOG_INF("====ITER:==== %d, %d", pos.x, pos.y);

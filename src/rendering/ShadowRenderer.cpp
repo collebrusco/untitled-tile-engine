@@ -129,7 +129,6 @@ void ShadowRenderer::prepare() {
             Tile& t = target->buffer[i+j*REGION_SIZE];
             bool surf = t.surf.props.f.present;
             float x = i; float y = j;
-            tile_sprite_t img = surf ? t.surf.img : t.terr.img;
             if (!surf) continue;
             if (!t.surf.props.f.blocks_light) continue;
             surroundings_t surr = get_tile_surr(i, j, target, world);
@@ -201,7 +200,7 @@ void ShadowRenderer::render() {
     current_shader->bind();
     current_shader->uMat4("uModel", model);
     sh_vao.bind();
-    gl.draw_vao_ibo(sh_vao, sh_ibo);
+    gl.draw_vao_ibo(sh_ibo);
     sh_vao.unbind();
 
 }

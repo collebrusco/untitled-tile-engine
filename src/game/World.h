@@ -22,6 +22,7 @@ struct World {
     static region_coords_t pos_to_rpos(glm::vec2 pos);
     static tile_coords_t pos_to_tpos(glm::vec2 pos);
     static region_coords_t tpos_to_rpos(tile_coords_t tpos);
+    static glm::vec2 tpos_to_pos(tile_coords_t tpos);
     static tile_coords_t rpos_to_tpos(region_coords_t rpos);
 
     void relocate(region_coords_t newpos);

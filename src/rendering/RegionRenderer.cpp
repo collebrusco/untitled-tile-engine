@@ -79,7 +79,6 @@ void RegionRenderer::prepare() {
 
     vector<vec2> uvs;
     uvs.reserve(REGION_SIZE*REGION_SIZE*4);
-    uint32_t shibase = 0;
     for (size_t j = 0; j < REGION_SIZE; j++) {
         for (size_t i = 0; i < REGION_SIZE; i++) {
             Tile& t = target->buffer[i+j*REGION_SIZE];
@@ -102,7 +101,7 @@ void RegionRenderer::render(Texture tile_tex) {
     t_vao.bind();
     t_uvbuff.bind(); 
     t_vao.attrib(1, 2, GL_FLOAT, 0, 0);
-    gl.draw_vao_ibo(t_vao, t_ibo);
+    gl.draw_vao_ibo(t_ibo);
     t_vao.unbind();
     tile_tex.unbind();
     t_uvbuff.unbind();

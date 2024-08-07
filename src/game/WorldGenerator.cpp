@@ -3,6 +3,7 @@
 WorldGenerator::WorldGenerator(world_seed_t sd) : seed(sd) {}
 
 void WorldGenerator::generate(int x, int y, Region* target, World* world) {
+    (void)world;
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
             target->tile_at(i,j) = {
@@ -19,6 +20,7 @@ WorldGenerator(sd), gen(seed), dis(0) {
 }
 
 void TestWorldGenerator::generate(int x, int y, Region* target, World* world) {
+    (void)world;
     target->pos = {x,y};
     
     for (int i = 0; i < REGION_SIZE; i++) {

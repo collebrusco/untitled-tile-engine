@@ -64,7 +64,7 @@ void EntityRenderer::render(Texture tile_tex) {
         atlas_shader.uMat4("uModel", model);
 
         vao.bind();
-        gl.draw_vao_ibo(vao, ibo);
+        gl.draw_vao_ibo(ibo);
     }
     tile_tex.unbind();
 }

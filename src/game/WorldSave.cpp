@@ -11,6 +11,7 @@ generator(std::move(gen))
 WorldSave::~WorldSave() {}
 
 bool WorldSave::bounds(int x, int y) const {
+    (void)x; (void)y;
     return true;
 }
 
@@ -26,6 +27,7 @@ void MapWSave::load(int x, int y, Region* target, World* world) {
 }
 
 void MapWSave::store(Region const& target, World const& world) {
+    (void)world;
     rmap.emplace(target.pos, target);
 }
 

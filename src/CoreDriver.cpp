@@ -49,8 +49,11 @@ vec2 CoreDriver::world_mdelt() const {
 }
 
 void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
+	(void)mouse;
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
+
     lcam_control.update(state.lcam, dt);
+	
 	c_Actor::take_all_turns(&state.world.ecs, &state.actions);
 	for (auto* action : state.actions) {
 		action->perform();

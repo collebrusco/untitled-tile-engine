@@ -86,7 +86,7 @@ struct abstract_freelist_objpool {
     afop_it end() {return afop_it(this, -1);}
 
     class afop_it {
-    friend class abstract_freelist_objpool;
+    friend struct abstract_freelist_objpool;
         abstract_freelist_objpool& afop;
         uint16_t i{0};
         afop_it(abstract_freelist_objpool* home, uint16_t _i = 0) : afop(*home), i(_i) {}
@@ -117,7 +117,7 @@ private:
     struct {
         uint16_t data[slots];
         uint16_t top;
-    } freelist = {0};
+    } freelist = {{0}, {0}};
 };
 
 
