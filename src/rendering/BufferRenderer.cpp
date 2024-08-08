@@ -7,7 +7,7 @@
 LOG_MODULE(bufrend);
 using namespace glm;
 
-BufferRenderer::BufferRenderer() : cam(&frame_manager) {}
+BufferRenderer::BufferRenderer() : cam(&frame_manager), wf(false) {}
 
 void BufferRenderer::init() {
     // set_pix_width(pixels);

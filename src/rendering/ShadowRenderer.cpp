@@ -66,7 +66,7 @@ typedef union {
     uint8_t val;
 } surroundings_t;
 
-static surroundings_t get_tile_surr(int i, int j, Region* tar, World* world) {
+static surroundings_t get_tile_surr(int i, int j, Region* tar, World* const world) {
 #ifdef __APPLE__
     surroundings_t surr = {
         .f.top = (j+1 > REGION_SIZE-1 ?

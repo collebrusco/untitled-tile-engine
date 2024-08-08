@@ -18,7 +18,7 @@ bool WorldSave::bounds(int x, int y) const {
 MapWSave::MapWSave(std::unique_ptr<WorldGenerator> gen) : WorldSave(std::move(gen)) {}
 
 
-void MapWSave::load(int x, int y, Region* target, World* world) {
+void MapWSave::load(int x, int y, Region* target, World* const world) {
     if (rmap.find({x,y}) == rmap.end()) {
         generator->generate(x, y, target, world);
         return;

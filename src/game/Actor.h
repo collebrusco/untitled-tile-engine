@@ -7,6 +7,7 @@
 #include "ECS.h"
 #include "util/abstract_freelist_objpool.h"
 #include "util/c_abstract.h"
+#include "World.h"
 
 #define ACTION_MAX_ACTIONS  1024
 #define ACTION_MAX_SIZE     (64-1)
@@ -24,13 +25,13 @@ struct Action {
 
 struct Actor {
     virtual ~Actor() = default;
-    virtual void take_turn(ActionPool *apool) = 0;
+    virtual void take_turn(entID self, World *const world, ActionPool* const apool) = 0;
 };
 
 
 struct c_Actor final : public c_abstract<Actor, ACTOR_MAX_SIZE> {
 
-    static void take_all_turns(ECS* ecs, ActionPool* apool);
+    static void take_all_turns(World*const ecs, ActionPool* const apool);
 
 };
 

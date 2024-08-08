@@ -31,6 +31,7 @@ void CoreDriver::user_create() {
 	text_renderer.init();
 	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls%s","");//\npress L to turn on lighting (bad) (wip) %s", "");
 	LOG_DBG("user driver created");
+	Player::spawn(&state.world, {0.f,0.f});
 }
 
 vec2 CoreDriver::world_mpos() const {
@@ -54,13 +55,15 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 
     lcam_control.update(state.lcam, dt);
 	
-	c_Actor::take_all_turns(&state.world.ecs, &state.actions);
+	c_Actor::take_all_turns(&state.world, &state.actions);
 	for (auto* action : state.actions) {
 		action->perform();
 		if (action->complete()) {
 			state.actions.remove(action);
 		}
 	}
+
+	c_Move::execute_moves(dt, &state.world);
 }
 
 void CoreDriver::user_render() {
