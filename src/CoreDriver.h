@@ -31,7 +31,7 @@
 #include "game/Actor.h"
 #include "game/Movement.h"
 #include "game/Player.h"
-
+#include "game/world_mouse.h"
 
 class CoreDriver final : public GameDriver {
 public:

@@ -8,6 +8,10 @@
 #include "game/components.h"
 #include "game/World.h"
 
+/**
+ * c_Move represents a move w velocity v in tiles/sec
+ * clip_rad is bounding radius, set negative for no tile collisions
+ */
 struct __attribute__((packed)) c_Move {
     glm::vec2 v;
     float clip_rad; /* if < 0, no clip */

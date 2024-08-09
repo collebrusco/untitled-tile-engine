@@ -21,4 +21,6 @@
     class_type& operator=(class_type const& other) = delete; \
     class_type& operator=(class_type && other) = delete;
 
+#define ASSERT_AGGREGATE(type) static_assert(std::is_aggregate<type>::value)
+
 #endif /* MISC_HEADER_H */

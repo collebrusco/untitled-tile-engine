@@ -5,8 +5,11 @@
 #ifndef RENDER_PIPELINE_STRUCTS
 #define RENDER_PIPELINE_STRUCTS
 #include <flgl/glm.h>
+#include <type_traits>
 #include <flgl.h>
+#include <type_traits>
 #include "game/World.h"
+#include "util/misc.h"
 
 /**
  * ================ BUFF REND IN ================
@@ -24,6 +27,7 @@ struct local_cam_t {
     glm::vec2 pos;
     glm::vec2 frame;
 };
+ASSERT_AGGREGATE(local_cam_t);
 
 static inline float local_cam_asp(local_cam_t& cam) {
     return cam.frame.x / cam.frame.y;
@@ -42,6 +46,7 @@ struct buffrender_details_t {
     glm::vec2 wmpos; /* mouse pos in world */
     local_cam_t lcam;
 };
+ASSERT_AGGREGATE(buffrender_details_t);
 
 /**
  * ================ BUFFREND OUT / WINDREND IN ================
@@ -63,5 +68,6 @@ struct postrender_details_t {
     glm::ivec2 world_blpos; /* bot left pos tile coords */
     local_cam_t local_cam;
 };
+ASSERT_AGGREGATE(postrender_details_t);
 
 #endif /* RENDER_PIPELINE_STRUCTS */

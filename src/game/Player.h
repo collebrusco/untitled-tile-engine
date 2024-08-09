@@ -10,7 +10,7 @@
 
 struct PlayerActor final : public Actor {
     virtual ~PlayerActor() = default;
-    virtual void take_turn(entID self, World*const world, ActionPool* const apool) override final;
+    virtual void take_turn(entID self, State& state, Keyboard const& kb, world_mouse_t const& wm) override final;
 };
 
 class Player {

@@ -8,30 +8,20 @@
 #include "util/abstract_freelist_objpool.h"
 #include "util/c_abstract.h"
 #include "World.h"
+#include "State.h"
+#include "game/world_mouse.h"
 
-#define ACTION_MAX_ACTIONS  1024
-#define ACTION_MAX_SIZE     (64-1)
 #define ACTOR_MAX_SIZE      64
-
-struct Action;
-typedef abstract_freelist_objpool<Action, ACTION_MAX_SIZE, ACTION_MAX_ACTIONS> ActionPool;
-
-
-struct Action {
-    virtual ~Action() = default;
-    virtual void perform() = 0;
-    virtual bool complete() const = 0;
-};
 
 struct Actor {
     virtual ~Actor() = default;
-    virtual void take_turn(entID self, World *const world, ActionPool* const apool) = 0;
+    virtual void take_turn(entID self, State& state, Keyboard const& kb, world_mouse_t const& wm) = 0;
 };
 
 
 struct c_Actor final : public c_abstract<Actor, ACTOR_MAX_SIZE> {
 
-    static void take_all_turns(World*const ecs, ActionPool* const apool);
+    static void take_all_turns(State& state, Keyboard const& kb, world_mouse_t const& wm);
 
 };
 

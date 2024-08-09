@@ -32,6 +32,8 @@ void CoreDriver::user_create() {
 	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls%s","");//\npress L to turn on lighting (bad) (wip) %s", "");
 	LOG_DBG("user driver created");
 	Player::spawn(&state.world, {0.f,0.f});
+	state.world.tile_at((tile_coords_t){0, 5}).surf.img = 3;
+	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.present = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.solid = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.blocks_light = 1;
 }
 
 vec2 CoreDriver::world_mpos() const {
@@ -55,7 +57,7 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 
     lcam_control.update(state.lcam, dt);
 	
-	c_Actor::take_all_turns(&state.world, &state.actions);
+	c_Actor::take_all_turns(state, kb, {.mouse = &mouse, .pos = world_mpos(), .delt = world_mdelt()});
 	for (auto* action : state.actions) {
 		action->perform();
 		if (action->complete()) {

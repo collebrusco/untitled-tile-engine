@@ -5,15 +5,19 @@
 LOG_MODULE(plyr);
 using namespace glm;
 
-void PlayerActor::take_turn(entID self, World*const world, ActionPool *const apool) {
-    (void)apool;
-    c_Move* mov = world->ecs.tryGetComp<c_Move>(self);
-    if (mov) {
-        world->ecs.removeComp<c_Move>(self);
+void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_mouse_t const& wm) {
+    
+    auto& pobj = state.world.ecs.getComp<c_Object>(self);
+    if (kb[GLFW_KEY_W].down || kb[GLFW_KEY_A].down || kb[GLFW_KEY_S].down || kb[GLFW_KEY_D].down) {
+        auto& move = state.world.ecs.addComp<c_Move>(self);
+        move.clip_rad = 0.2f;
+        if (kb[GLFW_KEY_W].down) move.v.y += (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+        if (kb[GLFW_KEY_A].down) move.v.x -= (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+        if (kb[GLFW_KEY_S].down) move.v.y -= (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+        if (kb[GLFW_KEY_D].down) move.v.x += (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
     }
-    mov = &world->ecs.addComp<c_Move>(self);
-    mov->clip_rad = 0.5f;
-    mov->v = {0.f, 0.2f};
+
+    pobj.rot = vectorToAngle(wm.pos - pobj.pos);
 }
 
 entID Player::spawn(World *const world, glm::vec2 pos) {

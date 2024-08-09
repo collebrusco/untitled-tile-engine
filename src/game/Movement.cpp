@@ -49,7 +49,7 @@ void c_Move::execute_moves(float dt, World* const world) {
         auto& obj = world->ecs.getComp<c_Object>(e);
         auto& mov = world->ecs.getComp<c_Move>(e);
         auto const pos = obj.pos;
-        auto vec = mov.v;
+        auto vec = mov.v * dt;
         /* no clip case */
         if (mov.clip_rad < 0.f) {
             obj.pos += vec;
@@ -95,7 +95,7 @@ void c_Move::execute_moves(float dt, World* const world) {
         }
 
         /* complete move */
-        obj.pos += vec * dt;
+        obj.pos += vec;
         world->ecs.removeComp<c_Move>(e);
     }
 }
