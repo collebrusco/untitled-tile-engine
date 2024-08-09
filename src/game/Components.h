@@ -5,8 +5,9 @@
 #ifndef COMPONENTS
 #define COMPONENTS
 #include <stdint.h>
-#include "constants.h"
 #include <flgl/glm.h>
+#include "constants.h"
+#include "util/misc.h"
 
 
 struct c_Object {
@@ -14,6 +15,7 @@ struct c_Object {
     float rot;
     glm::vec2 anc;
 };
+ASSERT_AGGREGATE(c_Object);
 
 struct c_StaticAtlas {
     struct {
@@ -28,5 +30,7 @@ struct c_StaticAtlas {
         return c;
     }
 };
+ASSERT_AGGREGATE(c_StaticAtlas);
+
 
 #endif /* COMPONENTS */

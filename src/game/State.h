@@ -12,7 +12,10 @@ struct State {
     State();
 
     World world;
-    local_cam_t lcam;
+    struct {
+        local_cam_t lcam;
+        entID e;
+    } cam;
 
     ActionPool actions;
 

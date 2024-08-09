@@ -1,6 +1,6 @@
 #include "config.h"
 #ifdef BENCHMARK
-#include "debug_buf.h"
+    #include "util/debug_buf.h"
 #endif
 #include "BufferRenderer.h"
 #include <flgl/logger.h>

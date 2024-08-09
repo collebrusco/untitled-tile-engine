@@ -13,9 +13,10 @@ struct PlayerActor final : public Actor {
     virtual void take_turn(entID self, State& state, Keyboard const& kb, world_mouse_t const& wm) override final;
 };
 
-class Player {
-public:
-    static entID spawn(World* const world, glm::vec2 pos);
+struct Player {
+    entID id;
+    static Player spawn(World* const world, glm::vec2 pos);
+    static void despawn(World* const world, Player player);
 };
 
 #endif /* PLAYER_H */

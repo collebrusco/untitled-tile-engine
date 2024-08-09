@@ -3,7 +3,24 @@
 #include <flgl/glm.h>
 #include <flgl/logger.h>
 #include "constants.h"
+#include "game/components.h"
+#include "game/Followers.h"
 LOG_MODULE(lcamc);
+
+void LCamControl::spawn(State &state) {
+    state.cam.e = state.world.ecs.newEntity();
+    state.world.ecs.addComp<c_Object>(state.cam.e).pos = state.cam.lcam.pos;
+}
+
+void LCamControl::follow(State &state, entID tar, float pct) {
+    if (!state.world.ecs.entityValid(state.cam.e)) LOG_ERR("cam cant follow without spawning as entity");
+    state.world.ecs.addComp<c_DiffFollower>(state.cam.e) = {.tar = tar, .pct = pct};
+}
+
+void LCamControl::nofollow(State &state) {
+    if (!state.world.ecs.entityValid(state.cam.e)) LOG_ERR("cam cant unfollow without spawning as entity");
+    state.world.ecs.removeComp<c_DiffFollower>(state.cam.e);
+}
 
 void LCamControl::set_speed(float sens) {
     this->speed = sens;
@@ -19,7 +36,12 @@ void LCamControl::scroll(local_cam_t& lcam, float dt) {
     lcam.frame.x = glm::clamp(lcam.frame.x, 2.f, REGION_SIZE_F * WORLD_DIAMETER - REGION_SIZE_F/2.f);
 }
 
-void LCamControl::update(local_cam_t& lcam, float dt) {
+void LCamControl::update(local_cam_t& lcam, entID e, World& world, float dt) {
+    if (world.ecs.entityValid(e)) {
+        c_Object* co = world.ecs.tryGetComp<c_Object>(e);
+        if (co) lcam.pos = co->pos;
+    }
+    world.relocate(lcam.pos);
     scroll(lcam, dt);
     local_cam_upf(lcam);
 }

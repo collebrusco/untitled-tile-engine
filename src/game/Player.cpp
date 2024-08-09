@@ -20,7 +20,7 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     pobj.rot = vectorToAngle(wm.pos - pobj.pos);
 }
 
-entID Player::spawn(World *const world, glm::vec2 pos) {
+Player Player::spawn(World *const world, glm::vec2 pos) {
     ECS& ecs = world->ecs;
     entID e = ecs.newEntity();
     auto& pobj = ecs.addComp<c_Object>(e);
@@ -31,5 +31,9 @@ entID Player::spawn(World *const world, glm::vec2 pos) {
     ecs.addComp<c_StaticAtlas>(e) = c_StaticAtlas::from_sheet({63.f + 3.f/16.f, 3.f/16.f}, vec2(10.f/16.f));
     c_Actor& ator = ecs.addComp<c_Actor>(e);
     ator.emplace<PlayerActor>();
-    return e;
+    return Player{e};
+}
+
+void Player::despawn(World *const world, Player player) {
+    world->ecs.removeEntity(player.id);
 }

@@ -1,8 +1,9 @@
 #include "config.h"
 #ifdef BENCHMARK
-#include "util/debug_buf.h"
+	#include "util/debug_buf.h"
 #endif
 #include "CoreDriver.h"
+#include "game/Followers.h"
 #include <flgl/logger.h>
 LOG_MODULE(main);
 
@@ -16,13 +17,19 @@ CoreDriver::CoreDriver() : GameDriver()
 							}
 
 void CoreDriver::user_create() {
-	/* RENDERING */
 	gl.init(); window.create("untitled", 980, 720);
-	state.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
+	state.cam.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
+	lcam_control.spawn(state);
+	entID pid = Player::spawn(&state.world, {0.f,0.f}).id;
+	lcam_control.follow(state, pid, 0.2f);
+	state.world.tile_at((tile_coords_t){0, 5}).surf.img = 3;
+	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.present = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.solid = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.blocks_light = 1;
+	
+	/* RENDERING */
 	(*(brenderer.input_ptr())) = {
 		.world = &state.world,
 		.wmpos = world_mpos(),
-		.lcam = this->state.lcam
+		.lcam = this->state.cam.lcam
 	};
 	brenderer.init();
 	prenderer.init();
@@ -31,31 +38,27 @@ void CoreDriver::user_create() {
 	text_renderer.init();
 	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls%s","");//\npress L to turn on lighting (bad) (wip) %s", "");
 	LOG_DBG("user driver created");
-	Player::spawn(&state.world, {0.f,0.f});
-	state.world.tile_at((tile_coords_t){0, 5}).surf.img = 3;
-	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.present = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.solid = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.blocks_light = 1;
 }
 
 vec2 CoreDriver::world_mpos() const {
 	vec2 res = vec2(window.mouse.pos / (vec2)window.frame);
 	res.y = 1.f - res.y;
-	res = res * state.lcam.frame; /* tile coords relative to origin */
-	res += state.lcam.pos - (state.lcam.frame/2.f);
+	res = res * state.cam.lcam.frame; /* tile coords relative to origin */
+	res += state.cam.lcam.pos - (state.cam.lcam.frame/2.f);
 	return res;
 }
 
 vec2 CoreDriver::world_mdelt() const {
 	vec2 del = vec2(window.mouse.delta / (vec2)window.frame);
 	del.y = 1.f - del.y;
-	del = del * state.lcam.frame; /* tile coords */
+	del = del * state.cam.lcam.frame; /* tile coords */
 	return del;
 }
 
 void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
-	(void)mouse;
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
 
-    lcam_control.update(state.lcam, dt);
+    lcam_control.update(state.cam.lcam, state.cam.e, state.world, dt);
 	
 	c_Actor::take_all_turns(state, kb, {.mouse = &mouse, .pos = world_mpos(), .delt = world_mdelt()});
 	for (auto* action : state.actions) {
@@ -65,6 +68,8 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 		}
 	}
 
+	c_DiffFollower::execute(state.world.ecs);
+
 	c_Move::execute_moves(dt, &state.world);
 }
 
@@ -73,7 +78,7 @@ void CoreDriver::user_render() {
 	(*(brenderer.input_ptr())) = {
 		.world = &state.world,
 		.wmpos = world_mpos(),
-		.lcam = this->state.lcam
+		.lcam = this->state.cam.lcam
 	};
 	/* buffer render to framebuffer */
 #ifdef BENCHMARK 

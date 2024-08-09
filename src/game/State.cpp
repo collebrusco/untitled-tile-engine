@@ -7,4 +7,5 @@ State::State() :
         )
     )
 {
+    cam.e = (~(entID{0})); /* disabled */
 }
