@@ -45,9 +45,9 @@ static bool tile_col_check(World* const world, vec2 c, float r) {
 }
 
 void c_Move::execute_moves(float dt, World* const world) {
-    for (entID e : world->ecs.view((a_Movable*)0)) {
-        auto& obj = world->ecs.getComp<c_Object>(e);
-        auto& mov = world->ecs.getComp<c_Move>(e);
+    for (entID e : world->view((a_Movable*)0)) {
+        auto& obj = world->getComp<c_Object>(e);
+        auto& mov = world->getComp<c_Move>(e);
         auto const pos = obj.pos;
         auto vec = mov.v * dt;
         /* no clip case */
@@ -96,7 +96,7 @@ void c_Move::execute_moves(float dt, World* const world) {
 
         /* complete move */
         obj.pos += vec;
-        world->ecs.removeComp<c_Move>(e);
+        world->removeComp<c_Move>(e);
     }
 }
 

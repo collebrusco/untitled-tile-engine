@@ -157,7 +157,7 @@ void BufferRenderer::render() {
     // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities 
-    erenderer.prepare(&input.world->ecs, &cam);
+    erenderer.prepare(input.world, &cam);
     erenderer.render(tile_tex);
 
     // render mouse hover tile outline

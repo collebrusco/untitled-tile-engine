@@ -9,7 +9,7 @@
 #include "ECS.h"
 #include "constants.h"
 
-struct World {
+struct World : public ECS {
     explicit World(std::unique_ptr<WorldSave> sv);
 
     bool bounds(region_coords_t pos) const;
@@ -30,8 +30,6 @@ struct World {
     region_coords_t get_center() const;
 
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
-
-    ECS ecs;
 
     static size_t rpos_to_idx(region_coords_t rpos); // renderer needs this
 private:

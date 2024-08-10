@@ -68,7 +68,7 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 		}
 	}
 
-	c_DiffFollower::execute(state.world.ecs);
+	c_DiffFollower::execute(state.world);
 
 	c_Move::execute_moves(dt, &state.world);
 }
