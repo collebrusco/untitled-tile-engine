@@ -12,7 +12,6 @@
 struct Action;
 typedef abstract_freelist_objpool<Action, ACTION_MAX_SIZE, ACTION_MAX_ACTIONS> ActionPool;
 
-
 struct Action {
     virtual ~Action() = default;
     virtual void perform() = 0;

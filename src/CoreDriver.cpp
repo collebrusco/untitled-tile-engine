@@ -17,13 +17,20 @@ CoreDriver::CoreDriver() : GameDriver()
 							}
 
 void CoreDriver::user_create() {
+	/* gfx & window open */
 	gl.init(); window.create("untitled", 980, 720);
+	/* cam */
 	state.cam.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
 	lcam_control.spawn(state);
+	/* spawn player & cam follow it */
 	entID pid = Player::spawn(&state.world, {0.f,0.f}).id;
 	lcam_control.follow(state, pid, 0.2f);
+
+	/* test tile */
 	state.world.tile_at((tile_coords_t){0, 5}).surf.img = 3;
-	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.present = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.solid = state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.blocks_light = 1;
+	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.present = 
+	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.solid = 
+	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.blocks_light = 1;
 	
 	/* RENDERING */
 	(*(brenderer.input_ptr())) = {
@@ -33,11 +40,10 @@ void CoreDriver::user_create() {
 	};
 	brenderer.init();
 	prenderer.init();
-	LOG_DBG("renderers init");
+	
 	text_renderer.init_text_rendering();
 	text_renderer.init();
 	text_renderer.set_text("move with wasd | scroll to zoom | click to place walls%s","");//\npress L to turn on lighting (bad) (wip) %s", "");
-	LOG_DBG("user driver created");
 }
 
 vec2 CoreDriver::world_mpos() const {
@@ -61,6 +67,7 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
     lcam_control.update(state.cam.lcam, state.cam.e, state.world, dt);
 	
 	c_Actor::take_all_turns(state, kb, {.mouse = &mouse, .pos = world_mpos(), .delt = world_mdelt()});
+
 	for (auto* action : state.actions) {
 		action->perform();
 		if (action->complete()) {
