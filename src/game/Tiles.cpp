@@ -5,7 +5,7 @@ sTiledef const sTiles::blank(
     (SurfaceTile) {
         .img = 0,
         .ent = ~(entID{0}),
-        .props.val = 0
+        .props = {.val = 0}
     }
 );
 
@@ -13,9 +13,14 @@ sTiledef const sTiles::wall(
     (SurfaceTile) {
         .img = 3,
         .ent = ~(entID{0}),
-        .props.f.present = 1,
-        .props.f.blocks_light = 1,
-        .props.f.solid = 1
+        .props = {
+            .f = {
+                .present = 1,
+                .solid = 1,
+                .blocks_light = 1,
+                .__res = 0
+            }
+        }
     }
 );
 
@@ -23,22 +28,22 @@ sTiledef const sTiles::wall(
 
 tTiledef const tTiles::sand(
     (TerrainTile) {
-        .img = 2,
-        .friction = 1.f
+        .friction = 1.f,
+        .img = 2
     }
 );
 
 tTiledef const tTiles::sand_pebble(
     (TerrainTile) {
-        .img = 0,
-        .friction = 0.8f
+        .friction = 0.8f,
+        .img = 0
     }
 );
 
 tTiledef const tTiles::sand_tumble(
     (TerrainTile) {
-        .img = 1,
-        .friction = 0.5f
+        .friction = 0.5f,
+        .img = 1
     }
 );
 

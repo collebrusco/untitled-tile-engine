@@ -10,7 +10,7 @@ void WorldGenerator::generate(int x, int y, Region* target, World* const world) 
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
             target->tile_at(i,j) = {
-                .terr = {.img = (tile_sprite_t)(i+j*REGION_SIZE)},
+                .terr = {.friction = 1.f, .img = (tile_sprite_t)(i+j*REGION_SIZE)},
                 .surf = {.img = 0, .ent = 0, .props = {.val = 0}}
             };
         }

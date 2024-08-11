@@ -83,7 +83,7 @@ struct abstract_freelist_objpool {
 
     class afop_it;
     afop_it begin() {return is_valid(0) ? afop_it(this) : this->end();}
-    afop_it end() {return afop_it(this, -1);}
+    afop_it end() {return afop_it(this, 0xFFFF);}
 
     class afop_it {
     friend struct abstract_freelist_objpool;
@@ -101,12 +101,12 @@ struct abstract_freelist_objpool {
                 i++;
                 if (i >= slots) {
                     printf("returnin (oob)\n");
-                    i = -1; return *this;
+                    i = 0xFFFF; return *this;
                 }
             } while (!afop.is_valid(i));
             return *this;
         }
-        inline Base* operator*() const {return ((i == -1) && afop.is_valid(i)) ? 0 : afop.at(i);}
+        inline Base* operator*() const {return ((i == 0xFFFF) && afop.is_valid(i)) ? 0 : afop.at(i);}
     };
 
 #ifndef UNITTEST
