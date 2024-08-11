@@ -9,7 +9,11 @@ add_subdirectory(lib/ecs)
 
 include_directories(${PROJECT_SOURCE_DIR}/lib/flgl/inc ${PROJECT_SOURCE_DIR}/lib/sw ${PROJECT_SOURCE_DIR}/lib/ecs/inc ${PROJECT_SOURCE_DIR}/src)
 
-file(GLOB_RECURSE PROJECT_SOURCES "src/*.cpp" "lib/sw/*.cpp")
+file(GLOB PROJECT_SOURCES "src/*.cpp" "src/game/*.cpp" "src/util/*.cpp" "src/rendering/*.cpp" "lib/sw/*.cpp")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-variable -Werror=unused-variable")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
 
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
 
@@ -30,3 +34,19 @@ add_custom_target(cleancm
     COMMAND ${CMAKE_COMMAND} -E remove -f CMakeCache.txt cmake_install.cmake 
     COMMENT "Cleaned cmake cache"
 )
+
+# Specify the source files for unit tests
+file(GLOB UNITTEST_SOURCES "src/tests/*.cpp")
+
+# Add a custom target for unit tests without the ALL keyword
+add_custom_target(unittest
+    COMMAND ${CMAKE_COMMAND} --build ${CMAKE_BINARY_DIR} --target ${PROJECT_NAME}_unittest
+    COMMAND cd ${CMAKE_CURRENT_LIST_DIR} && ./build/${PROJECT_NAME}_unittest
+)
+
+# Create the executable for unit tests only when the unittest target is built
+add_executable(${PROJECT_NAME}_unittest ${PROJECT_SOURCES} ${UNITTEST_SOURCES})
+target_compile_definitions(${PROJECT_NAME}_unittest PRIVATE UNITTEST)
+target_link_libraries(${PROJECT_NAME}_unittest FLGL ecs)
+
+set_target_properties(${PROJECT_NAME}_unittest PROPERTIES EXCLUDE_FROM_ALL TRUE EXCLUDE_FROM_DEFAULT_BUILD TRUE)

@@ -79,7 +79,7 @@ frame_manager_t::frame_region_view_t::frame_region_iter frame_manager_t::frame_r
 
 frame_manager_t::frame_region_view_t::frame_region_iter::
 frame_region_iter(region_coords_t const& p, region_coords_t *b) 
-: pos(p), br(b) {}
+: br(b), pos(p) {}
 
 bool frame_manager_t::frame_region_view_t::frame_region_iter::operator==(frame_region_iter const& other) const {
     return (!this->br && !other.br) || (this->pos == other.pos);

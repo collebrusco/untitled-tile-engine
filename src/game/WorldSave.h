@@ -18,7 +18,7 @@ struct WorldSave {
 
     std::unique_ptr<WorldGenerator> generator;
 
-    virtual void load(int x, int y, Region* target, World* world) = 0;
+    virtual void load(int x, int y, Region* target, World* const world) = 0;
     virtual void store(Region const& target, World const& world) = 0;
     virtual Region* read(int x, int y) = 0;
     // in the future, save to file
@@ -39,9 +39,9 @@ namespace std {
 
 #include <unordered_map>
 typedef std::unordered_map<glm::ivec2, Region> region_map_t;
-struct MapWSave : public WorldSave {
+struct MapWSave final : public WorldSave {
     MapWSave(std::unique_ptr<WorldGenerator> gen);
-    virtual void load(int x, int y, Region* target, World* world) override final;
+    virtual void load(int x, int y, Region* target, World* const world) override final;
     virtual void store(Region const& target, World const& world) override final;
     virtual Region* read(int x, int y) override final;
 private:

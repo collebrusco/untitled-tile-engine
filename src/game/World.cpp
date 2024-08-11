@@ -59,7 +59,7 @@ Tile& World::tile_at(glm::vec2 pos) {
 }
 
 Tile const& World::read_tile_at(tile_coords_t pos) const {
-    Region const& r = read_region_at(pos/REGION_SIZE);
+    Region const& r = read_region_at(pos_to_rpos(pos));
     pos = index_mod(pos, REGION_SIZE);
     return r.read_tile_at(pos.x, pos.y);
 }
@@ -69,14 +69,12 @@ Tile const& World::read_tile_at(glm::vec2 pos) const {
 }
 
 region_coords_t World::pos_to_rpos(vec2 pos) {
-    tile_coords_t p = (tile_coords_t)pos;
     vec2 frpos = ((vec2)pos) / (float)(REGION_SIZE);
     frpos = floor(frpos);
     return (region_coords_t)frpos;
 }
 
 tile_coords_t World::pos_to_tpos(vec2 pos) {
-    tile_coords_t p = (tile_coords_t)pos;
     vec2 frpos = ((vec2)pos);
     frpos = floor(frpos);
     return (tile_coords_t)(frpos);
@@ -84,6 +82,10 @@ tile_coords_t World::pos_to_tpos(vec2 pos) {
 
 region_coords_t World::tpos_to_rpos(tile_coords_t tpos) {
     return pos_to_rpos((vec2)(tpos));
+}
+
+glm::vec2 World::tpos_to_pos(tile_coords_t tpos) {
+    return (vec2)tpos + (vec2){0.5f, 0.5f};
 }
 
 tile_coords_t World::rpos_to_tpos(region_coords_t rpos) {
@@ -121,7 +123,6 @@ void World::shift(int dx, int dy) {
     center.y += dy;
     if (dy) {
         int startx  = center.x - (WORLD_DIAMETER/2);
-        int endx    = center.x + (WORLD_DIAMETER/2);
         for (int i = 0; i < WORLD_DIAMETER; i++) {
             int x = startx + i;
             int y = center.y + ((dy*(WORLD_DIAMETER/2)) - (dy>0));
@@ -133,6 +134,7 @@ void World::shift(int dx, int dy) {
 }
 
 void World::full_move(region_coords_t newpos) {
+    (void)newpos;
     // for (int i = 0; i < WORLD_DIAMETER; i++) {
     //     for (int j = 0; j < WORLD_DIAMETER; j++) {
     //         Region* tar = &regions[i + j*WORLD_DIAMETER];

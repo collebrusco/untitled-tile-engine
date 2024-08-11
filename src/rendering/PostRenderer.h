@@ -44,9 +44,6 @@ private:
     frame_vao_t frame_vao;
     Mesh<Vt_classic> testq;
 
-    glm::ivec2 pframe;
-
-    bool wf;
 };
 
 

@@ -9,7 +9,7 @@
 #include "ECS.h"
 #include "constants.h"
 
-struct World {
+struct World : public ECS {
     explicit World(std::unique_ptr<WorldSave> sv);
 
     bool bounds(region_coords_t pos) const;
@@ -22,6 +22,7 @@ struct World {
     static region_coords_t pos_to_rpos(glm::vec2 pos);
     static tile_coords_t pos_to_tpos(glm::vec2 pos);
     static region_coords_t tpos_to_rpos(tile_coords_t tpos);
+    static glm::vec2 tpos_to_pos(tile_coords_t tpos);
     static tile_coords_t rpos_to_tpos(region_coords_t rpos);
 
     void relocate(region_coords_t newpos);
@@ -29,8 +30,6 @@ struct World {
     region_coords_t get_center() const;
 
     Region regions[WORLD_DIAMETER*WORLD_DIAMETER];
-
-    ECS ecs;
 
     static size_t rpos_to_idx(region_coords_t rpos); // renderer needs this
 private:
