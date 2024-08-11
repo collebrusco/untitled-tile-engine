@@ -1,7 +1,7 @@
 #include "Movement.h"
 #include <flgl/logger.h>
 #include <stdlib.h>
-LOG_MODULE("mvmnt");
+LOG_MODULE(mvmnt);
 using namespace glm;
 
 static bool inline point_in_rad(vec2 pt, vec2 c, float r) {
@@ -34,6 +34,7 @@ static bool tile_col_check(World* const world, vec2 c, float r) {
     for (int x = mi.x; x <= ma.x; x++) {
         for (int y = mi.y; y <= ma.y; y++) {
             if (tile_on_edge({x,y}, c, r)) {
+                LOG_INF("checkin %p at %d,%d: solid: %d", &world->read_tile_at((ivec2{x,y})), x, y, world->read_tile_at((ivec2{x,y})).surf.props.val);
                 Tile const& t = world->read_tile_at((tile_coords_t){x,y});
                 if (t.surf.props.f.present && t.surf.props.f.solid) {
                     return true;

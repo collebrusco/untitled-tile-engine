@@ -59,7 +59,7 @@ Tile& World::tile_at(glm::vec2 pos) {
 }
 
 Tile const& World::read_tile_at(tile_coords_t pos) const {
-    Region const& r = read_region_at(pos/REGION_SIZE);
+    Region const& r = read_region_at(pos_to_rpos(pos));
     pos = index_mod(pos, REGION_SIZE);
     return r.read_tile_at(pos.x, pos.y);
 }
