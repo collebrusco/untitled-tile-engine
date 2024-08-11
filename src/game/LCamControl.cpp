@@ -3,7 +3,7 @@
 #include <flgl/glm.h>
 #include <flgl/logger.h>
 #include "constants.h"
-#include "game/components.h"
+#include "data/components.h"
 #include "game/Followers.h"
 LOG_MODULE(lcamc);
 

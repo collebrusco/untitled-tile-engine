@@ -8,7 +8,7 @@
 #include <type_traits>
 #include <flgl.h>
 #include <type_traits>
-#include "game/World.h"
+#include "data/World.h"
 #include "util/misc.h"
 
 /**

@@ -9,7 +9,7 @@
 #include <flgl/glm.h>
 #include "Stopwatch.h"
 #include "NWOcam.h"
-#include "render_pipeline_structs.h"
+#include "data/render_pipeline_structs.h"
 
 struct frame_vao_t {
     VertexArray vao;

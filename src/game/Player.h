@@ -5,7 +5,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 #include "ECS.h"
-#include "game/World.h"
+#include "data/World.h"
 #include "game/Actor.h"
 
 struct PlayerActor final : public Actor {

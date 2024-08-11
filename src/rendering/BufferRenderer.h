@@ -10,11 +10,11 @@
 #include "RegionRenderer.h"
 #include "ShadowRenderer.h"
 #include "EntityRenderer.h"
-#include "game/World.h"
+#include "data/World.h"
 #include <Stopwatch.h>
 #include "frame_manager.h"
 #include "NWOcam.h"
-#include "render_pipeline_structs.h"
+#include "data/render_pipeline_structs.h"
 
 struct BufferRenderer {
 

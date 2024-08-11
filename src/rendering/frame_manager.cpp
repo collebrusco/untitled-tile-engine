@@ -1,5 +1,5 @@
 #include "frame_manager.h"
-#include "game/World.h"
+#include "data/World.h"
 #include <flgl/logger.h>
 #include "constants.h"
 LOG_MODULE(fmngr);

@@ -6,7 +6,7 @@
 #define EVENT_H
 #include <flgl.h>
 #include <flgl/glm.h>
-#include "game/State.h"
+#include "data/State.h"
 
 #define MAX_EVENT_SUBS (32)
 

@@ -7,9 +7,9 @@
 #include "ECS.h"
 #include "util/abstract_freelist_objpool.h"
 #include "util/c_abstract.h"
-#include "World.h"
-#include "State.h"
-#include "game/world_mouse.h"
+#include "data/World.h"
+#include "data/State.h"
+#include "data/world_mouse.h"
 
 #define ACTOR_MAX_SIZE      64
 

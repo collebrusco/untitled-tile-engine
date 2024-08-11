@@ -1,6 +1,6 @@
 #include "Player.h"
 #include <flgl/logger.h>
-#include "game/components.h"
+#include "data/components.h"
 #include "game/Movement.h"
 #include "game/Tiledefs.h"
 #include "game/Tiles.h"

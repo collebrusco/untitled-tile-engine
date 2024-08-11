@@ -1,5 +1,5 @@
 #include "EntityRenderer.h"
-#include "game/components.h"
+#include "data/components.h"
 #include <flgl/glm.h>
 #include <flgl/logger.h>
 LOG_MODULE(erend);

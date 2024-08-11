@@ -5,7 +5,7 @@
 #ifndef FRAME_MANAGER
 #define FRAME_MANAGER
 #include <flgl/glm.h>
-#include "game/Region.h"
+#include "data/Region.h"
 
 struct frame_manager_t {
     int w, h;

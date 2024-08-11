@@ -1,6 +1,6 @@
 #ifndef WORLD_GENERATOR_H
 #define WORLD_GENERATOR_H
-#include "Region.h"
+#include "data/Region.h"
 
 struct World;
 

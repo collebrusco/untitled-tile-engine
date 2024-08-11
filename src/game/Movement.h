@@ -5,8 +5,8 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 #include "ECS.h"
-#include "game/components.h"
-#include "game/World.h"
+#include "data/components.h"
+#include "data/World.h"
 
 #define CMOVE_FRICTION_FULL 0x7F
 

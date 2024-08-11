@@ -4,8 +4,8 @@
  */
 #ifndef LCAM_CONTROL_H
 #define LCAM_CONTROL_H
-#include "render_pipeline_structs.h"
-#include "State.h"
+#include "data/render_pipeline_structs.h"
+#include "data/State.h"
 
 class LCamControl {
     float speed{1.f};

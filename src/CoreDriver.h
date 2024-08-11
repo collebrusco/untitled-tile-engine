@@ -20,18 +20,18 @@
 #include <flgl/tools.h>
 #include <flgl/glm.h>
 #include "Driver.h"
-#include "game/World.h"
+#include "data/World.h"
 #include "rendering/RegionRenderer.h"
-#include "render_pipeline_structs.h"
+#include "data/render_pipeline_structs.h"
 #include "rendering/BufferRenderer.h"
 #include "rendering/PostRenderer.h"
-#include "game/State.h"
-#include "game/components.h"
+#include "data/State.h"
+#include "data/components.h"
 #include "game/LCamControl.h"
 #include "game/Actor.h"
 #include "game/Movement.h"
 #include "game/Player.h"
-#include "game/world_mouse.h"
+#include "data/world_mouse.h"
 
 class CoreDriver final : public GameDriver {
 public:

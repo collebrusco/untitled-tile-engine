@@ -5,7 +5,7 @@
 #ifndef TILES_H
 #define TILES_H
 #include "game/Tiledefs.h"
-#include "World.h"
+#include "data/World.h"
 
 struct sTiles {
 
