@@ -13,9 +13,13 @@ sTiledef const sTiles::wall(
     (SurfaceTile) {
         .img = 3,
         .ent = ~(entID{0}),
-        .props.f.present = 1,
-        .props.f.blocks_light = 1,
-        .props.f.solid = 1
+        .props = {
+            .f = {
+                .present = 1,
+                .blocks_light = 1,
+                .solid = 1
+            }
+        }
     }
 );
 
