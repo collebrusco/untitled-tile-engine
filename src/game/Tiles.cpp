@@ -28,22 +28,22 @@ sTiledef const sTiles::wall(
 
 tTiledef const tTiles::sand(
     (TerrainTile) {
-        .friction = 1.f
-        .img = 2,
+        .friction = 1.f,
+        .img = 2
     }
 );
 
 tTiledef const tTiles::sand_pebble(
     (TerrainTile) {
-        .friction = 0.8f
-        .img = 0,
+        .friction = 0.8f,
+        .img = 0
     }
 );
 
 tTiledef const tTiles::sand_tumble(
     (TerrainTile) {
-        .friction = 0.5f
-        .img = 1,
+        .friction = 0.5f,
+        .img = 1
     }
 );
 
