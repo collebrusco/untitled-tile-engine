@@ -13,6 +13,7 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     if (kb[GLFW_KEY_W].down || kb[GLFW_KEY_A].down || kb[GLFW_KEY_S].down || kb[GLFW_KEY_D].down) {
         auto& move = state.world.addComp<c_Move>(self);
         move.clip_rad = 0.2f;
+        move.props.friction = CMOVE_FRICTION_FULL;
         if (kb[GLFW_KEY_W].down) move.v.y += (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
         if (kb[GLFW_KEY_A].down) move.v.x -= (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
         if (kb[GLFW_KEY_S].down) move.v.y -= (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
