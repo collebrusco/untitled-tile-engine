@@ -5,7 +5,7 @@ sTiledef const sTiles::blank(
     (SurfaceTile) {
         .img = 0,
         .ent = ~(entID{0}),
-        .props.val = 0
+        .props = {.val = 0}
     }
 );
 

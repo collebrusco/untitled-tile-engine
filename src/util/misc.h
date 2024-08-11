@@ -5,7 +5,7 @@
 #ifndef MISC_HEADER_H
 #define MISC_HEADER_H
 
-#define IS_POW2(num) ( !(num & (num-1)) )
+#define IS_POW2(num) ( !((num) & ((num)-1)) )
 
 #define NO_COPY(class_type) \
     class_type(class_type const& other) = delete; \
