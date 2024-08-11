@@ -8,7 +8,6 @@
 #include "constants.h"
 #include <flgl/glm.h>
 
-
 struct c_Object {
     glm::vec2 pos, scale;
     float rot;
