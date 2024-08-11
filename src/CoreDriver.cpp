@@ -25,12 +25,6 @@ void CoreDriver::user_create() {
 	/* spawn player & cam follow it */
 	entID pid = Player::spawn(&state.world, {0.f,0.f}).id;
 	lcam_control.follow(state, pid, 0.2f);
-
-	/* test tile */
-	state.world.tile_at((tile_coords_t){0, 5}).surf.img = 3;
-	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.present = 
-	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.solid = 
-	state.world.tile_at((tile_coords_t){0, 5}).surf.props.f.blocks_light = 1;
 	
 	/* RENDERING */
 	(*(brenderer.input_ptr())) = {

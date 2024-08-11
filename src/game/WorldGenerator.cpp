@@ -1,4 +1,7 @@
 #include "WorldGenerator.h"
+#include "game/Tiles.h"
+#include <flgl/logger.h>
+LOG_MODULE(wgen);
 
 WorldGenerator::WorldGenerator(world_seed_t sd) : seed(sd) {}
 
@@ -26,22 +29,21 @@ void TestWorldGenerator::generate(int x, int y, Region* target, World* const wor
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
             int r = dis(gen) & 0x3F;
-            tile_sprite_t sp = 0;
+            Tile* t = &(target->tile_at(i,j));
             switch (r) {
             case 0:
-                sp = 0; break;
+                tTiles::sand_pebble.place(*world, t, {i,j});
+                break;
             case 1:
             case 2:
             case 3:
-                sp = 1; break;
+                tTiles::sand_tumble.place(*world, t, {i,j});
+                break;
             default:
-                sp = 2; break;
+                tTiles::sand.place(*world, t, {i,j});
+                break;
             }
-
-            target->tile_at(i,j) = {
-                .terr = {.img = sp},
-                .surf = {.img = 0, .ent = 0, .props = {.val = 0}}
-            };
+            sTiles::blank.place(*world, t, {i,j});
         }
     }
 }

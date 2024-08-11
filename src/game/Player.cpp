@@ -2,6 +2,8 @@
 #include <flgl/logger.h>
 #include "game/components.h"
 #include "game/Movement.h"
+#include "game/Tiledefs.h"
+#include "game/Tiles.h"
 LOG_MODULE(plyr);
 using namespace glm;
 
@@ -18,6 +20,11 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     }
 
     pobj.rot = vectorToAngle(wm.pos - pobj.pos);
+
+    if (wm.mouse->left.down) {
+        sTiles::destroy_clear(state.world, wm.pos);
+        sTiles::wall.place(state.world, 0, World::pos_to_tpos(wm.pos));
+    }
 }
 
 Player Player::spawn(World *const world, glm::vec2 pos) {
