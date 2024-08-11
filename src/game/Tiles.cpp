@@ -18,7 +18,8 @@ sTiledef const sTiles::wall(
                 .present = 1,
                 .blocks_light = 1,
                 .solid = 1
-            }
+            },
+            .val = 0
         }
     }
 );
