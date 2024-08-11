@@ -16,8 +16,8 @@ sTiledef const sTiles::wall(
         .props = {
             .f = {
                 .present = 1,
-                .blocks_light = 1,
                 .solid = 1,
+                .blocks_light = 1,
                 .__res = 0
             }
         }
