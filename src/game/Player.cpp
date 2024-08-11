@@ -24,7 +24,6 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     if (wm.mouse->left.down) {
         sTiles::destroy_clear(state.world, wm.pos);
         sTiles::wall.place(state.world, &state.world.tile_at(wm.pos), {0,0});
-        LOG_INF("placed %p, readback props %d", &state.world.tile_at(wm.pos), state.world.tile_at(wm.pos).surf.props.val);
     }
 }
 
