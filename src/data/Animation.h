@@ -8,6 +8,7 @@
 #include <flgl/glm.h>
 #include "util/misc.h"
 #include "data/components.h"
+#include "game/Sprite.h"
 #include "ECS.h"
 
 /**
@@ -21,9 +22,6 @@ struct anim_frame_t {
 };
 ASSERT_AGGREGATE(anim_frame_t);
 
-/** Animation container fwd decl */
-struct Animations;
-
 /**
  * Animation Type Objects
  * these are used to create and declare animations of N frames
@@ -33,11 +31,24 @@ template <uint8_t N>
 struct Animation {
     const glm::vec2 frame_size;
     const anim_frame_t frames[N];
-    // NO_COPY_OR_MOVE(Animation);
+};
 
-private:
-    // friend struct Animations;
-    // constexpr Animation(glm::vec2 const frame_size, frames[N]
+/** 
+ * Animation container
+ * This is the design interface, where anims are written
+ */
+struct Animations {
+    static constexpr Animation<6> character = {
+        .frame_size = Sprites::char_0.size,
+        .frames = {
+            {Sprites::char_0.at, 1.f/12.f},
+            {Sprites::char_1.at, 1.f/12.f},
+            {Sprites::char_2.at, 1.f/12.f},
+            {Sprites::char_3.at, 1.f/12.f},
+            {Sprites::char_4.at, 1.f/12.f},
+            {Sprites::char_5.at, 1.f/12.f}
+        }
+    };
 };
 
 /**
@@ -61,7 +72,6 @@ struct c_AnimationState {
         frame_size(anim->frame_size),
         frames((const anim_frame_t* const)(anim->frames))
     {
-        printf("CAS CONST const: %p, this frame %p, this %p\n", anim->frames, frames, this);
     }
 
     NO_COPY_OR_MOVE(c_AnimationState);
@@ -72,10 +82,6 @@ struct c_AnimationState {
 
     static void execute(float dt, ECS& ecs);
 
-};
-
-struct Animations {
-    const static Animation<6> character;
 };
 
 

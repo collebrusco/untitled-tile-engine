@@ -7,20 +7,22 @@
 #include "data/components.h"
 
 struct Sprite {
-    c_StaticAtlas at;
-    glm::vec2 size;
+    const c_StaticAtlas at;
+    const glm::vec2 size;
 };
 
-struct Sprites {
-    const static Sprite temp_player;
 
-    const static Sprite char_0;
-    const static Sprite char_1;
-    const static Sprite char_2;
-    const static Sprite char_3;
-    const static Sprite char_4;
-    const static Sprite char_5;
-    const static Sprite char_6;
+#define SPRITE_DECL(blx, bly, sx, sy) ((Sprite) {.at = c_StaticAtlas::from_sheet({(blx), (bly)}, {(sx), (sy)}), .size = {sx, sy} })
+
+struct Sprites {
+    static constexpr Sprite temp_player =   SPRITE_DECL(63.f + 3.f/16.f, 3.f/16.f, 10.f/16.f, 10.f/16.f);
+    static constexpr Sprite char_0 =        SPRITE_DECL((0.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
+    static constexpr Sprite char_1 =        SPRITE_DECL((1.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
+    static constexpr Sprite char_2 =        SPRITE_DECL((2.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
+    static constexpr Sprite char_3 =        SPRITE_DECL((3.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
+    static constexpr Sprite char_4 =        SPRITE_DECL((4.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
+    static constexpr Sprite char_5 =        SPRITE_DECL((5.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
+    static constexpr Sprite char_6 =        SPRITE_DECL((6.f * (24.f / 16.f)), (0.f), (1.5f), (2.f));
 };
 
 #endif /* SPRITE_H */
