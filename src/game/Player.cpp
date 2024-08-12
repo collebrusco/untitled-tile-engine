@@ -4,6 +4,7 @@
 #include "game/Movement.h"
 #include "game/Tiledefs.h"
 #include "game/Tiles.h"
+#include "game/Entity.h"
 LOG_MODULE(plyr);
 using namespace glm;
 
@@ -33,9 +34,10 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
     auto& pobj = world->addComp<c_Object>(e);
     pobj.pos = pos;
     pobj.rot = 0.f;
-    pobj.scale = vec2(1.f);
+    // pobj.scale = vec2(1.f);
     pobj.anc = vec2(0.f);
-    world->addComp<c_StaticAtlas>(e) = c_StaticAtlas::from_sheet({63.f + 3.f/16.f, 3.f/16.f}, vec2(10.f/16.f));
+    // world->addComp<c_StaticAtlas>(e) = c_StaticAtlas::from_sheet({63.f + 3.f/16.f, 3.f/16.f}, vec2(10.f/16.f));
+    Entity::config_for_sprite(e, *world, Sprites::temp_player);
     c_Actor& ator = world->addComp<c_Actor>(e);
     ator.emplace<PlayerActor>();
     return Player{e};

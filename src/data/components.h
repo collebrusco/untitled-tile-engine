@@ -19,13 +19,21 @@ struct c_StaticAtlas {
         glm::vec2 bl, tr;
     } uvs;
     
-    static inline c_StaticAtlas from_sheet(glm::vec2 sheetblpos, glm::vec2 size) {
+    /** 
+     * @param sheetblpos bot-left corner of sprite  (tile unit coords)
+     * @param size       size of sprite             (tile unit coords)
+     */
+    static inline constexpr c_StaticAtlas from_sheet(glm::vec2 sheetblpos, glm::vec2 size) {
         sheetblpos.y = TILE_SPRITESHEET_DIM_F - sheetblpos.y; size.y *= -1.f;
-        c_StaticAtlas c;
-        c.uvs.bl = sheetblpos / TILE_SPRITESHEET_DIM_F;
-        c.uvs.tr = (sheetblpos + size) / TILE_SPRITESHEET_DIM_F;
-        return c;
+        return (c_StaticAtlas) {
+            .uvs = {
+                .bl = sheetblpos / TILE_SPRITESHEET_DIM_F,
+                .tr = (sheetblpos + size) / TILE_SPRITESHEET_DIM_F
+            }
+        };
     }
+
 };
+
 
 #endif /* COMPONENTS */

@@ -20,40 +20,65 @@ struct anim_frame_t {
 };
 ASSERT_AGGREGATE(anim_frame_t);
 
+/**
+ * Animation Type Objects
+ * these are used to create and declare animations of N frames
+ * this is the design interface
+ */
 template <uint8_t N>
 struct Animation {
-    glm::vec2 frame_size;
-    anim_frame_t frames[N];
+    const glm::vec2 frame_size;
+    const anim_frame_t frames[N];
 };
 
-struct AnimationState {
+/**
+ * Animation State Component
+ * carries out frame switching through a given animation
+ * system must execute before render (redundant)
+ * plays in a loop. need done cb?
+ */
+struct c_AnimationState {
     float tmr{0};
     uint8_t idx{0};
+    const uint8_t N;
     const glm::vec2 frame_size;
     const anim_frame_t *const frames;
-    const uint8_t N;
     template <uint8_t n>
-    inline AnimationState(Animation<n> const& anim) :
+    inline c_AnimationState(Animation<n> const& anim) :
+        N(n),
         frame_size(anim.frame_size),
-        frames(anim.frames),
-        N(n)
+        frames(anim.frames)
         {}
 
-    void inline step(float dt) {
+    bool inline step(float dt) {
         tmr += dt;
         if (tmr > frames[idx].t) {
             tmr = 0.f; 
             idx = (idx+1)%N;
+            return true;
         }
+        return false;
     }
 
     uint8_t inline get_frame(c_StaticAtlas* dest = 0) {
         if (dest) {
-            dest->uvs.bl = frames[idx].blpos;
-            dest->uvs.tr = frames[idx].blpos + frame_size;
+            (*(dest)) = c_StaticAtlas::from_sheet(frames[idx].blpos, frames[idx].blpos + frame_size);
         }
         return idx;
     }
+
+    static inline void execute(float dt, ECS& ecs) {
+        for (auto e : ecs.view<c_AnimationState>()) {
+            auto& as = ecs.getComp<c_AnimationState>(e);
+            if (as.step(dt))
+                as.get_frame(&(ecs.getComp<c_StaticAtlas>(e)));
+        }
+    }
+
+};
+
+struct Animations {
+
 };
 
 
