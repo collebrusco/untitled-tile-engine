@@ -13,6 +13,14 @@ struct Sprite {
 
 struct Sprites {
     const static Sprite temp_player;
+
+    const static Sprite char_0;
+    const static Sprite char_1;
+    const static Sprite char_2;
+    const static Sprite char_3;
+    const static Sprite char_4;
+    const static Sprite char_5;
+    const static Sprite char_6;
 };
 
 #endif /* SPRITE_H */
