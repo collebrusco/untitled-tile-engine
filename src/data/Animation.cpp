@@ -12,7 +12,7 @@ bool c_AnimationState::step(float dt) {
     return false;
 }
 
-uint8_t c_AnimationState::get_frame(c_StaticAtlas* dest) {
+uint8_t c_AnimationState::get_frame(c_EntRenderEntry* dest) {
     if (dest) {
         (*(dest)) = frames[idx].cstat;
     }
@@ -23,6 +23,6 @@ void c_AnimationState::execute(float dt, ECS& ecs) {
     for (auto e : ecs.view<c_AnimationState>()) {
         auto& as = ecs.getComp<c_AnimationState>(e);
         if (as.step(dt))
-            as.get_frame(&(ecs.getComp<c_StaticAtlas>(e)));
+            as.get_frame(&(ecs.getComp<c_EntRenderEntry>(e)));
     }
 }

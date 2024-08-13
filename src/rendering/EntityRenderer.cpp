@@ -46,16 +46,48 @@ void EntityRenderer::render(Texture tile_tex) {
     mat4 model;
     Vt_2Dclassic verts[4];
     tile_tex.bind();
-    for (auto e : ecs->view<c_Object, c_StaticAtlas>()) {
+    for (auto e : ecs->view<c_Object, c_EntRenderEntry>()) {
         auto& obj = ecs->getComp<c_Object>(e);
-        auto& atl = ecs->getComp<c_StaticAtlas>(e);
+        auto& atl = ecs->getComp<c_EntRenderEntry>(e);
+        auto  pos = obj.pos;
+        float rot = obj.rot;
 
-        model = genModelMat2d(obj.pos, obj.rot, obj.scale, obj.anc);
+        if (atl.props.pix_snap) {
+            pos = (floor(pos * TILE_PIXELS_F)) / TILE_PIXELS_F;
+        }
+        int8_t hmirr = 1, vmirr = 1;
+        switch (atl.props.rot) {
+        case ROTATE_NONE:
+            rot = 0;
+            break;
+        case ROTATE_HAXIS_MIRROR:
+            if (rot > 90.f && rot < 270.f) hmirr = -1;
+            rot = 0;
+            break;
+        case ROTATE_VAXIS_MIRROR:
+            if (rot > 180.f) vmirr = -1;
+            rot = 0;
+            break;
+        case ROTATE_2_PT:
+            rot = floor(rot/180.f) * 180.f;
+            break;
+        case ROTATE_4_PT:
+            rot = floor((rot+45.f)/90.f) * 90.f;
+            break;
+        case ROTATE_6_PT:
+            rot = floor((rot+30.f)/60.f) * 60.f;
+            break;
+        case ROTATE_FULL:
+        default:
+            break;
+        }
 
-        verts[0] = {{-0.5,-0.5}, {atl.uvs.bl.x, atl.uvs.bl.y}};
-        verts[1] = {{-0.5, 0.5}, {atl.uvs.bl.x, atl.uvs.tr.y}};
-        verts[2] = {{ 0.5, 0.5}, {atl.uvs.tr.x, atl.uvs.tr.y}};
-        verts[3] = {{ 0.5,-0.5}, {atl.uvs.tr.x, atl.uvs.bl.y}};
+        model = genModelMat2d(pos, rot, obj.scale, obj.anc);
+
+        verts[0] = {{(float)vmirr * -0.5, (float)hmirr * -0.5}, {atl.uvs.bl.x, atl.uvs.bl.y}};
+        verts[1] = {{(float)vmirr * -0.5, (float)hmirr *  0.5}, {atl.uvs.bl.x, atl.uvs.tr.y}};
+        verts[2] = {{(float)vmirr *  0.5, (float)hmirr *  0.5}, {atl.uvs.tr.x, atl.uvs.tr.y}};
+        verts[3] = {{(float)vmirr *  0.5, (float)hmirr * -0.5}, {atl.uvs.tr.x, atl.uvs.bl.y}};
 
         vbo.bind();
         vbo.buffer_data(4, verts);

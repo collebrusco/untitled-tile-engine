@@ -10,19 +10,28 @@ LOG_MODULE(plyr);
 using namespace glm;
 
 void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_mouse_t const& wm) {
-    
+    auto& A = kb[GLFW_KEY_A]; auto& W = kb[GLFW_KEY_W]; auto& S = kb[GLFW_KEY_S]; auto& D = kb[GLFW_KEY_D]; 
+    auto& shift = kb[GLFW_KEY_LEFT_SHIFT];
     auto& pobj = state.world.getComp<c_Object>(self);
-    if (kb[GLFW_KEY_W].down || kb[GLFW_KEY_A].down || kb[GLFW_KEY_S].down || kb[GLFW_KEY_D].down) {
+    bool movekey = A.down || S.down || D.down || W.down;
+    if (movekey) {
         auto& move = state.world.addComp<c_Move>(self);
         move.clip_rad = 0.2f;
         move.props.friction = CMOVE_FRICTION_FULL;
-        if (kb[GLFW_KEY_W].down) move.v.y += (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-        if (kb[GLFW_KEY_A].down) move.v.x -= (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-        if (kb[GLFW_KEY_S].down) move.v.y -= (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
-        if (kb[GLFW_KEY_D].down) move.v.x += (4.f + ((kb[GLFW_KEY_LEFT_SHIFT].down) * 32.f));
+        float speed = !shift.down ? 2.f : 3.2f;
+        if (shift.down) {
+            Entity::set_anim_if_not(self, state.world, &Animations::character_run);
+            pobj.rot = A.down ? 90.f : 270.f;
+        } else {Entity::set_anim_if_not(self, state.world, &Animations::character_walk);}
+        if (W.down) move.v.y += speed;
+        if (A.down) move.v.x -= speed;
+        if (S.down) move.v.y -= speed;
+        if (D.down) move.v.x += speed;
+    } else if (W.released || A.released || S.released || D.released) {
+        Entity::set_anim_if_not(self, state.world, &Animations::character_stand);
     }
 
-    pobj.rot = vectorToAngle(wm.pos - pobj.pos);
+    if (!(movekey && shift.down)) pobj.rot = vectorToAngle(wm.pos - pobj.pos);
 
     if (wm.mouse->left.down) {
         sTiles::destroy_clear(state.world, wm.pos);
@@ -37,12 +46,12 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
     pobj.rot = 0.f;
     // pobj.scale = vec2(1.f);
     pobj.anc = vec2(0.f);
-    // world->addComp<c_StaticAtlas>(e) = c_StaticAtlas::from_sheet({63.f + 3.f/16.f, 3.f/16.f}, vec2(10.f/16.f));
+    // world->addComp<c_EntRenderEntry>(e) = c_EntRenderEntry::from_sheet({63.f + 3.f/16.f, 3.f/16.f}, vec2(10.f/16.f));
     Entity::config_for_sprite(e, *world, Sprites::char_0);
     c_Actor& ator = world->addComp<c_Actor>(e);
     ator.emplace<PlayerActor>();
 
-    world->addComp<c_AnimationState>(e, &Animations::character);
+    Entity::set_anim_if_not(e, *world, &Animations::character_stand);
 
     return Player{e};
 }
