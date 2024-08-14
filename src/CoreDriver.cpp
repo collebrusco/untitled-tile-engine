@@ -4,6 +4,7 @@
 #endif
 #include "CoreDriver.h"
 #include "game/Followers.h"
+#include "data/Animation.h"
 #include <flgl/logger.h>
 LOG_MODULE(main);
 
@@ -72,6 +73,8 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	c_DiffFollower::execute(state.world);
 
 	c_Move::execute_moves(dt, &state.world);
+
+	c_AnimationState::execute(dt, state.world);
 }
 
 void CoreDriver::user_render() {
