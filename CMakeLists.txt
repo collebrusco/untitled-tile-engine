@@ -9,9 +9,11 @@ add_subdirectory(lib/ecs)
 
 include_directories(${PROJECT_SOURCE_DIR}/lib/flgl/inc ${PROJECT_SOURCE_DIR}/lib/sw ${PROJECT_SOURCE_DIR}/lib/ecs/inc ${PROJECT_SOURCE_DIR}/src)
 
-file(GLOB PROJECT_SOURCES "src/*.cpp" "src/game/*.cpp" "src/util/*.cpp" "src/rendering/*.cpp" "lib/sw/*.cpp")
+file(GLOB PROJECT_SOURCES "src/*.cpp" "src/game/*.cpp" "src/util/*.cpp" "src/data/*.cpp" "src/rendering/*.cpp" "lib/sw/*.cpp")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wparentheses -Wtype-limits")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wmissing-field-initializers")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wunused-variable -Werror=unused-variable")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror=return-type")
 

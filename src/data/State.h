@@ -4,9 +4,9 @@
  */
 #ifndef STATE_H
 #define STATE_H
-#include "game/World.h"
+#include "data/World.h"
 #include "game/Action.h"
-#include "render_pipeline_structs.h"
+#include "data/render_pipeline_structs.h"
 
 struct State {
     State();

@@ -3,8 +3,9 @@
 #include <flgl/glm.h>
 #include <flgl/logger.h>
 #include "constants.h"
-#include "game/components.h"
+#include "data/components.h"
 #include "game/Followers.h"
+using namespace glm;
 LOG_MODULE(lcamc);
 
 void LCamControl::spawn(State &state) {

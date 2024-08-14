@@ -44,6 +44,11 @@ static bool tile_col_check(World* const world, vec2 c, float r) {
     return false;
 }
 
+static void inline move_with_friction(vec2& pos, vec2 vec, uint8_t fm, World* const world) {
+    float mult = ((float)(fm)/(static_cast<float>(CMOVE_FRICTION_FULL))) * (world->read_tile_at(pos).terr.friction);
+    pos += (mult * vec);
+}
+
 void c_Move::execute_moves(float dt, World* const world) {
     for (entID e : world->view((a_Movable*)0)) {
         auto& obj = world->getComp<c_Object>(e);
@@ -51,8 +56,12 @@ void c_Move::execute_moves(float dt, World* const world) {
         auto const pos = obj.pos;
         auto vec = mov.v * dt;
         /* no clip case */
-        if (mov.clip_rad < 0.f) {
-            obj.pos += vec;
+        if (mov.props.clip) {
+            if (mov.props.friction) {
+                move_with_friction(obj.pos, vec, mov.props.friction, world);
+            } else {
+                obj.pos += vec;
+            }
             return;
         }
         /* step */
@@ -95,7 +104,11 @@ void c_Move::execute_moves(float dt, World* const world) {
         }
 
         /* complete move */
-        obj.pos += vec;
+        if (mov.props.friction) {
+            move_with_friction(obj.pos, vec, mov.props.friction, world);
+        } else {
+            obj.pos += vec;
+        }
         world->removeComp<c_Move>(e);
     }
 }

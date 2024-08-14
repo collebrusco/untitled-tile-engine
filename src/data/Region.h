@@ -9,7 +9,7 @@ typedef glm::ivec2 region_coords_t;
 typedef glm::ivec2 tile_coords_t;
 
 struct TerrainTile {
-	uint16_t id;
+	// uint16_t id;
 	float friction;
 	tile_sprite_t img;
 };

@@ -5,16 +5,22 @@
 #ifndef MOVEMENT_H
 #define MOVEMENT_H
 #include "ECS.h"
-#include "game/components.h"
-#include "game/World.h"
+#include "data/components.h"
+#include "data/World.h"
+
+#define CMOVE_FRICTION_FULL 0x7F
 
 /**
  * c_Move represents a move w velocity v in tiles/sec
- * clip_rad is bounding radius, set negative for no tile collisions
+ * clip_rad is bounding radius
  */
 struct __attribute__((packed)) c_Move {
     glm::vec2 v;
-    float clip_rad; /* if < 0, no clip */
+    float clip_rad;
+    struct {
+        bool clip           : 1;
+        uint8_t friction    : 7;
+    } props;
     static void execute_moves(float dt, World* const world);
 };
 

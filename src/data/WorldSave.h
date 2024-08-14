@@ -1,8 +1,8 @@
 #ifndef WORLD_SAVE_H
 #define WORLD_SAVE_H
 #include <memory>
-#include "Region.h"
-#include "WorldGenerator.h"
+#include "data/Region.h"
+#include "game/WorldGenerator.h"
 
 // The world save is responsible for storing world state that goes out of range
 // of the fast circ buffer in the World struct. that buffer pulls from and

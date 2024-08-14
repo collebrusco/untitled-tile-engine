@@ -1,7 +1,7 @@
 #ifndef SHADOW_RENDERER_H
 #define SHADOW_RENDERER_H
-#include "render_pipeline_structs.h"
-#include "../game/World.h"
+#include "data/render_pipeline_structs.h"
+#include "data/World.h"
 #include <flgl.h>
 #include <flgl/glm.h>
 

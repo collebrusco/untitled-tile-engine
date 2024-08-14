@@ -5,8 +5,8 @@
 #ifndef TILE_DEFS_H
 #define TILE_DEFS_H
 
-#include "game/World.h"
-#include "game/State.h"
+#include "data/World.h"
+#include "data/State.h"
 
 struct sTiledef {
     const SurfaceTile st;

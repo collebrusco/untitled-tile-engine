@@ -1,5 +1,5 @@
 #include "Followers.h"
-#include "components.h"
+#include "data/components.h"
 
 void c_DiffFollower::execute(ECS& ecs) {
     for (auto e : ecs.view<c_DiffFollower, c_Object>()) {

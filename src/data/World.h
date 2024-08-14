@@ -3,9 +3,9 @@
 #include <memory>
 #include <flgl/glm.h>
 #include <flgl/tools.h>
-#include "WorldGenerator.h"
-#include "WorldSave.h"
-#include "Region.h"
+#include "game/WorldGenerator.h"
+#include "data/WorldSave.h"
+#include "data/Region.h"
 #include "ECS.h"
 #include "constants.h"
 
