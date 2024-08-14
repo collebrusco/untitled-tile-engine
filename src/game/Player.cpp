@@ -20,6 +20,11 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         move.props.friction = CMOVE_FRICTION_FULL;
         float speed = !shift.down ? 2.f : 4.f;
         if (shift.down) {
+            /** this needs to go elsewhere (maybe animcontrol comp?) 
+             * because it needs to be optional and reusable 
+             * (and isnt really related to 'taking ur turn') 
+             * really think this needs to be event maybe? 
+             * */
             Entity::set_anim_if_not(self, state.world, &Animations::character_run);
             pobj.rot = A.down ? 90.f : 270.f;
         } else {
