@@ -74,7 +74,6 @@ struct Animations {
  * system must execute before render (redundant)
  * plays in a loop. need done cb?
  */
-#include <stdio.h>
 struct c_AnimationState {
     float tmr;
     uint8_t idx;

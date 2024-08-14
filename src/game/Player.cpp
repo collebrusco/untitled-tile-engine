@@ -22,7 +22,9 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         if (shift.down) {
             Entity::set_anim_if_not(self, state.world, &Animations::character_run);
             pobj.rot = A.down ? 90.f : 270.f;
-        } else {Entity::set_anim_if_not(self, state.world, &Animations::character_walk);}
+        } else {
+            Entity::set_anim_if_not(self, state.world, &Animations::character_walk);
+        }
         if (W.down) move.v.y += speed;
         if (A.down) move.v.x -= speed;
         if (S.down) move.v.y -= speed;
