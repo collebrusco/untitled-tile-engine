@@ -24,15 +24,17 @@ enum rotation_type_e {
     ROTATE_HAXIS_MIRROR
 };
 
+struct __attribute__((packed)) ent_render_props_t {
+    rotation_type_e rot : 3;
+    uint8_t pix_snap    : 1;
+};
+
 struct c_EntRenderEntry {
     struct {
         glm::vec2 bl, tr;
     } uvs;
 
-    struct {
-        rotation_type_e rot : 3;
-        uint8_t pix_snap    : 1;
-    } props;
+    ent_render_props_t props;
     
     /** 
      * @param sheetblpos bot-left corner of sprite  (tile unit coords)

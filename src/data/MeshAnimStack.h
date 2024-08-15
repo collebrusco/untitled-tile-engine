@@ -8,6 +8,7 @@
 #include "util/abstract_linear_objpool.h"
 #include "game/Sprite.h"
 #include <flgl.h>
+#include "data/components.h"
 #include "data/Animation.h"
 
 struct AbsAnimStackLayer {
