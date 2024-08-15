@@ -3,9 +3,6 @@
 #include <flgl/logger.h>
 LOG_MODULE(event);
 
-EVENT_DEFINE(ActorMove);
-
-
 
 /* define more events here ... */
 
@@ -16,12 +13,12 @@ EVENT_DEFINE(ActorMove);
 
 uint16_t __EventIdGetter::id_ct = 0;
 
-template <typename Input_t>
-void Event<Input_t>::loge(const char* msg) const {
+template <typename Input_t, uint16_t MAX_EVENT_SUBS>
+void Event<Input_t, MAX_EVENT_SUBS>::loge(const char* msg) const {
     LOG_ERR("%s", msg);
 }
-template <typename Input_t>
-void Event<Input_t>::logw(const char* msg) const {
+template <typename Input_t, uint16_t MAX_EVENT_SUBS>
+void Event<Input_t, MAX_EVENT_SUBS>::logw(const char* msg) const {
     LOG_WRN("%s", msg);
 }
 

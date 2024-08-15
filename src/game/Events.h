@@ -6,9 +6,4 @@
 #define EVENTS_H
 #include "Event.h"
 
-EVENT_DECLARE(ActorMove) {
-    entID actor;
-    glm::vec2 oldpos, newpos;
-};
-
 #endif /* EVENTS_H */

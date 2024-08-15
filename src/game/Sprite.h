@@ -23,6 +23,12 @@ struct Sprites {
     static constexpr Sprite char_4 =        SPRITE_DECL((4.f * (24.f / 16.f)), (0.f), (1.5f), (2.f)     , ROTATE_VAXIS_MIRROR,  1);
     static constexpr Sprite char_5 =        SPRITE_DECL((5.f * (24.f / 16.f)), (0.f), (1.5f), (2.f)     , ROTATE_VAXIS_MIRROR,  1);
     static constexpr Sprite char_6 =        SPRITE_DECL((6.f * (24.f / 16.f)), (0.f), (1.5f), (2.f)     , ROTATE_NONE,          1);
+
+    static constexpr Sprite rch_0  =        SPRITE_DECL((0.f * 2.f), 2.f, 2.f, 2.f, ROTATE_FULL, 0);
+    static constexpr Sprite rch_1  =        SPRITE_DECL((1.f * 2.f), 2.f, 2.f, 2.f, ROTATE_FULL, 0);
+    static constexpr Sprite rch_2  =        SPRITE_DECL((2.f * 2.f), 2.f, 2.f, 2.f, ROTATE_FULL, 0);
+    static constexpr Sprite rch_3  =        SPRITE_DECL((3.f * 2.f), 2.f, 2.f, 2.f, ROTATE_FULL, 0);
+    static constexpr Sprite rch    =        SPRITE_DECL((4.f * 2.f), 2.f, 2.f, 2.f, ROTATE_FULL, 0);
 };
 
 #endif /* SPRITE_H */

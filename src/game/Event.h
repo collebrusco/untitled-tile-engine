@@ -8,10 +8,14 @@
 #include <flgl/glm.h>
 #include "data/State.h"
 
-#define MAX_EVENT_SUBS (32)
-
-#define EVENT_DECLARE(name) struct name##EventData; extern Event<name##EventData> name##Event; struct name##EventData 
-#define EVENT_DEFINE(name) Event<name##EventData> name##Event
+/**
+ * declare an event type accepting a certain input type
+ * follow with {enum values or struct members};
+ * @param name name of event. event type name is <name>_event. input type name is <name>_event_input.
+ * @param type struct or enum
+ * @param max_subs max subs
+ */
+#define EVENT_DECLARE(name, type, max_subs) type name##_event_input; struct name##_event final : public Event<name##_event_input, max_subs> {}; type name##_event_input 
 
 struct __EventIdGetter {
     static uint16_t id_ct;
@@ -19,7 +23,7 @@ struct __EventIdGetter {
     static uint16_t inline get_eid() {static uint16_t id = id_ct++; return id;}
 };
 
-template <typename Input_t>
+template <typename Input_t, uint16_t MAX_EVENT_SUBS>
 class Event {
     void logw(const char* msg) const;
     void loge(const char* msg) const;

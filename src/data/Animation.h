@@ -66,6 +66,23 @@ struct Animations {
             {Sprites::char_6.at, 100.f},
         }
     };
+
+    static constexpr Animation<4> ovh_jog = {
+        .frame_size = Sprites::rch.size,
+        .frames = {
+            {Sprites::rch_0.at, 1.f/12.f},
+            {Sprites::rch_1.at, 1.f/12.f},
+            {Sprites::rch_2.at, 1.f/12.f},
+            {Sprites::rch_3.at, 1.f/12.f},
+        }
+    };
+
+    static constexpr Animation<1> ovh_stand = {
+        .frame_size = Sprites::rch.size,
+        .frames = {
+            {Sprites::rch.at, 100.f},
+        }
+    };
 };
 
 /**
