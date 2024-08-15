@@ -1,6 +1,7 @@
 #include "EntityRenderer.h"
 #include "data/components.h"
 #include "data/Animation.h"
+#include "data/MeshAnimStack.h"
 #include <flgl/glm.h>
 #include <flgl/logger.h>
 LOG_MODULE(erend);
@@ -43,6 +44,19 @@ void EntityRenderer::prepare(ECS* ecs, Camera* cam) {
 }
 
 void EntityRenderer::render(Texture tile_tex) {
+    render_basics(tile_tex);
+    render_stacks(tile_tex);
+}
+
+void EntityRenderer::destroy() {
+    atlas_shader.destroy();
+
+    vao.destroy();
+    vbo.destroy();
+    ibo.destroy();
+}
+
+void EntityRenderer::render_basics(Texture tile_tex) {
     mat4 model;
     Vt_2Dclassic verts[4];
     tile_tex.bind();
@@ -102,12 +116,14 @@ void EntityRenderer::render(Texture tile_tex) {
     tile_tex.unbind();
 }
 
-void EntityRenderer::destroy() {
-    atlas_shader.destroy();
-
-    vao.destroy();
-    vbo.destroy();
-    ibo.destroy();
+#define MAX_QUADS (8)
+#define MAX_VERTS (MAX_QUADS * 4)
+#define MAX_ELEMS (MAX_QUADS * 6)
+void EntityRenderer::render_stacks(Texture tile_tex) {
+    mat4 model;
+    Vt_classic verts[MAX_VERTS];
+    uint32_t elems[MAX_ELEMS];
+    for (auto e : ecs->view<c_Object, c_AnimationStack>()) {
+        
+    }
 }
-
-

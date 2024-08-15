@@ -21,6 +21,9 @@ private:
     ElementBuffer ibo;
 
     Shader atlas_shader;
+
+    void render_basics(Texture tile_tex);
+    void render_stacks(Texture tile_tex);
 };
 
 #endif /* ENTITY_RENDERER_H */
