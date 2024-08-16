@@ -29,6 +29,7 @@ struct HumanoidMesh final : public GenMesh {
 
     float target_leg_pos{0};
     bool walkin{0};
+    bool runnin{0};
 
 
 };

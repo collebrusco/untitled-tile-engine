@@ -20,27 +20,17 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         move.clip_rad = 0.2f;
         move.props.friction = CMOVE_FRICTION_FULL;
         float speed = !shift.down ? 4.f : 8.f;
-        // Entity::set_anim_if_not(self, state.world, &Animations::ovh_jog);
+
         ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->walkin = 1;
-        // if (shift.down) {
-        //     /** this needs to go elsewhere (maybe animcontrol comp?) 
-        //      * because it needs to be optional and reusable 
-        //      * (and isnt really related to 'taking ur turn') 
-        //      * really think this needs to be event maybe? 
-        //      * */
-        //     // Entity::set_anim_if_not(self, state.world, &Animations::character_run);
-        //     // pobj.rot = A.down ? 90.f : 270.f;
-        // } else {
-        //     // Entity::set_anim_if_not(self, state.world, &Animations::character_walk);
-        // }
+        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->runnin = shift.down;
+
         if (W.down) move.v.y += speed;
         if (A.down) move.v.x -= speed;
         if (S.down) move.v.y -= speed;
         if (D.down) move.v.x += speed;
     } else if (W.released || A.released || S.released || D.released) {
         ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->walkin = 0;
-        // Entity::set_anim_if_not(self, state.world, &Animations::ovh_stand);
-        // Entity::set_anim_if_not(self, state.world, &Animations::character_stand);
+        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->runnin = 0;
     }
 
     pobj.rot = vectorToAngle(wm.pos - pobj.pos);

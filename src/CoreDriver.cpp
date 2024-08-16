@@ -20,16 +20,13 @@ CoreDriver::CoreDriver() : GameDriver()
 void CoreDriver::user_create() {
 	/* gfx & window open */
 	gl.init(); window.create("untitled", 980, 720);
+	
 	/* cam */
 	state.cam.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
 	lcam_control.spawn(state);
 	/* spawn player & cam follow it */
 	entID pid = Player::spawn(&state.world, {0.f,0.f}).id;
 	lcam_control.follow(state, pid, 0.2f);
-
-	// tid = state.world.newEntity();
-	// state.world.addComp<c_Object>(tid).scale = {1.f,1.f};
-	// state.world.addComp<c_GenMesh>(tid).emplace<HumanoidMesh>().walkin = true;
 	
 	/* RENDERING */
 	(*(brenderer.input_ptr())) = {
@@ -62,8 +59,6 @@ vec2 CoreDriver::world_mdelt() const {
 
 void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
-
-	// ((HumanoidMesh*)(&(state.world.getComp<c_GenMesh>(tid).get())))->walkin = kb[GLFW_KEY_0].down;
 
     lcam_control.update(state.cam.lcam, state.cam.e, state.world, dt);
 	

@@ -68,7 +68,7 @@ void HumanoidMesh::step(float const dt) {
     if (walkin) {
         if (!pwalkin) t = 0;
         t += dt;
-        target_leg_pos = 0.4 * sin(12.f * t);
+        target_leg_pos = ((runnin) ? 0.7 : 0.4) * sin((runnin ? 16.f : 12.f) * t);
     } else {
         target_leg_pos -= target_leg_pos * 0.7;
     }
