@@ -1,7 +1,7 @@
 #include "EntityRenderer.h"
 #include "data/components.h"
 #include "data/Animation.h"
-#include "data/MeshAnimStack.h"
+#include "data/GenMesh.h"
 #include <flgl/glm.h>
 #include <flgl/logger.h>
 LOG_MODULE(erend);
@@ -53,8 +53,14 @@ void EntityRenderer::destroy() {
 
 void EntityRenderer::render(Texture tile_tex) {
     mat4 model;
-    Vt_2Dclassic verts[4];
+    Vt_classic verts[4];
     tile_tex.bind();
+    glEnable(GL_DEPTH_TEST);
+    VertexArray::unbind();
+    /** Simple quad sprites */
+    ibo.bind();
+    ibo.buffer<uint32_t>({0, 2, 1,    0, 2, 3});
+    ibo.unbind();
     for (auto e : ecs->view<c_Object, c_EntRenderEntry>()) {
         auto& obj = ecs->getComp<c_Object>(e);
         auto& atl = ecs->getComp<c_EntRenderEntry>(e);
@@ -93,10 +99,10 @@ void EntityRenderer::render(Texture tile_tex) {
 
         model = genModelMat2d(pos, rot, obj.scale, obj.anc);
 
-        verts[0] = {{(float)vmirr * -0.5, (float)hmirr * -0.5}, {atl.uvs.bl.x, atl.uvs.bl.y}};
-        verts[1] = {{(float)vmirr * -0.5, (float)hmirr *  0.5}, {atl.uvs.bl.x, atl.uvs.tr.y}};
-        verts[2] = {{(float)vmirr *  0.5, (float)hmirr *  0.5}, {atl.uvs.tr.x, atl.uvs.tr.y}};
-        verts[3] = {{(float)vmirr *  0.5, (float)hmirr * -0.5}, {atl.uvs.tr.x, atl.uvs.bl.y}};
+        verts[0] = {{(float)vmirr * -0.5f, (float)hmirr * -0.5f, 0.f}, {atl.uvs.bl.x, atl.uvs.bl.y}};
+        verts[1] = {{(float)vmirr * -0.5f, (float)hmirr *  0.5f, 0.f}, {atl.uvs.bl.x, atl.uvs.tr.y}};
+        verts[2] = {{(float)vmirr *  0.5f, (float)hmirr *  0.5f, 0.f}, {atl.uvs.tr.x, atl.uvs.tr.y}};
+        verts[3] = {{(float)vmirr *  0.5f, (float)hmirr * -0.5f, 0.f}, {atl.uvs.tr.x, atl.uvs.bl.y}};
 
         vbo.bind();
         vbo.buffer_data(4, verts);
@@ -107,7 +113,27 @@ void EntityRenderer::render(Texture tile_tex) {
 
         vao.bind();
         gl.draw_vao_ibo(ibo);
+        vao.unbind();
+    }
+    /** general mesh */
+    for (auto e : ecs->view<c_Object, c_GenMesh>()) {
+        auto& obj = ecs->getComp<c_Object>(e);
+        auto& gm = ecs->getComp<c_GenMesh>(e);
+        auto  pos = obj.pos;
+        float rot = obj.rot;
+
+        model = genModelMat2d(pos, rot, obj.scale, obj.anc);
+
+        gm.get().sync(vbo, ibo);
+
+        atlas_shader.bind();
+        atlas_shader.uMat4("uModel", model);
+
+        vao.bind();
+        gl.draw_vao_ibo(ibo);
+        vao.unbind();
     }
     tile_tex.unbind();
     vao.unbind();
+    glDisable(GL_DEPTH_TEST);
 }

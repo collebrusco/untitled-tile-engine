@@ -34,7 +34,6 @@ void BufferRenderer::init() {
 	}
     
     erenderer.init();
-    gmrenderer.init();
 
     this->prepare();
 
@@ -158,13 +157,8 @@ void BufferRenderer::render() {
     // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities 
-    glEnable(GL_DEPTH_TEST);
     erenderer.prepare(input.world, &cam);
     erenderer.render(tile_tex);
-
-    gmrenderer.prepare(input.world, &cam);
-    gmrenderer.render(tile_tex);
-    glDisable(GL_DEPTH_TEST);
 
     // render mouse hover tile outline
     vec2 mp = input.wmpos;
@@ -212,7 +206,6 @@ void BufferRenderer::destroy() {
     outline.destroy();
     ol_shader.destroy();
     tile_tex.destroy();
-    gmrenderer.destroy();
 }
 
 

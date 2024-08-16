@@ -17,13 +17,10 @@ private:
     ECS* ecs;
 
     VertexArray vao;
-    VertexBuffer<Vt_2Dclassic> vbo;
+    VertexBuffer<Vt_classic> vbo;
     ElementBuffer ibo;
 
     Shader atlas_shader;
-
-    void render_basics(Texture tile_tex);
-    void render_stacks(Texture tile_tex);
 };
 
 #endif /* ENTITY_RENDERER_H */

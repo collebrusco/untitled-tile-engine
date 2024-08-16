@@ -5,11 +5,11 @@
 #include "CoreDriver.h"
 #include "game/Followers.h"
 #include "data/Animation.h"
+#include "data/GenMesh.h"
 #include <flgl/logger.h>
-LOG_MODULE(main);
-
 #include <iostream>
 #include <vector>
+LOG_MODULE(core);
 using namespace glm;
 using namespace std;
 
