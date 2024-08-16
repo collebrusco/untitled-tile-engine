@@ -7,6 +7,7 @@
 #include "game/Entity.h"
 #include "data/Animation.h"
 #include "data/GenMesh.h"
+#include "data/HumanoidMesh.h"
 LOG_MODULE(plyr);
 using namespace glm;
 
@@ -21,16 +22,14 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         move.props.friction = CMOVE_FRICTION_FULL;
         float speed = !shift.down ? 4.f : 8.f;
 
-        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->walkin = 1;
-        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->runnin = shift.down;
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = (shift.down) ? RUNNING : WALKING;
 
         if (W.down) move.v.y += speed;
         if (A.down) move.v.x -= speed;
         if (S.down) move.v.y -= speed;
         if (D.down) move.v.x += speed;
     } else if (W.released || A.released || S.released || D.released) {
-        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->walkin = 0;
-        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->runnin = 0;
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = STOOD;
     }
 
     pobj.rot = vectorToAngle(wm.pos - pobj.pos);
@@ -52,7 +51,7 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
     ator.emplace<PlayerActor>();
 
     auto& hm = world->addComp<c_GenMesh>(e).emplace<HumanoidMesh>();
-    hm.walkin = 0;
+    hm.legs.state = STOOD;
 
     // Entity::set_anim_if_not(e, *world, &Animations::);
 

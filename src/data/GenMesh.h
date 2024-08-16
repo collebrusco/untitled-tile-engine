@@ -10,28 +10,11 @@
 
 struct GenMesh {
     virtual void sync(VertexBuffer<Vt_classic>& vbo, ElementBuffer& ibo) const = 0;
-    virtual void step(float const dt) = 0;
+    virtual void step(float const dt, float const t) = 0;
 };
 
 struct c_GenMesh final : public c_abstract<GenMesh, 128> {
-    static void execute(float const dt, ECS& ecs);
-};
-
-struct TMesh final : public GenMesh {
-    float t{0};
-    virtual void sync(VertexBuffer<Vt_classic>& vbo, ElementBuffer& ibo) const override final;
-    virtual void step(float const dt) override final;
-};
-
-struct HumanoidMesh final : public GenMesh {
-    virtual void sync(VertexBuffer<Vt_classic>& vbo, ElementBuffer& ibo) const override final;
-    virtual void step(float const dt) override final;
-
-    float target_leg_pos{0};
-    bool walkin{0};
-    bool runnin{0};
-
-
+    static void execute(float const dt, float const t, ECS& ecs);
 };
 
 #endif /* GEN_MESH_H */

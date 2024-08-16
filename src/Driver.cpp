@@ -8,7 +8,7 @@ LOG_MODULE(driver);
 
 #define COMPLICATED_LOOP 0
 
-GameDriver::GameDriver() :  dt(_dt), launch_timer(_launch_timer),
+GameDriver::GameDriver() :  launch_timer(_launch_timer),
                             _close(false),
                             _dt(1.f/60.f),
                             _launch_timer(SECONDS),
@@ -45,7 +45,7 @@ void GameDriver::loop() {
         user_update(_dt, window.keyboard, window.mouse);
     }
 #else 
-    user_update(_dt, window.keyboard, window.mouse);
+    user_update({_dt, (float) launch_timer.read(SECONDS)}, window.keyboard, window.mouse);
 #endif /* COMPLICATED_LOOP */
 #ifdef BENCHMARK
     tu[(t)&0x1F] = t_upd.stop();

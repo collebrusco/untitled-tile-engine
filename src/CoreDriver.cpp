@@ -6,6 +6,7 @@
 #include "game/Followers.h"
 #include "data/Animation.h"
 #include "data/GenMesh.h"
+#include "data/HumanoidMesh.h"
 #include <flgl/logger.h>
 #include <iostream>
 #include <vector>
@@ -20,7 +21,7 @@ CoreDriver::CoreDriver() : GameDriver()
 void CoreDriver::user_create() {
 	/* gfx & window open */
 	gl.init(); window.create("untitled", 980, 720);
-	
+
 	/* cam */
 	state.cam.lcam.frame = vec2(REGION_SIZE*2.f, (REGION_SIZE*2.f)/window.aspect);
 	lcam_control.spawn(state);
@@ -57,10 +58,10 @@ vec2 CoreDriver::world_mdelt() const {
 	return del;
 }
 
-void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
+void CoreDriver::user_update(timing_t time, Keyboard const& kb, Mouse const& mouse) {
 	if (kb[GLFW_KEY_ESCAPE].down) this->close();
 
-    lcam_control.update(state.cam.lcam, state.cam.e, state.world, dt);
+    lcam_control.update(state.cam.lcam, state.cam.e, state.world, time.dt);
 	
 	c_Actor::take_all_turns(state, kb, {.mouse = &mouse, .pos = world_mpos(), .delt = world_mdelt()});
 
@@ -73,11 +74,11 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 
 	c_DiffFollower::execute(state.world);
 
-	c_Move::execute_moves(dt, &state.world);
+	c_Move::execute_moves(time.dt, &state.world);
 
-	c_AnimationState::execute(dt, state.world);
+	c_AnimationState::execute(time.dt, state.world);
 
-	c_GenMesh::execute(dt, state.world);
+	c_GenMesh::execute(time.dt, time.t, state.world);
 }
 
 void CoreDriver::user_render() {

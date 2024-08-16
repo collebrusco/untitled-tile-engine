@@ -39,7 +39,7 @@ public:
 	virtual ~CoreDriver() = default;
 private:
     virtual void user_create() override final;
-    virtual void user_update(float dt, Keyboard const& kb, Mouse const& mouse) override final;
+    virtual void user_update(timing_t time, Keyboard const& kb, Mouse const& mouse) override final;
     virtual void user_render() override final;
     virtual void user_destroy() override final;
 

@@ -21,6 +21,11 @@
 
 #define DRIVER_MAIN_FUNCTION(main_name, Classname) int main_name() {Classname *driver = new Classname(); driver->start(); delete driver; return 0;}
 
+struct timing_t {
+    float dt;
+    float t;
+};
+
 class GameDriver {
 protected:
 	void close();
@@ -29,7 +34,6 @@ public:
     void loop();
     GameDriver();
 
-    float const& dt;
     Stopwatch const& launch_timer;
 
 private:
@@ -38,7 +42,7 @@ private:
 	Stopwatch _launch_timer;
     Stopwatch delta_timer;
     virtual void user_create() = 0;
-    virtual void user_update(float dt, Keyboard const& kb, Mouse const& mouse) = 0;
+    virtual void user_update(timing_t time, Keyboard const& kb, Mouse const& mouse) = 0;
     virtual void user_render() = 0;
     virtual void user_destroy() = 0;
     void exit();

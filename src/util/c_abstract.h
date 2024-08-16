@@ -22,6 +22,13 @@ static_assert(IS_POW2(max_size));
         return (*((Base*)data));
     }
 
+    template <typename Sub>
+    Sub& downcast() {
+static_assert(sizeof(Sub) <= max_size);
+static_assert(std::is_base_of<Base, Sub>::value);
+        return (*((Sub*)((Base*)data)));
+    }
+
     template <typename Sub, typename ...Args>
     Sub& emplace(Args... args) {
 static_assert(sizeof(Sub) <= max_size);
