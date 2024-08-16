@@ -23,4 +23,14 @@ struct TMesh final : public GenMesh {
     virtual void step(float const dt) override final;
 };
 
+struct HumanoidMesh final : public GenMesh {
+    virtual void sync(VertexBuffer<Vt_classic>& vbo, ElementBuffer& ibo) const override final;
+    virtual void step(float const dt) override final;
+
+    float target_leg_pos{0};
+    bool walkin{0};
+
+
+};
+
 #endif /* GEN_MESH_H */

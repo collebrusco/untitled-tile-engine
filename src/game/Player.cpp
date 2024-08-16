@@ -6,6 +6,7 @@
 #include "game/Tiles.h"
 #include "game/Entity.h"
 #include "data/Animation.h"
+#include "data/GenMesh.h"
 LOG_MODULE(plyr);
 using namespace glm;
 
@@ -19,7 +20,8 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         move.clip_rad = 0.2f;
         move.props.friction = CMOVE_FRICTION_FULL;
         float speed = !shift.down ? 4.f : 8.f;
-        Entity::set_anim_if_not(self, state.world, &Animations::ovh_jog);
+        // Entity::set_anim_if_not(self, state.world, &Animations::ovh_jog);
+        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->walkin = 1;
         // if (shift.down) {
         //     /** this needs to go elsewhere (maybe animcontrol comp?) 
         //      * because it needs to be optional and reusable 
@@ -36,7 +38,8 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         if (S.down) move.v.y -= speed;
         if (D.down) move.v.x += speed;
     } else if (W.released || A.released || S.released || D.released) {
-        Entity::set_anim_if_not(self, state.world, &Animations::ovh_stand);
+        ((HumanoidMesh*)(&state.world.getComp<c_GenMesh>(self).get()))->walkin = 0;
+        // Entity::set_anim_if_not(self, state.world, &Animations::ovh_stand);
         // Entity::set_anim_if_not(self, state.world, &Animations::character_stand);
     }
 
@@ -54,11 +57,14 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
     pobj.pos = pos;
     pobj.rot = 0.f;
     pobj.anc = vec2(0.f);
-    Entity::config_for_sprite(e, *world, Sprites::rch);
+    Entity::config_for_sprite(e, *world, Sprites::temp_player);
     c_Actor& ator = world->addComp<c_Actor>(e);
     ator.emplace<PlayerActor>();
 
-    Entity::set_anim_if_not(e, *world, &Animations::ovh_stand);
+    auto& hm = world->addComp<c_GenMesh>(e).emplace<HumanoidMesh>();
+    hm.walkin = 0;
+
+    // Entity::set_anim_if_not(e, *world, &Animations::);
 
     return Player{e};
 }

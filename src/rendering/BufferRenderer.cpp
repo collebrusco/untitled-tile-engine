@@ -103,7 +103,7 @@ void BufferRenderer::render() {
         ivec2 dim = frame_manager.get_fbuff_wh_pix();
         gl.viewport(dim.x, dim.y);
     }
-    glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render shadow perlin bg
     glDisable(GL_STENCIL_TEST);
@@ -158,11 +158,13 @@ void BufferRenderer::render() {
     // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities 
+    glEnable(GL_DEPTH_TEST);
     erenderer.prepare(input.world, &cam);
     erenderer.render(tile_tex);
 
     gmrenderer.prepare(input.world, &cam);
     gmrenderer.render(tile_tex);
+    glDisable(GL_DEPTH_TEST);
 
     // render mouse hover tile outline
     vec2 mp = input.wmpos;

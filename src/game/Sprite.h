@@ -15,7 +15,7 @@ struct Sprite {
 #define SPRITE_DECL(blx, bly, sx, sy, rot, snp) ((Sprite) {.at = c_EntRenderEntry::from_sheet({(blx), (bly)}, {(sx), (sy)}, rot, snp), .size = {sx, sy} })
 
 struct Sprites {
-    static constexpr Sprite temp_player =   SPRITE_DECL(63.f + 3.f/16.f, 3.f/16.f, 10.f/16.f, 10.f/16.f , ROTATE_FULL,          0);
+    static constexpr Sprite temp_player =   SPRITE_DECL(63.f, 0.f, 1.f, 1.f , ROTATE_FULL,          0);
     static constexpr Sprite char_0 =        SPRITE_DECL((0.f * (24.f / 16.f)), (0.f), (1.5f), (2.f)     , ROTATE_VAXIS_MIRROR,  1);
     static constexpr Sprite char_1 =        SPRITE_DECL((1.f * (24.f / 16.f)), (0.f), (1.5f), (2.f)     , ROTATE_VAXIS_MIRROR,  1);
     static constexpr Sprite char_2 =        SPRITE_DECL((2.f * (24.f / 16.f)), (0.f), (1.5f), (2.f)     , ROTATE_VAXIS_MIRROR,  1);
