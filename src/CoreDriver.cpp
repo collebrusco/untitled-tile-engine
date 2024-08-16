@@ -26,6 +26,10 @@ void CoreDriver::user_create() {
 	/* spawn player & cam follow it */
 	entID pid = Player::spawn(&state.world, {0.f,0.f}).id;
 	lcam_control.follow(state, pid, 0.2f);
+
+	entID tid = state.world.newEntity();
+	state.world.addComp<c_Object>(tid).scale = {1.f,1.f};
+	state.world.addComp<c_GenMesh>(tid).emplace<TMesh>();
 	
 	/* RENDERING */
 	(*(brenderer.input_ptr())) = {
@@ -75,6 +79,8 @@ void CoreDriver::user_update(float dt, Keyboard const& kb, Mouse const& mouse) {
 	c_Move::execute_moves(dt, &state.world);
 
 	c_AnimationState::execute(dt, state.world);
+
+	c_GenMesh::execute(dt, state.world);
 }
 
 void CoreDriver::user_render() {

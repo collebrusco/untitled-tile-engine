@@ -15,6 +15,7 @@
 #include "frame_manager.h"
 #include "NWOcam.h"
 #include "data/render_pipeline_structs.h"
+#include "rendering/GenMeshRenderer.h"
 
 struct BufferRenderer {
 
@@ -39,6 +40,7 @@ private:
 	RegionRenderer rrenderers[WORLD_DIAMETER*WORLD_DIAMETER];
 	ShadowRenderer srenderers[WORLD_DIAMETER*WORLD_DIAMETER];
     EntityRenderer erenderer;
+    GenMeshRenderer gmrenderer;
     
 	Texture tile_tex;
 

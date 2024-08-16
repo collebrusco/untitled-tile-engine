@@ -32,6 +32,7 @@
 #include "game/Movement.h"
 #include "game/Player.h"
 #include "data/world_mouse.h"
+#include "rendering/GenMeshRenderer.h"
 
 class CoreDriver final : public GameDriver {
 public:

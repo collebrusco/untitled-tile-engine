@@ -43,11 +43,6 @@ void EntityRenderer::prepare(ECS* ecs, Camera* cam) {
     atlas_shader.uMat4("uProj", cam->proj());
 }
 
-void EntityRenderer::render(Texture tile_tex) {
-    render_basics(tile_tex);
-    render_stacks(tile_tex);
-}
-
 void EntityRenderer::destroy() {
     atlas_shader.destroy();
 
@@ -56,7 +51,7 @@ void EntityRenderer::destroy() {
     ibo.destroy();
 }
 
-void EntityRenderer::render_basics(Texture tile_tex) {
+void EntityRenderer::render(Texture tile_tex) {
     mat4 model;
     Vt_2Dclassic verts[4];
     tile_tex.bind();
@@ -114,43 +109,5 @@ void EntityRenderer::render_basics(Texture tile_tex) {
         gl.draw_vao_ibo(ibo);
     }
     tile_tex.unbind();
-}
-
-#define MAX_QUADS (8)
-#define MAX_VERTS (MAX_QUADS * 4)
-#define MAX_ELEMS (MAX_QUADS * 6)
-void EntityRenderer::render_stacks(Texture tile_tex) {
-    mat4 model;
-    Vt_classic verts[MAX_VERTS];
-    uint32_t elems[MAX_ELEMS];
-    for (auto e : ecs->view<c_Object, c_AnimationStack>()) {
-        uint16_t vtop = 0, etop = 0;
-        auto& obj = ecs->getComp<c_Object>(e);
-        auto& stk = ecs->getComp<c_AnimationStack>(e);
-        auto  pos = obj.pos;
-        float rot = obj.rot;
-        
-        model = genModelMat2d(pos, rot, obj.scale, obj.anc);
-        
-        float z = 0.f;
-        for (AbsAnimStackLayer* layer : stk) {
-            layer->add_mesh(verts, &vtop, elems, &etop, z);
-            z += 0.1f;
-        }
-
-        vbo.bind();
-        vbo.buffer_data(vtop, verts);
-        vbo.unbind();
-
-        ibo.bind();
-        ibo.buffer_data(etop, elems);
-        ibo.unbind();
-
-        atlas_shader.bind();
-        atlas_shader.uMat4("uModel", model);
-
-        vao.bind();
-        gl.draw_vao_ibo(ibo);
-    }
-    tile_tex.unbind();
+    vao.unbind();
 }

@@ -34,6 +34,7 @@ void BufferRenderer::init() {
 	}
     
     erenderer.init();
+    gmrenderer.init();
 
     this->prepare();
 
@@ -160,6 +161,9 @@ void BufferRenderer::render() {
     erenderer.prepare(input.world, &cam);
     erenderer.render(tile_tex);
 
+    gmrenderer.prepare(input.world, &cam);
+    gmrenderer.render(tile_tex);
+
     // render mouse hover tile outline
     vec2 mp = input.wmpos;
     ol_shader.bind();
@@ -206,6 +210,7 @@ void BufferRenderer::destroy() {
     outline.destroy();
     ol_shader.destroy();
     tile_tex.destroy();
+    gmrenderer.destroy();
 }
 
 
