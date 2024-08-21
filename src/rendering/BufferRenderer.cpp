@@ -14,6 +14,10 @@ void BufferRenderer::init() {
     timer.setUnit(SECONDS);
     timer.reset_start();
 
+    cam.getNear() = 0.001;
+    cam.getFar() = 10.f;
+    cam.getLook() = {0., 0., -1.};
+
 
     // setup buffer of region renderers attached in pllel w world buffer
 	RegionRenderer::static_init();

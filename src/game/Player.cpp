@@ -12,7 +12,7 @@ LOG_MODULE(plyr);
 using namespace glm;
 
 void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_mouse_t const& wm) {
-    auto& A = kb[GLFW_KEY_A]; auto& W = kb[GLFW_KEY_W]; auto& S = kb[GLFW_KEY_S]; auto& D = kb[GLFW_KEY_D]; 
+    auto& A = kb[GLFW_KEY_A]; auto& W = kb[GLFW_KEY_W]; auto& S = kb[GLFW_KEY_S]; auto& D = kb[GLFW_KEY_D];
     auto& shift = kb[GLFW_KEY_LEFT_SHIFT];
     auto& pobj = state.world.getComp<c_Object>(self);
     bool movekey = A.down || S.down || D.down || W.down;
@@ -22,14 +22,14 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         move.props.friction = CMOVE_FRICTION_FULL;
         float speed = !shift.down ? 4.f : 8.f;
 
-        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = (shift.down) ? RUNNING : WALKING;
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = (shift.down) ? HumanoidLegs::RUNNING : HumanoidLegs::WALKING;
 
         if (W.down) move.v.y += speed;
         if (A.down) move.v.x -= speed;
         if (S.down) move.v.y -= speed;
         if (D.down) move.v.x += speed;
     } else if (W.released || A.released || S.released || D.released) {
-        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = STOOD;
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = HumanoidLegs::STOOD;
     }
 
     pobj.rot = vectorToAngle(wm.pos - pobj.pos);
@@ -46,12 +46,13 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
     pobj.pos = pos;
     pobj.rot = 0.f;
     pobj.anc = vec2(0.f);
-    Entity::config_for_sprite(e, *world, Sprites::temp_player);
+    pobj.scale = vec2(1.f);
+    // Entity::config_for_sprite(e, *world, Sprites::temp_player);
     c_Actor& ator = world->addComp<c_Actor>(e);
     ator.emplace<PlayerActor>();
 
     auto& hm = world->addComp<c_GenMesh>(e).emplace<HumanoidMesh>();
-    hm.legs.state = STOOD;
+    hm.legs.state = HumanoidLegs::STOOD;
 
     // Entity::set_anim_if_not(e, *world, &Animations::);
 

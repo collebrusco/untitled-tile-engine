@@ -17,7 +17,7 @@ using namespace glm;
  */
 
 void EntityRenderer::init() {
-    atlas_shader = Shader::from_source("2Dmvp_vert", "entity_atlas_f");
+    atlas_shader = Shader::from_source("mvp_vert", "entity_atlas_f");
 
     vao.create();
     vbo.create();

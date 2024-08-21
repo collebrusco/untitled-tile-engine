@@ -15,5 +15,6 @@ struct c_DiffFollower {
 };
 ASSERT_AGGREGATE(c_DiffFollower);
 
+/* lowpass follower, etc... maybe put these in a sep math helper */
 
 #endif /* FOLLOWERS_H */
