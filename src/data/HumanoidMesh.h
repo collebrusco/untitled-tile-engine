@@ -8,54 +8,55 @@
 #include "ECS.h"
 #include "data/GenMesh.h"
 
-struct HumanoidLegs {
-    static const uint8_t num_verts = 8;
-    static const uint8_t num_elems = 12;
-    float target_pos{0};
-    float pos{0};
-    enum state_e {
-        STOOD = 0,
-        WALKING,
-        RUNNING
-    } state  : 4;
-    void sync(Vt_classic *const verts, uint16_t *const vtop, 
-              uint32_t *const elems, uint16_t *const etop) const;
-    void step(float const dt, float const t);
-};
-
-struct HumanoidTorso {
-    static const uint8_t num_verts = 4;
-    static const uint8_t num_elems = 6;
-
-    void sync(Vt_classic *const verts, uint16_t *const vtop,
-              uint32_t *const elems, uint16_t *const etop) const;
-};
-
-struct HumanoidArms {
-    static const uint8_t num_verts = 8;
-    static const uint8_t num_elems = 12;
-    float target_pos{0};
-    float pos{0};
-    enum state_e {
-        STOOD = 0,
-        WALKING,
-        RUNNING,
-        AIMING,
-    } state  : 4;
-    void sync(Vt_classic *const verts, uint16_t *const vtop, 
-              uint32_t *const elems, uint16_t *const etop) const;
-    void step(float const dt, float const t);
-};
-
 struct HumanoidMesh final : public GenMesh {
     virtual void sync(VertexBuffer<Vt_classic>& vbo, ElementBuffer& ibo) const override final;
     virtual void step(float const dt, float const t) override final;
 
+    struct Head {
+        static const uint8_t num_verts = 4;
+        static const uint8_t num_elems = 6;
+        void sync(Vt_classic *const verts, uint16_t *const vtop, 
+                uint32_t *const elems, uint16_t *const etop) const;
+    } head;
     
+    struct Legs {
+        static const uint8_t num_verts = 8;
+        static const uint8_t num_elems = 12;
+        float target_pos{0};
+        float pos{0};
+        enum state_e {
+            STOOD = 0,
+            WALKING,
+            RUNNING
+        } state  : 4;
+        void sync(Vt_classic *const verts, uint16_t *const vtop, 
+                uint32_t *const elems, uint16_t *const etop) const;
+        void step(float const dt, float const t);
+    } legs;
 
-    HumanoidLegs legs;
-    HumanoidTorso torso;
-    HumanoidArms arms;
+    struct Torso {
+        static const uint8_t num_verts = 4;
+        static const uint8_t num_elems = 6;
+        void sync(Vt_classic *const verts, uint16_t *const vtop,
+                uint32_t *const elems, uint16_t *const etop) const;
+    } torso;
+
+    struct Arms {
+        static const uint8_t num_verts = 16;
+        static const uint8_t num_elems = 24;
+        float target_pos{0};
+        float pos{0};
+        enum state_e {
+            STOOD = 0,
+            WALKING,
+            RUNNING,
+            AIMING,
+        } state  : 4;
+        void sync(Vt_classic *const verts, uint16_t *const vtop, 
+                uint32_t *const elems, uint16_t *const etop) const;
+        void step(float const dt, float const t);
+    } arms;
+
 };
 
 #endif /* HUMANOID_MESH_H */

@@ -116,6 +116,7 @@ void EntityRenderer::render(Texture tile_tex) {
         vao.unbind();
     }
     /** general mesh */
+    gl.wireframe(true);
     for (auto e : ecs->view<c_Object, c_GenMesh>()) {
         auto& obj = ecs->getComp<c_Object>(e);
         auto& gm = ecs->getComp<c_GenMesh>(e);
@@ -133,6 +134,7 @@ void EntityRenderer::render(Texture tile_tex) {
         gl.draw_vao_ibo(ibo);
         vao.unbind();
     }
+    gl.wireframe(false);
     tile_tex.unbind();
     vao.unbind();
     glDisable(GL_DEPTH_TEST);
