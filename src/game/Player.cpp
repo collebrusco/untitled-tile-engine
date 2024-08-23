@@ -46,7 +46,7 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
     pobj.pos = pos;
     pobj.rot = 0.f;
     pobj.anc = vec2(0.f);
-    pobj.scale = vec2(10.f);
+    pobj.scale = vec2(1.f);
     // Entity::config_for_sprite(e, *world, Sprites::temp_player);
     c_Actor& ator = world->addComp<c_Actor>(e);
     ator.emplace<PlayerActor>();
