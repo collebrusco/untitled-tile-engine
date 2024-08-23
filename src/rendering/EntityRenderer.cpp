@@ -116,7 +116,7 @@ void EntityRenderer::render(Texture tile_tex) {
         vao.unbind();
     }
     /** general mesh */
-    gl.wireframe(true);
+    // gl.wireframe(true);
     for (auto e : ecs->view<c_Object, c_GenMesh>()) {
         auto& obj = ecs->getComp<c_Object>(e);
         auto& gm = ecs->getComp<c_GenMesh>(e);

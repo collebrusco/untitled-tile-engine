@@ -54,27 +54,6 @@ void HumanoidMesh::Legs::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     verts[(*vtop)++] = {{ LEG_INNER, -pos,   0.f}, {0.5,0.5}};
     verts[(*vtop)++] = {{ LEG_OUTER, -pos,   0.f}, {0.5,0.5}};
     verts[(*vtop)++] = {{ LEG_OUTER, 0   ,   0.f}, {0.5,0.5}};
-
-}
-
-void HumanoidMesh::Legs::step(float const dt, float const t) {
-    (void)dt;
-    float amp, freq;
-    switch (this->state) {
-    case STOOD:
-        this->target_pos -= this->target_pos * 0.1f;
-        break;
-    case WALKING:
-        amp = 0.4; freq = 11.f;
-        break;
-    case RUNNING:
-        amp = 0.55; freq = 16.f;
-        break;
-    }
-    if (this->state != STOOD) {
-        this->target_pos = amp * sin(freq * (t));
-    }
-    pos = pos + (this->target_pos - pos) * 0.66;
 }
 
 void HumanoidMesh::Torso::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -146,6 +125,26 @@ void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uin
 
 }
 
+void HumanoidMesh::Legs::step(float const dt, float const t) {
+    (void)dt;
+    float amp, freq;
+    switch (this->state) {
+    case STOOD:
+        this->target_pos -= this->target_pos * 0.1f;
+        break;
+    case WALKING:
+        amp = 0.35; freq = 11.f;
+        break;
+    case RUNNING:
+        amp = 0.45; freq = 16.f;
+        break;
+    }
+    if (this->state != STOOD) {
+        this->target_pos = amp * sin(freq * (t));
+    }
+    pos = pos + (this->target_pos - pos) * 0.66;
+}
+
 void HumanoidMesh::Arms::step(float const dt, float const t) {
     (void)dt;
     float amp, freq;
@@ -154,10 +153,10 @@ void HumanoidMesh::Arms::step(float const dt, float const t) {
         this->target_pos -= this->target_pos * 0.1f;
         break;
     case WALKING:
-        amp = 0.4; freq = 11.f;
+        amp = 0.2; freq = 11.f;
         break;
     case RUNNING:
-        amp = 0.45; freq = 16.f;
+        amp = 0.25; freq = 16.f;
         break;
     case AIMING:
         break;
