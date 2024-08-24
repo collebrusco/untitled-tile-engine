@@ -7,6 +7,7 @@
 #include <flgl.h>
 #include "ECS.h"
 #include "data/GenMesh.h"
+#include "util/math.h"
 
 struct HumanoidMesh final : public GenMesh {
     virtual void sync(VertexBuffer<Vt_classic>& vbo, ElementBuffer& ibo) const override final;
@@ -44,8 +45,7 @@ struct HumanoidMesh final : public GenMesh {
     struct Arms {
         static const uint8_t num_verts = 16;
         static const uint8_t num_elems = 24;
-        float target_pos{0};
-        float pos{0};
+        pi_approach<float> py, al, ar;
         enum state_e {
             STOOD = 0,
             WALKING,

@@ -2,7 +2,8 @@
  * ecs_test.h
  * created 07/24/24 by frank collebrusco 
  */
-#ifndef ECS_TEST_H
+// #ifndef ECS_TEST_H
+#if 0
 #define ECS_TEST_H
 #include "ECS.h"
 #include <stdio.h>

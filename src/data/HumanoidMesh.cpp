@@ -1,5 +1,14 @@
 #include "HumanoidMesh.h"
 #include "util/math.h"
+#include <flgl/logger.h>
+LOG_MODULE(hmesh);
+using namespace glm;
+
+/** 
+ * the mesh animations are kinda hacked and should be in a vertex shader or something.
+ * the renderer buffers the whole mesh for each draw here which is probly bad
+ * i just want it to be one draw call other than buffering model mat for each part
+ */
 
 void HumanoidMesh::sync(VertexBuffer<Vt_classic> &vbo, ElementBuffer &ibo) const {
     const uint16_t nv = HumanoidMesh::Legs::num_verts + HumanoidMesh::Torso::num_verts + HumanoidMesh::Arms::num_verts + HumanoidMesh::Head::num_verts;
@@ -25,7 +34,7 @@ void HumanoidMesh::sync(VertexBuffer<Vt_classic> &vbo, ElementBuffer &ibo) const
 void HumanoidMesh::step(float const dt, float const t) {
     legs.step(dt, t);
     arms.step(dt, t);
-    arms.state = (HumanoidMesh::Arms::state_e)legs.state;
+    if (arms.state != Arms::AIMING) arms.state = (HumanoidMesh::Arms::state_e)legs.state;
 }
 
 void HumanoidMesh::Legs::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -104,25 +113,54 @@ void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     #define ARM_W (3.f/16.f)
     #define ARM_H (TORSO_H)
     #define ARM_D (5.f/16.f)
+    static const vec2 l_arm_c = vec2((ARM_W/2.f)-ARM_D, 0.f);
+    static const vec2 r_arm_c = vec2((ARM_W/2.f)+ARM_D, 0.f);
+    float alt = (this->state == WALKING || this->state == RUNNING) ? -1.f : 1.f;
 
-    verts[(*vtop)++] = {{ -ARM_D,        0   ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ -ARM_D,        pos ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-(ARM_D+ARM_W), pos ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-(ARM_D+ARM_W), 0   ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{  ARM_D,        0   ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{  ARM_D,        -pos,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ (ARM_D+ARM_W), -pos,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ (ARM_D+ARM_W), 0   ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        0                               ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         py.val                         ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  py.val                         ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), 0                               ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        0                               ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        alt*py.val                      ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), alt*py.val                      ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), 0                               ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
 
-    verts[(*vtop)++] = {{ -ARM_D,        -((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ -ARM_D,         ((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-(ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-(ARM_D+ARM_W), -((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{  ARM_D,         ((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{  ARM_D,        -((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ (ARM_D+ARM_W), -((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ (ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(pos)/5.f)),   0.1f}, {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
 
+}
+
+void HumanoidMesh::Arms::step(float const dt, float const t) {
+    float amp, freq, Ki, Kp;
+    Ki = 0.4f; Kp = 0.3f;
+    switch (this->state) {
+    case STOOD:
+        py.tar = ar.tar = al.tar = 0.f;
+        break;
+    case WALKING:
+        amp = 0.2; freq = 11.f;
+        break;
+    case RUNNING:
+        amp = 0.25; freq = 16.f;
+        break;
+    case AIMING:
+        py.tar = 0.75f;
+        ar.tar = 15.f;
+        al.tar = -50.f;
+        break;
+    }
+    if (this->state == WALKING || this->state == RUNNING) {
+        py.tar = amp * -sin(freq * (t));
+        ar.tar = al.tar = 0.f;
+    }
+    py.step(Kp, Ki, dt); al.step(Kp, Ki, dt); ar.step(Kp, Ki, dt);
 }
 
 void HumanoidMesh::Legs::step(float const dt, float const t) {
@@ -141,28 +179,6 @@ void HumanoidMesh::Legs::step(float const dt, float const t) {
     }
     if (this->state != STOOD) {
         this->target_pos = amp * sin(freq * (t));
-    }
-    pos = pos + (this->target_pos - pos) * 0.66;
-}
-
-void HumanoidMesh::Arms::step(float const dt, float const t) {
-    (void)dt;
-    float amp, freq;
-    switch (this->state) {
-    case STOOD:
-        this->target_pos -= this->target_pos * 0.1f;
-        break;
-    case WALKING:
-        amp = 0.2; freq = 11.f;
-        break;
-    case RUNNING:
-        amp = 0.25; freq = 16.f;
-        break;
-    case AIMING:
-        break;
-    }
-    if (this->state != STOOD) {
-        this->target_pos = amp * -sin(freq * (t));
     }
     pos = pos + (this->target_pos - pos) * 0.66;
 }

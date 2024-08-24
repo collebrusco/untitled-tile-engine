@@ -34,6 +34,13 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
 
     pobj.rot = vectorToAngle(wm.pos - pobj.pos);
 
+    if (kb[GLFW_KEY_0].pressed) {
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::AIMING;
+    }
+    if (kb[GLFW_KEY_0].released) {
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::STOOD;
+    }
+
     if (wm.mouse->left.down) {
         sTiles::destroy_clear(state.world, wm.pos);
         sTiles::wall.place(state.world, &state.world.tile_at(wm.pos), {0,0});
