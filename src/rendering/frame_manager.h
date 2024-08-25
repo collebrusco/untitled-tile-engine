@@ -26,8 +26,8 @@ struct frame_manager_t {
         struct frame_region_iter {
             region_coords_t * tl, * br, pos;
             frame_region_iter(region_coords_t const& p, region_coords_t *b=0);
-            bool operator==(frame_region_iter const& other) const;;;
-            bool operator!=(frame_region_iter const& other) const;;
+            bool operator==(frame_region_iter const& other) const;
+            bool operator!=(frame_region_iter const& other) const;
             frame_region_iter& operator++();
             region_coords_t operator*() const;
         };

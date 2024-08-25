@@ -33,8 +33,8 @@ void HumanoidMesh::sync(VertexBuffer<Vt_classic> &vbo, ElementBuffer &ibo) const
 
 void HumanoidMesh::step(c_Object const& obj, float const dt, float const t) {
     legs.step(dt, t);
-    arms.step(dt, t);
     head.step(obj.rot, torso.rot.val);
+    arms.step(dt, t, head.angle);
     torso.step(dt, obj.rot);
     if (arms.state != Arms::AIMING) arms.state = (HumanoidMesh::Arms::state_e)legs.state;
 }
@@ -91,7 +91,7 @@ void HumanoidMesh::Torso::sync(Vt_classic *const verts, uint16_t *const vtop, ui
 
 void HumanoidMesh::Torso::step(float const dt, float const tar) {
     rot.tar = tar;
-    rot.step(0.20f, 0.015, dt);
+    rot.step(0.18f, 0.005, dt);
 }
 
 void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -147,7 +147,7 @@ void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uin
 
 }
 
-void HumanoidMesh::Arms::step(float const dt, float const t) {
+void HumanoidMesh::Arms::step(float const dt, float const t, float const a) {
     float amp, freq, Kp, Ki;
     Kp = 0.25f, Ki = 0.025f;
     switch (this->state) {
@@ -162,8 +162,8 @@ void HumanoidMesh::Arms::step(float const dt, float const t) {
         break;
     case AIMING:
         length.tar.x = length.tar.y = 0.5f;
-        angle.tar.y = 15.f;
-        angle.tar.x = -50.f;
+        angle.tar.y =  15.f + a/3.f;
+        angle.tar.x = -50.f + a/3.f;
         break;
     case SWINGING0:
         gent = 0.f;

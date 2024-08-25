@@ -28,17 +28,26 @@ void TestWorldGenerator::generate(int x, int y, Region* target, World* const wor
     
     for (int i = 0; i < REGION_SIZE; i++) {
         for (int j = 0; j < REGION_SIZE; j++) {
-            int r = dis(gen) & 0x3F;
+            int r = dis(gen) & 0xFF;
+            int r2 = dis(gen) & 0xFF;
             Tile* t = &(target->tile_at(i,j));
             switch (r) {
             case 0:
-                // tTiles::sand_pebble.place(*world, t, {i,j});
-                // break;
+                tTiles::sand_pebble.place(*world, t, {i,j});
+                break;
             case 1:
             case 2:
             case 3:
-                // tTiles::sand_tumble.place(*world, t, {i,j});
-                // break;
+            case 4:
+            case 5:
+                tTiles::sand_tumble.place(*world, t, {i,j});
+                break;
+
+            case 255:
+                if (r2 < 25) {
+                    tTiles::oil.place(*world, t, {i,j});
+                    break;
+                }
             default:
                 tTiles::sand.place(*world, t, {i,j});
                 break;

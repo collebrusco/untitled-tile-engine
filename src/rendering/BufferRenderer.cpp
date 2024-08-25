@@ -108,75 +108,75 @@ void BufferRenderer::render() {
     }
     glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // render shadow perlin bg
-    glDisable(GL_STENCIL_TEST);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-    quad_perlin.bind();
-    quad_perlin.uVec2("uRes", frame_manager.get_fbuff_wh_pix());
-    quad_perlin.uFloat("uTime", timer.read());
-    quad_perlin.uFloat("uAspect", frame_manager.get_fbuff_aspect());
-    quad_perlin.uVec2("uCampos", input.lcam.pos);
-    quad.bind();
-    gl.draw_mesh(quad);
+    // // render shadow perlin bg
+    // glDisable(GL_STENCIL_TEST);
+    // glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    // quad_perlin.bind();
+    // quad_perlin.uVec2("uRes", frame_manager.get_fbuff_wh_pix());
+    // quad_perlin.uFloat("uTime", timer.read());
+    // quad_perlin.uFloat("uAspect", frame_manager.get_fbuff_aspect());
+    // quad_perlin.uVec2("uCampos", input.lcam.pos);
+    // quad.bind();
+    // gl.draw_mesh(quad);
 
-    // turn off color mask, setup to increment stencil
-    glEnable(GL_STENCIL_TEST);
-    glStencilFunc(GL_ALWAYS, 0, 0xFF);
-    glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
-    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    // // turn off color mask, setup to increment stencil
+    // glEnable(GL_STENCIL_TEST);
+    // glStencilFunc(GL_ALWAYS, 0, 0xFF);
+    // glStencilOp(GL_KEEP, GL_KEEP, GL_INCR_WRAP);
+    // glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-    gl.wireframe(wf);
+    // gl.wireframe(wf);
 
-    // render shadow geometry
-    ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
-	ShadowRenderer::give_data(cam, input.lcam.pos);
-    for (auto pos : frame_manager.regions_in_frame()) {
-        size_t i = input.world->rpos_to_idx(pos);
-		srenderers[i].prepare();
-	}
-    for (auto pos : frame_manager.regions_in_frame()) {
-        size_t i = input.world->rpos_to_idx(pos);
-        srenderers[i].prepare();
-		srenderers[i].render();
-	}
+    // // render shadow geometry
+    // ShadowRenderer::use_shader(ShadowRenderer::shadow_shader);
+	// ShadowRenderer::give_data(cam, input.lcam.pos);
+    // for (auto pos : frame_manager.regions_in_frame()) {
+    //     size_t i = input.world->rpos_to_idx(pos);
+	// 	srenderers[i].prepare();
+	// }
+    // for (auto pos : frame_manager.regions_in_frame()) {
+    //     size_t i = input.world->rpos_to_idx(pos);
+    //     srenderers[i].prepare();
+	// 	srenderers[i].render();
+	// }
 
-    // setup test to keep fragment if stencil == 0 (not in shadow)
-    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-    glStencilFunc(GL_EQUAL, 0, 0xFF);
-    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+    // // setup test to keep fragment if stencil == 0 (not in shadow)
+    // glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    // glStencilFunc(GL_EQUAL, 0, 0xFF);
+    // glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 
-    // render terrain
-	RegionRenderer::sync_camera(cam);
-    size_t ct = 0;
-    // static size_t pct = 0;
-    for (auto pos : frame_manager.regions_in_frame()) {
-        ct++;
-        // LOG_INF("====ITER:==== %d, %d", pos.x, pos.y);
-        size_t i = input.world->rpos_to_idx(pos);
-		// ivec2 const& rpos = input.world->regions[i].pos;
-		rrenderers[i].prepare();
-		rrenderers[i].render(tile_tex);
-        input.world->regions[i].clear_flag();
-	}
-    // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
+    // // render terrain
+	// RegionRenderer::sync_camera(cam);
+    // size_t ct = 0;
+    // // static size_t pct = 0;
+    // for (auto pos : frame_manager.regions_in_frame()) {
+    //     ct++;
+    //     // LOG_INF("====ITER:==== %d, %d", pos.x, pos.y);
+    //     size_t i = input.world->rpos_to_idx(pos);
+	// 	// ivec2 const& rpos = input.world->regions[i].pos;
+	// 	rrenderers[i].prepare();
+	// 	rrenderers[i].render(tile_tex);
+    //     input.world->regions[i].clear_flag();
+	// }
+    // // if (pct != ct) {pct = ct; LOG_INF("%d / %d renders", ct, WORLD_DIAMETER*WORLD_DIAMETER);}
 
     // render entities 
     erenderer.prepare(input.world, &cam);
     erenderer.render(tile_tex);
 
-    // render mouse hover tile outline
-    vec2 mp = input.wmpos;
-    ol_shader.bind();
-    ol_shader.uMat4("uView", cam.view());
-    ol_shader.uMat4("uProj", cam.proj());
-    mat4 model = genModelMat2d((vec2)(input.world->pos_to_tpos(mp)), 0., vec2(1.));
-    ol_shader.uMat4("uModel", model);
-    gl.draw_mesh(outline, GL_LINES);
-    // render mouse hover region outline
-    model = genModelMat2d((vec2)(input.world->pos_to_rpos(mp) * REGION_SIZE), 0., vec2((float)REGION_SIZE));
-    ol_shader.uMat4("uModel", model);
-    outline.bind();
-    gl.draw_mesh(outline, GL_LINES);
+    // // render mouse hover tile outline
+    // vec2 mp = input.wmpos;
+    // ol_shader.bind();
+    // ol_shader.uMat4("uView", cam.view());
+    // ol_shader.uMat4("uProj", cam.proj());
+    // mat4 model = genModelMat2d((vec2)(input.world->pos_to_tpos(mp)), 0., vec2(1.));
+    // ol_shader.uMat4("uModel", model);
+    // gl.draw_mesh(outline, GL_LINES);
+    // // render mouse hover region outline
+    // model = genModelMat2d((vec2)(input.world->pos_to_rpos(mp) * REGION_SIZE), 0., vec2((float)REGION_SIZE));
+    // ol_shader.uMat4("uModel", model);
+    // outline.bind();
+    // gl.draw_mesh(outline, GL_LINES);
 
     Framebuffer::bind_default(); VertexArray::unbind();
     glDisable(GL_STENCIL_TEST);

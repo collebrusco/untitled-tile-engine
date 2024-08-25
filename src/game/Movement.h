@@ -24,6 +24,16 @@ struct __attribute__((packed)) c_Move {
     static void execute_moves(float dt, World* const world);
 };
 
+/**
+ * c_Move represents a move w velocity v in tiles/sec
+ * clip_rad is bounding radius
+ */
+struct __attribute__((packed)) c_pMove {
+    glm::vec2 v;
+    float clip_rad;
+    static void execute_moves(float dt, World* const world);
+};
+
 struct a_Movable : public Archetype<c_Move, c_Object> {};
 
 #endif /* MOVEMENT_H */

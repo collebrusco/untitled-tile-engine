@@ -62,7 +62,7 @@ struct HumanoidMesh final : public GenMesh {
         } state  : 4;
         void sync(Vt_classic *const verts, uint16_t *const vtop, 
                 uint32_t *const elems, uint16_t *const etop) const;
-        void step(float const dt, float const t);
+        void step(float const dt, float const t, float const a);
     } arms;
 
 };

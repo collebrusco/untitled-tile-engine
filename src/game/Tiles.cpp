@@ -24,6 +24,21 @@ sTiledef const sTiles::wall(
     }
 );
 
+oil_sTiledef const sTiles::oil_rig(
+    (SurfaceTile) {
+        .img = 5,
+        .ent = ~(entID{0}),
+        .props = {
+            .f = {
+                .present = 1,
+                .solid = 1,
+                .blocks_light = 0,
+                .__res = 0
+            }
+        }
+    }
+);
+
 
 
 tTiledef const tTiles::sand(
@@ -44,6 +59,13 @@ tTiledef const tTiles::sand_tumble(
     (TerrainTile) {
         .friction = 0.5f,
         .img = 1
+    }
+);
+
+tTiledef const tTiles::oil(
+    (TerrainTile) {
+        .friction = 1.1f,
+        .img = 4
     }
 );
 

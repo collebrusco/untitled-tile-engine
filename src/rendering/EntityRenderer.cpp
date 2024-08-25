@@ -64,45 +64,47 @@ void EntityRenderer::render(Texture tile_tex) {
     for (auto e : ecs->view<c_Object, c_EntRenderEntry>()) {
         auto& obj = ecs->getComp<c_Object>(e);
         auto& atl = ecs->getComp<c_EntRenderEntry>(e);
-        auto  pos = obj.pos;
-        float rot = obj.rot;
+        LOG_INF("pos is %.1f, %.1f", obj.pos.x, obj.pos.y);
+        // auto  pos = obj.pos;
+        // float rot = obj.rot;
 
-        if (atl.props.pix_snap) {
-            pos = (floor(pos * TILE_PIXELS_F)) / TILE_PIXELS_F;
-        }
+        // if (atl.props.pix_snap) {
+        //     pos = (floor(pos * TILE_PIXELS_F)) / TILE_PIXELS_F;
+        // }
         int8_t hmirr = 1, vmirr = 1;
-        switch (atl.props.rot) {
-        case ROTATE_NONE:
-            rot = 0;
-            break;
-        case ROTATE_HAXIS_MIRROR:
-            if (rot > 90.f && rot < 270.f) hmirr = -1;
-            rot = 0;
-            break;
-        case ROTATE_VAXIS_MIRROR:
-            if (rot > 180.f) vmirr = -1;
-            rot = 0;
-            break;
-        case ROTATE_2_PT:
-            rot = floor(rot/180.f) * 180.f;
-            break;
-        case ROTATE_4_PT:
-            rot = floor((rot+45.f)/90.f) * 90.f;
-            break;
-        case ROTATE_6_PT:
-            rot = floor((rot+30.f)/60.f) * 60.f;
-            break;
-        case ROTATE_FULL:
-        default:
-            break;
-        }
+        // switch (atl.props.rot) {
+        // case ROTATE_NONE:
+        //     rot = 0;
+        //     break;
+        // case ROTATE_HAXIS_MIRROR:
+        //     if (rot > 90.f && rot < 270.f) hmirr = -1;
+        //     rot = 0;
+        //     break;
+        // case ROTATE_VAXIS_MIRROR:
+        //     if (rot > 180.f) vmirr = -1;
+        //     rot = 0;
+        //     break;
+        // case ROTATE_2_PT:
+        //     rot = floor(rot/180.f) * 180.f;
+        //     break;
+        // case ROTATE_4_PT:
+        //     rot = floor((rot+45.f)/90.f) * 90.f;
+        //     break;
+        // case ROTATE_6_PT:
+        //     rot = floor((rot+30.f)/60.f) * 60.f;
+        //     break;
+        // case ROTATE_FULL:
+        // default:
+        //     break;
+        // }
 
-        model = genModelMat2d(pos, rot, obj.scale, obj.anc);
+        // model = genModelMat2d(pos, rot, obj.scale, obj.anc);
+        model = genModelMat2d({0.f,0.f}, 0.f, {1.f,1.f});
 
-        verts[0] = {{(float)vmirr * -0.5f, (float)hmirr * -0.5f, 0.f}, {atl.uvs.bl.x, atl.uvs.bl.y}};
-        verts[1] = {{(float)vmirr * -0.5f, (float)hmirr *  0.5f, 0.f}, {atl.uvs.bl.x, atl.uvs.tr.y}};
-        verts[2] = {{(float)vmirr *  0.5f, (float)hmirr *  0.5f, 0.f}, {atl.uvs.tr.x, atl.uvs.tr.y}};
-        verts[3] = {{(float)vmirr *  0.5f, (float)hmirr * -0.5f, 0.f}, {atl.uvs.tr.x, atl.uvs.bl.y}};
+        verts[0] = {{(float)vmirr * -0.5f, (float)hmirr * -0.5f, 1.f}, {atl.uvs.bl.x, atl.uvs.bl.y}};
+        verts[1] = {{(float)vmirr * -0.5f, (float)hmirr *  0.5f, 1.f}, {atl.uvs.bl.x, atl.uvs.tr.y}};
+        verts[2] = {{(float)vmirr *  0.5f, (float)hmirr *  0.5f, 1.f}, {atl.uvs.tr.x, atl.uvs.tr.y}};
+        verts[3] = {{(float)vmirr *  0.5f, (float)hmirr * -0.5f, 1.f}, {atl.uvs.tr.x, atl.uvs.bl.y}};
 
         vbo.bind();
         vbo.buffer_data(4, verts);
@@ -112,26 +114,29 @@ void EntityRenderer::render(Texture tile_tex) {
         atlas_shader.uMat4("uModel", model);
 
         vao.bind();
+        vbo.bind(); ibo.bind();
         gl.draw_vao_ibo(ibo);
         vao.unbind();
+        vbo.unbind(); ibo.unbind();
     }
     /** general mesh */
     // gl.wireframe(true);
-    for (auto e : ecs->view<c_Object, c_GenMesh>()) {
-        auto& obj = ecs->getComp<c_Object>(e);
-        auto& gm = ecs->getComp<c_GenMesh>(e);
+    // glEnable(GL_DEPTH_TEST);
+    // for (auto e : ecs->view<c_Object, c_GenMesh>()) {
+    //     auto& obj = ecs->getComp<c_Object>(e);
+    //     auto& gm = ecs->getComp<c_GenMesh>(e);
 
-        model = gm.get().model(obj);
+    //     model = gm.get().model(obj);
 
-        gm.get().sync(vbo, ibo);
+    //     gm.get().sync(vbo, ibo);
 
-        atlas_shader.bind();
-        atlas_shader.uMat4("uModel", model);
+    //     atlas_shader.bind();
+    //     atlas_shader.uMat4("uModel", model);
 
-        vao.bind();
-        gl.draw_vao_ibo(ibo);
-        vao.unbind();
-    }
+    //     vao.bind();
+    //     gl.draw_vao_ibo(ibo);
+    //     vao.unbind();
+    // }
     gl.wireframe(false);
     tile_tex.unbind();
     vao.unbind();

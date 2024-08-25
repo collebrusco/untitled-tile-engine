@@ -8,6 +8,7 @@
 #include "data/GenMesh.h"
 #include "data/HumanoidMesh.h"
 #include "game/Effort.h"
+#include "game/oil.h"
 #include <flgl/logger.h>
 #include <iostream>
 #include <vector>
@@ -73,9 +74,12 @@ void CoreDriver::user_update(timing_t time, Keyboard const& kb, Mouse const& mou
 		}
 	}
 
+	c_oilrig::execute(state.world, time.dt);
+
 	c_DiffFollower::execute(state.world);
 
 	c_Move::execute_moves(time.dt, &state.world);
+	c_pMove::execute_moves(time.dt, &state.world);
 
 	c_RotationEffort::execute(state.world, time.dt);
 

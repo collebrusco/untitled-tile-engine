@@ -113,3 +113,54 @@ void c_Move::execute_moves(float dt, World* const world) {
     }
 }
 
+void c_pMove::execute_moves(float dt, World *const world) {
+    for (entID e : world->view<c_Object, c_pMove>()) {
+        auto& obj = world->getComp<c_Object>(e);
+        auto& mov = world->getComp<c_pMove>(e);
+        auto const pos = obj.pos;
+        auto vec = mov.v * dt;
+        /* step */
+#if 1
+        auto pa = World::pos_to_tpos(pos);
+        auto pb = World::pos_to_tpos(pos + vec);
+        {
+            if (abs(pa.x - pb.x) > 1 ||
+                abs(pa.y - pb.y) > 1) {
+                    LOG_ERR("move over > 1 tile in one frame, currently unsupported. Add stepper to support that speed");
+                }
+        }
+#endif
+
+        /* edit move to be legal (deflect, block) */
+        if (tile_col_check(world, pos + vec, mov.clip_rad)) {
+            /* collision in (x + y) */
+            if (tile_col_check(world, {pos.x + vec.x, pos.y}, mov.clip_rad)) {
+                /* collision in (x+y), x */
+                if (tile_col_check(world, {pos.x, pos.y + vec.y}, mov.clip_rad)) {
+                    /* collides in (x+y), x, & y, no moving */
+                    vec *= -1.f;
+                } else {
+                    /* collision in (x+y) & x only, allow y */
+                    vec.x *= -1.f;
+                }
+            } else {
+                /* no collision in x alone */
+                if (tile_col_check(world, {pos.x, pos.y + vec.y}, mov.clip_rad)) {
+                    /* collision in y only, allow x */
+                    vec.y *= -1.f;
+                } else {
+                    /* this would mean col in (x+y), not x or y alone. pick random */
+                    if (rand()&0x01u)
+                        vec.x *= -1.f;
+                    else
+                        vec.y *= -1.f;
+                }
+            }
+        }
+
+        /* complete move */
+        obj.pos += vec;
+        if (length(mov.v) < 0.000001f) world->removeComp<c_pMove>(e);
+        else mov.v *= 0.97f;
+    }
+}
