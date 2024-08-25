@@ -22,3 +22,11 @@ glm::vec3 rotate_around_origin(glm::vec3 pt, float deg) {
 glm::vec3 rotate_around_pt(glm::vec3 pt, glm::vec2 c, float deg) {
     return glm::vec3(c, pt.y) + rotate_around_origin(pt - glm::vec3(c, pt.y), deg);
 }
+
+float circle_diff(float Vt, float Vi, float max) {
+    float v = Vt - Vi;
+    float vh = (Vt - max) - Vi;
+    float vl = (Vt + max) - Vi;
+    float r = amin(amin(v, vh), vl);
+    return r;
+}

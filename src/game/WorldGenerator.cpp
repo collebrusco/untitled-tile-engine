@@ -32,13 +32,13 @@ void TestWorldGenerator::generate(int x, int y, Region* target, World* const wor
             Tile* t = &(target->tile_at(i,j));
             switch (r) {
             case 0:
-                tTiles::sand_pebble.place(*world, t, {i,j});
-                break;
+                // tTiles::sand_pebble.place(*world, t, {i,j});
+                // break;
             case 1:
             case 2:
             case 3:
-                tTiles::sand_tumble.place(*world, t, {i,j});
-                break;
+                // tTiles::sand_tumble.place(*world, t, {i,j});
+                // break;
             default:
                 tTiles::sand.place(*world, t, {i,j});
                 break;

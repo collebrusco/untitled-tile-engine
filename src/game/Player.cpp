@@ -8,6 +8,7 @@
 #include "data/Animation.h"
 #include "data/GenMesh.h"
 #include "data/HumanoidMesh.h"
+#include "data/RotationEffort.h"
 LOG_MODULE(plyr);
 using namespace glm;
 
@@ -32,7 +33,14 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
         state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = HumanoidMesh::Legs::STOOD;
     }
 
-    pobj.rot = vectorToAngle(wm.pos - pobj.pos);
+    // pobj.rot = 
+    
+    auto* re = state.world.tryGetComp<c_RotationEffort>(self);
+    if (!re) {
+        re = &state.world.addComp<c_RotationEffort>(self);
+        re->Ki = 0.002f; re->Kp = 0.5f; re->Kl = 0.5f;
+    }
+    re->r.tar = vectorToAngle(wm.pos - pobj.pos);
 
     if (kb[GLFW_KEY_0].pressed) {
         state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::AIMING;

@@ -1,6 +1,7 @@
 /** 
  * Entity.h
  * created 08/11/24 by frank collebrusco
+ * for now i place common entity helper funcs here
  */
 #ifndef ENTITY_H
 #define ENTITY_H

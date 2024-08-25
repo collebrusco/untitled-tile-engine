@@ -13,7 +13,7 @@ struct GenMesh {
     virtual void step(float const dt, float const t) = 0;
 };
 
-struct c_GenMesh final : public c_abstract<GenMesh, 128> {
+struct c_GenMesh final : public c_abstract<GenMesh, 256> {
     static void execute(float const dt, float const t, ECS& ecs);
 };
 

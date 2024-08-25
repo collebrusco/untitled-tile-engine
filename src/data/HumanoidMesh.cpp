@@ -55,14 +55,14 @@ void HumanoidMesh::Legs::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     #define LEG_OUTER (5.f/16.f)
     #define LEG_INNER (0.f/16.f)
 
-    verts[(*vtop)++] = {{-LEG_OUTER, 0   ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-LEG_OUTER, pos ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-LEG_INNER, pos ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-LEG_INNER, 0   ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_INNER, 0   ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_INNER, -pos,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_OUTER, -pos,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_OUTER, 0   ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{-LEG_OUTER, 0       ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{-LEG_OUTER, pos.val ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{-LEG_INNER, pos.val ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{-LEG_INNER, 0       ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{ LEG_INNER, 0       ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{ LEG_INNER, -pos.val,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{ LEG_OUTER, -pos.val,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{ LEG_OUTER, 0       ,   0.f}, {0.5,0.5}};
 }
 
 void HumanoidMesh::Torso::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -115,34 +115,33 @@ void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     #define ARM_D (5.f/16.f)
     static const vec2 l_arm_c = vec2((ARM_W/2.f)-ARM_D, 0.f);
     static const vec2 r_arm_c = vec2((ARM_W/2.f)+ARM_D, 0.f);
-    float alt = (this->state == WALKING || this->state == RUNNING) ? -1.f : 1.f;
 
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        0                               ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         py.val                         ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  py.val                         ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), 0                               ,    0.f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        0                               ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        alt*py.val                      ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), alt*py.val                      ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), 0                               ,    0.f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         0                              ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         length.val.x                   ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  length.val.x                   ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  0                              ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         0                              ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         length.val.y                   ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  length.val.y                   ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  0                              ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
 
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, l_arm_c, al.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), -((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(py.val)/5.f)),   0.1f}, r_arm_c, ar.val), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        -((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         ((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), -((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         ((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        -((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), -((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
 
 }
 
 void HumanoidMesh::Arms::step(float const dt, float const t) {
-    float amp, freq, Ki, Kp;
-    Ki = 0.4f; Kp = 0.3f;
+    float amp, freq, Kp, Ki;
+    Kp = 0.25f, Ki = 0.025f;
     switch (this->state) {
     case STOOD:
-        py.tar = ar.tar = al.tar = 0.f;
+        length.tar.x = length.tar.y = angle.tar.y = angle.tar.x = 0.f;
         break;
     case WALKING:
         amp = 0.2; freq = 11.f;
@@ -151,16 +150,24 @@ void HumanoidMesh::Arms::step(float const dt, float const t) {
         amp = 0.25; freq = 16.f;
         break;
     case AIMING:
-        py.tar = 0.75f;
-        ar.tar = 15.f;
-        al.tar = -50.f;
+        length.tar.x = length.tar.y = 0.75f;
+        angle.tar.y = 15.f;
+        angle.tar.x = -50.f;
+        break;
+    case SWINGING0:
+        gent = 0.f;
+        break;
+    case SWINGING1:
+        break;
+    case SWINGING2:
         break;
     }
     if (this->state == WALKING || this->state == RUNNING) {
-        py.tar = amp * -sin(freq * (t));
-        ar.tar = al.tar = 0.f;
+        length.tar.x = amp * -sin(freq * (t));
+        length.tar.y = -length.tar.x;
+        angle.tar.y = angle.tar.x = 0.f;
     }
-    py.step(Kp, Ki, dt); al.step(Kp, Ki, dt); ar.step(Kp, Ki, dt);
+    length.step(Kp, Ki, dt); angle.step(Kp, Ki, dt);
 }
 
 void HumanoidMesh::Legs::step(float const dt, float const t) {
@@ -168,7 +175,7 @@ void HumanoidMesh::Legs::step(float const dt, float const t) {
     float amp, freq;
     switch (this->state) {
     case STOOD:
-        this->target_pos -= this->target_pos * 0.1f;
+        this->pos.tar -= this->pos.tar * 0.1f;
         break;
     case WALKING:
         amp = 0.35; freq = 11.f;
@@ -178,9 +185,10 @@ void HumanoidMesh::Legs::step(float const dt, float const t) {
         break;
     }
     if (this->state != STOOD) {
-        this->target_pos = amp * sin(freq * (t));
+        this->pos.tar = amp * sin(freq * (t));
     }
-    pos = pos + (this->target_pos - pos) * 0.66;
+    float Kp = 0.2f, Ki = 0.02f;
+    pos.step(Kp, Ki, dt);
 }
 
 void HumanoidMesh::Head::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {

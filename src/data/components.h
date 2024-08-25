@@ -6,6 +6,7 @@
 #define COMPONENTS
 #include <stdint.h>
 #include "constants.h"
+#include "util/math.h"
 #include <flgl/glm.h>
 
 struct c_Object {

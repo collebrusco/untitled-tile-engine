@@ -23,8 +23,7 @@ struct HumanoidMesh final : public GenMesh {
     struct Legs {
         static const uint8_t num_verts = 8;
         static const uint8_t num_elems = 12;
-        float target_pos{0};
-        float pos{0};
+        piv_value<float> pos;
         enum state_e {
             STOOD = 0,
             WALKING,
@@ -45,12 +44,16 @@ struct HumanoidMesh final : public GenMesh {
     struct Arms {
         static const uint8_t num_verts = 16;
         static const uint8_t num_elems = 24;
-        pi_approach<float> py, al, ar;
+        piv_value<glm::vec2> length, angle;
+        float gent;
         enum state_e {
             STOOD = 0,
             WALKING,
             RUNNING,
             AIMING,
+            SWINGING0,
+            SWINGING1,
+            SWINGING2,
         } state  : 4;
         void sync(Vt_classic *const verts, uint16_t *const vtop, 
                 uint32_t *const elems, uint16_t *const etop) const;

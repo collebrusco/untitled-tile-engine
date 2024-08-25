@@ -7,6 +7,7 @@
 #include "data/Animation.h"
 #include "data/GenMesh.h"
 #include "data/HumanoidMesh.h"
+#include "data/RotationEffort.h"
 #include <flgl/logger.h>
 #include <iostream>
 #include <vector>
@@ -75,6 +76,8 @@ void CoreDriver::user_update(timing_t time, Keyboard const& kb, Mouse const& mou
 	c_DiffFollower::execute(state.world);
 
 	c_Move::execute_moves(time.dt, &state.world);
+
+	c_RotationEffort::execute(state.world, time.dt);
 
 	c_AnimationState::execute(time.dt, state.world);
 
