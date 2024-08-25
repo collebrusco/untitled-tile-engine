@@ -8,7 +8,7 @@
 #include "data/Animation.h"
 #include "data/GenMesh.h"
 #include "data/HumanoidMesh.h"
-#include "data/RotationEffort.h"
+#include "game/Effort.h"
 LOG_MODULE(plyr);
 using namespace glm;
 
@@ -17,6 +17,8 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     auto& shift = kb[GLFW_KEY_LEFT_SHIFT];
     auto& pobj = state.world.getComp<c_Object>(self);
     bool movekey = A.down || S.down || D.down || W.down;
+
+    /** move, anim state spaghett mixed in */
     if (movekey) {
         auto& move = state.world.addComp<c_Move>(self);
         move.clip_rad = 0.2f;
@@ -32,9 +34,8 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     } else if (W.released || A.released || S.released || D.released) {
         state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().legs.state = HumanoidMesh::Legs::STOOD;
     }
-
-    // pobj.rot = 
     
+    /** rotate */
     auto* re = state.world.tryGetComp<c_RotationEffort>(self);
     if (!re) {
         re = &state.world.addComp<c_RotationEffort>(self);
@@ -42,16 +43,18 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     }
     re->r.tar = vectorToAngle(wm.pos - pobj.pos);
 
+    /** aiming */
     if (kb[GLFW_KEY_0].pressed) {
-        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::AIMING;
-    }
-    if (kb[GLFW_KEY_0].released) {
-        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::STOOD;
     }
 
+    /** place tile, animation spaghett */
     if (wm.mouse->left.down) {
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::AIMING;
         sTiles::destroy_clear(state.world, wm.pos);
         sTiles::wall.place(state.world, &state.world.tile_at(wm.pos), {0,0});
+    }
+    if (wm.mouse->left.released) {
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::STOOD;
     }
 }
 
@@ -68,8 +71,6 @@ Player Player::spawn(World *const world, glm::vec2 pos) {
 
     auto& hm = world->addComp<c_GenMesh>(e).emplace<HumanoidMesh>();
     hm.legs.state = HumanoidMesh::Legs::STOOD;
-
-    // Entity::set_anim_if_not(e, *world, &Animations::);
 
     return Player{e};
 }

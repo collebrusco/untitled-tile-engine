@@ -7,7 +7,7 @@
 #include "data/Animation.h"
 #include "data/GenMesh.h"
 #include "data/HumanoidMesh.h"
-#include "data/RotationEffort.h"
+#include "game/Effort.h"
 #include <flgl/logger.h>
 #include <iostream>
 #include <vector>

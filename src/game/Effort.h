@@ -1,9 +1,9 @@
 /** 
- * RotationEffort.h
+ * Effort.h
  * created 08/25/24 by frank collebrusco 
  */
-#ifndef ROTATION_EFFORT_H
-#define ROTATION_EFFORT_H
+#ifndef EFFORT_H
+#define EFFORT_H
 #include "util/math.h"
 #include "ECS.h"
 
@@ -14,4 +14,4 @@ struct c_RotationEffort {
     static void execute(ECS& ecs, float const dt);
 };
 
-#endif /* ROTATION_EFFORT_H */
+#endif /* EFFORT_H */

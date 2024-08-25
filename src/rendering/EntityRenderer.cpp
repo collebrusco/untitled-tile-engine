@@ -120,10 +120,8 @@ void EntityRenderer::render(Texture tile_tex) {
     for (auto e : ecs->view<c_Object, c_GenMesh>()) {
         auto& obj = ecs->getComp<c_Object>(e);
         auto& gm = ecs->getComp<c_GenMesh>(e);
-        auto  pos = obj.pos;
-        float rot = obj.rot;
 
-        model = genModelMat2d(pos, rot, obj.scale, obj.anc);
+        model = gm.get().model(obj);
 
         gm.get().sync(vbo, ibo);
 

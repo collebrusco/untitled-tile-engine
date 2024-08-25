@@ -70,4 +70,11 @@ struct postrender_details_t {
 };
 ASSERT_AGGREGATE(postrender_details_t);
 
+
+/** tex'd Gen mesh renderer info */
+struct gmrend_details_t {
+    struct {glm::vec2 bl, size;} atl;
+    
+};
+
 #endif /* RENDER_PIPELINE_STRUCTS */

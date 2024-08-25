@@ -31,10 +31,16 @@ void HumanoidMesh::sync(VertexBuffer<Vt_classic> &vbo, ElementBuffer &ibo) const
     ibo.unbind();
 }
 
-void HumanoidMesh::step(float const dt, float const t) {
+void HumanoidMesh::step(c_Object const& obj, float const dt, float const t) {
     legs.step(dt, t);
     arms.step(dt, t);
+    head.step(obj.rot, torso.rot.val);
+    torso.step(dt, obj.rot);
     if (arms.state != Arms::AIMING) arms.state = (HumanoidMesh::Arms::state_e)legs.state;
+}
+
+glm::mat4 HumanoidMesh::model(c_Object const &obj) const {
+    return genModelMat2d(obj.pos, torso.rot.val, obj.scale, obj.anc);
 }
 
 void HumanoidMesh::Legs::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -81,6 +87,11 @@ void HumanoidMesh::Torso::sync(Vt_classic *const verts, uint16_t *const vtop, ui
     verts[(*vtop)++] = {{-(TORSO_W/2.f),  (TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
     verts[(*vtop)++] = {{ (TORSO_W/2.f),  (TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
     verts[(*vtop)++] = {{ (TORSO_W/2.f), -(TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
+}
+
+void HumanoidMesh::Torso::step(float const dt, float const tar) {
+    rot.tar = tar;
+    rot.step(0.20f, 0.015, dt);
 }
 
 void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -150,7 +161,7 @@ void HumanoidMesh::Arms::step(float const dt, float const t) {
         amp = 0.25; freq = 16.f;
         break;
     case AIMING:
-        length.tar.x = length.tar.y = 0.75f;
+        length.tar.x = length.tar.y = 0.5f;
         angle.tar.y = 15.f;
         angle.tar.x = -50.f;
         break;
@@ -202,8 +213,18 @@ void HumanoidMesh::Head::sync(Vt_classic *const verts, uint16_t *const vtop, uin
 
     #define HEAD_W (6.f/16.f)
 
-    verts[(*vtop)++] = {{-(HEAD_W/2.f), -(HEAD_W/2.f), 0.6f}, {0.5f,0.5f}};
-    verts[(*vtop)++] = {{-(HEAD_W/2.f),  (HEAD_W/2.f), 0.6f}, {0.5f,0.5f}};
-    verts[(*vtop)++] = {{ (HEAD_W/2.f),  (HEAD_W/2.f), 0.6f}, {0.5f,0.5f}};
-    verts[(*vtop)++] = {{ (HEAD_W/2.f), -(HEAD_W/2.f), 0.6f}, {0.5f,0.5f}};
+    glm::vec3 a = rotate_around_origin(glm::vec3(-(HEAD_W/2.f), -(HEAD_W/2.f), 0.6f), angle);
+    glm::vec3 b = rotate_around_origin(glm::vec3(-(HEAD_W/2.f),  (HEAD_W/2.f), 0.6f), angle);
+    glm::vec3 c = rotate_around_origin(glm::vec3( (HEAD_W/2.f),  (HEAD_W/2.f), 0.6f), angle);
+    glm::vec3 d = rotate_around_origin(glm::vec3( (HEAD_W/2.f), -(HEAD_W/2.f), 0.6f), angle);
+
+    verts[(*vtop)++] = {a, {0.5f,0.5f}};
+    verts[(*vtop)++] = {b, {0.5f,0.5f}};
+    verts[(*vtop)++] = {c, {0.5f,0.5f}};
+    verts[(*vtop)++] = {d, {0.5f,0.5f}};
 }
+
+void HumanoidMesh::Head::step(float ha, float ta) {
+    angle = ha - ta;
+}
+

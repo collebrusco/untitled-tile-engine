@@ -13,6 +13,7 @@ glm::vec3 rotate_around_pt(glm::vec3 pt, glm::vec2 c, float deg);
 
 /** closest vec from Vi -> Vt considering crossing 0 <-> max */
 float circle_diff(float Vt, float Vi, float max = 360);
+float posimod(float x, float min=0.f, float max=359.999999f);
 
 template <typename T>
 T amin(T a, T b) {
