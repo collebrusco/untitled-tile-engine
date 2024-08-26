@@ -31,6 +31,7 @@ struct Sprites {
     static constexpr Sprite rch    =        SPRITE_DECL((4.f * 2.f), 2.f, 2.f, 2.f, ROTATE_FULL, 0);
 
     static constexpr Sprite ball   =        SPRITE_DECL(0.25f, 62.25f, 0.5f, 0.5f, ROTATE_FULL, 0);
+    static constexpr Sprite bball  =        SPRITE_DECL(0.f, 60.f, 2.f, 2.f, ROTATE_FULL, 0);
 };
 
 #endif /* SPRITE_H */

@@ -10,7 +10,7 @@
 #include "data/Animation.h"
 
 struct Entity {
-    static void config_for_sprite(entID e, ECS& ecs, Sprite sprite);
+    static void config_for_sprite(entID e, ECS& ecs, Sprite sprite, float scale=1.f);
     template <uint8_t n>
     static void set_anim_if_not(entID e, ECS& ecs, Animation<n> const*const anim);
 };

@@ -67,13 +67,14 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     }
     if (kb[GLFW_KEY_T].released) {
         entID ball = state.world.newEntity();
-        Entity::config_for_sprite(ball, state.world, Sprites::ball);
+        Entity::config_for_sprite(ball, state.world, Sprites::bball, 0.16);
         auto& pm = state.world.addComp<c_pMove>(ball);
         auto& ob = state.world.getComp<c_Object>(ball);
         ob.pos = pobj.pos;
-
-        pm.clip_rad = 0.25f;
-        pm.v = angleToVector(pobj.rot) * pwr;
+        
+        pm.clip_rad = 1.f * 0.16;
+        auto* cm = state.world.tryGetComp<c_Move>(self);
+        pm.v = (angleToVector(pobj.rot) * pwr) + (cm ? cm->v : vec2(0.f));
         state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::STOOD;
     }
 }
