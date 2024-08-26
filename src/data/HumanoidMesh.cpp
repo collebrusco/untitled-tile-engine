@@ -58,17 +58,17 @@ void HumanoidMesh::Legs::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     elems[(*etop)++] = vbase + 4+2;
     elems[(*etop)++] = vbase + 4+3;
 
-    #define LEG_OUTER (5.f/16.f)
+    #define LEG_OUTER (8.f/16.f)
     #define LEG_INNER (0.f/16.f)
 
-    verts[(*vtop)++] = {{-LEG_OUTER, 0       ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-LEG_OUTER, pos.val ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-LEG_INNER, pos.val ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{-LEG_INNER, 0       ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_INNER, 0       ,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_INNER, -pos.val,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_OUTER, -pos.val,   0.f}, {0.5,0.5}};
-    verts[(*vtop)++] = {{ LEG_OUTER, 0       ,   0.f}, {0.5,0.5}};
+    verts[(*vtop)++] = {{-LEG_OUTER, 0       ,   0.f}, {32.f    , 8.f     }};
+    verts[(*vtop)++] = {{-LEG_OUTER, pos.val ,   0.f}, {32.f    , 8.f+16.f}};
+    verts[(*vtop)++] = {{-LEG_INNER, pos.val ,   0.f}, {32.f+8.f, 8.f+16.f}};
+    verts[(*vtop)++] = {{-LEG_INNER, 0       ,   0.f}, {32.f+8.f, 8.f     }};
+    verts[(*vtop)++] = {{ LEG_INNER, 0       ,   0.f}, {40.f    , 8.f     }};
+    verts[(*vtop)++] = {{ LEG_INNER, -pos.val,   0.f}, {40.f    , 8.f+16.f}};
+    verts[(*vtop)++] = {{ LEG_OUTER, -pos.val,   0.f}, {40.f+8.f, 8.f+16.f}};
+    verts[(*vtop)++] = {{ LEG_OUTER, 0       ,   0.f}, {40.f+8.f, 8.f     }};
 }
 
 void HumanoidMesh::Torso::sync(Vt_classic *const verts, uint16_t *const vtop, uint32_t *const elems, uint16_t *const etop) const {
@@ -80,13 +80,13 @@ void HumanoidMesh::Torso::sync(Vt_classic *const verts, uint16_t *const vtop, ui
     elems[(*etop)++] = vbase + 2;
     elems[(*etop)++] = vbase + 3;
 
-    #define TORSO_W (10.f/16.f)
-    #define TORSO_H (4.f/16.f)
+    #define TORSO_W (16.f/16.f)
+    #define TORSO_H (16.f/16.f)
 
-    verts[(*vtop)++] = {{-(TORSO_W/2.f), -(TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
-    verts[(*vtop)++] = {{-(TORSO_W/2.f),  (TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
-    verts[(*vtop)++] = {{ (TORSO_W/2.f),  (TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
-    verts[(*vtop)++] = {{ (TORSO_W/2.f), -(TORSO_H/2.f), 0.5f}, {0.5f+0.003,0.5f+0.003}};
+    verts[(*vtop)++] = {{-(TORSO_W/2.f), -(TORSO_H/2.f), 0.5f}, {16.f     , 8.f}};
+    verts[(*vtop)++] = {{-(TORSO_W/2.f),  (TORSO_H/2.f), 0.5f}, {16.f     , 8.f+16.f}};
+    verts[(*vtop)++] = {{ (TORSO_W/2.f),  (TORSO_H/2.f), 0.5f}, {16.f+16.f, 8.f+16.f}};
+    verts[(*vtop)++] = {{ (TORSO_W/2.f), -(TORSO_H/2.f), 0.5f}, {16.f+16.f, 8.f}};
 }
 
 void HumanoidMesh::Torso::step(float const dt, float const tar) {
@@ -121,29 +121,30 @@ void HumanoidMesh::Arms::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     elems[(*etop)++] = vbase + 12+2;
     elems[(*etop)++] = vbase + 12+3;
 
-    #define ARM_W (3.f/16.f)
-    #define ARM_H (TORSO_H)
+    #define ARM_W (6.f/16.f)
+    #define ARM_H (8.f/16.f)
     #define ARM_D (5.f/16.f)
-    static const vec2 l_arm_c = vec2((ARM_W/2.f)-ARM_D, 0.f);
-    static const vec2 r_arm_c = vec2((ARM_W/2.f)+ARM_D, 0.f);
+    #define ARM_L (12.f/16.f)
+    static const vec2 l_arm_c = vec2(((3.f/16.f)/2.f)-ARM_D, 0.f);
+    static const vec2 r_arm_c = vec2(((3.f/16.f)/2.f)+ARM_D, 0.f);
 
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         0                              ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         length.val.x                   ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  length.val.x                   ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  0                              ,    0.f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         0                              ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         length.val.y                   ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  length.val.y                   ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  0                              ,    0.f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         0                              ,    0.f}, l_arm_c, angle.val.x),       {0.f+6.f,0.f     }};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         length.val.x                   ,    0.f}, l_arm_c, angle.val.x),       {0.f+6.f,0.f+12.f}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  length.val.x                   ,    0.f}, l_arm_c, angle.val.x),       {0.f    ,0.f+12.f}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  0                              ,    0.f}, l_arm_c, angle.val.x),       {0.f    ,0.f     }};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         0                              ,    0.f}, r_arm_c, angle.val.y),       {6.f    ,0.f     }};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         length.val.y                   ,    0.f}, r_arm_c, angle.val.y),       {6.f    ,0.f+12.f}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  length.val.y                   ,    0.f}, r_arm_c, angle.val.y),       {6.f+6.f,0.f+12.f}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  0                              ,    0.f}, r_arm_c, angle.val.y),       {6.f+6.f,0.f     }};
 
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        -((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         ((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), -((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         ((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        -((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), -((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
-    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {0.5,0.5}};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,        -((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {12.f+6.f,0.f     }};
+    verts[(*vtop)++] = {rotate_around_pt({ -ARM_D,         ((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {12.f+6.f,0.f+8.f}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {12.f    ,0.f+8.f}};
+    verts[(*vtop)++] = {rotate_around_pt({-(ARM_D+ARM_W), -((ARM_H/2.f)-(abs(length.val.x)/5.f)),   0.1f}, l_arm_c, angle.val.x), {12.f    ,0.f     }};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,         ((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {18.f    ,0.f     }};
+    verts[(*vtop)++] = {rotate_around_pt({  ARM_D,        -((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {18.f    ,0.f+8.f}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W), -((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {18.f+6.f,0.f+8.f}};
+    verts[(*vtop)++] = {rotate_around_pt({ (ARM_D+ARM_W),  ((ARM_H/2.f)-(abs(length.val.y)/5.f)),   0.1f}, r_arm_c, angle.val.y), {18.f+6.f,0.f     }};
 
 }
 
@@ -161,7 +162,7 @@ void HumanoidMesh::Arms::step(float const dt, float const t) {
         amp = 0.25; freq = 16.f;
         break;
     case AIMING:
-        length.tar.x = length.tar.y = 0.5f;
+        length.tar.x = length.tar.y = ARM_L;
         angle.tar.y = 15.f;
         angle.tar.x = -50.f;
         break;
@@ -211,17 +212,17 @@ void HumanoidMesh::Head::sync(Vt_classic *const verts, uint16_t *const vtop, uin
     elems[(*etop)++] = vbase + 2;
     elems[(*etop)++] = vbase + 3;
 
-    #define HEAD_W (6.f/16.f)
+    #define HEAD_W (10.f/16.f)
 
     glm::vec3 a = rotate_around_origin(glm::vec3(-(HEAD_W/2.f), -(HEAD_W/2.f), 0.6f), angle);
     glm::vec3 b = rotate_around_origin(glm::vec3(-(HEAD_W/2.f),  (HEAD_W/2.f), 0.6f), angle);
     glm::vec3 c = rotate_around_origin(glm::vec3( (HEAD_W/2.f),  (HEAD_W/2.f), 0.6f), angle);
     glm::vec3 d = rotate_around_origin(glm::vec3( (HEAD_W/2.f), -(HEAD_W/2.f), 0.6f), angle);
 
-    verts[(*vtop)++] = {a, {0.5f,0.5f}};
-    verts[(*vtop)++] = {b, {0.5f,0.5f}};
-    verts[(*vtop)++] = {c, {0.5f,0.5f}};
-    verts[(*vtop)++] = {d, {0.5f,0.5f}};
+    verts[(*vtop)++] = {a, {0.f, 14.f}};
+    verts[(*vtop)++] = {b, {0.f, 14.f + 10.f}};
+    verts[(*vtop)++] = {c, {10.f, 14.f + 10.f}};
+    verts[(*vtop)++] = {d, {10.f, 14.f}};
 }
 
 void HumanoidMesh::Head::step(float ha, float ta) {

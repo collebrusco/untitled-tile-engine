@@ -126,6 +126,7 @@ void EntityRenderer::render(Texture tile_tex) {
         gm.get().sync(vbo, ibo);
 
         atlas_shader.bind();
+        atlas_shader.uVec2("uBL", {60.f/64.f, 61.f/64.f});
         atlas_shader.uMat4("uModel", model);
 
         vao.bind();

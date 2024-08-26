@@ -15,11 +15,9 @@ struct EntityRenderer {
     void destroy();
 private:
     ECS* ecs;
-
     VertexArray vao;
     VertexBuffer<Vt_classic> vbo;
     ElementBuffer ibo;
-
     Shader atlas_shader;
 };
 
