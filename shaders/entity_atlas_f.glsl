@@ -10,5 +10,4 @@ void main() {
     vec4 c = texture(utex, iUV);
     if (c.w < 1.) discard;
     out_color = c;
-    out_color = vec4(1.f);
 }

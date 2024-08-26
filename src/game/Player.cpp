@@ -48,19 +48,25 @@ void PlayerActor::take_turn(entID self, State& state, Keyboard const& kb, world_
     }
 
     /** place tile, animation spaghett */
-    static float pwr = 0.f;
-    if (wm.mouse->left.pressed) {
-        pwr = 0.f;
-    }
     if (wm.mouse->left.down) {
         state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::AIMING;
-        // sTiles::destroy_clear(state.world, wm.pos);
-        // sTiles::oil_rig.place(state.world, &state.world.tile_at(wm.pos), {0,0});
-        pwr += 1.f;
+        sTiles::destroy_clear(state.world, wm.pos);
+        sTiles::wall.place(state.world, &state.world.tile_at(wm.pos), {0,0});
     }
     if (wm.mouse->left.released) {
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::STOOD;
+    }
+    /** throw ball + spag */
+    static float pwr = 0.f;
+    if (kb[GLFW_KEY_T].pressed) {
+        pwr = 0.f;
+    }
+    if (kb[GLFW_KEY_T].down) {
+        state.world.getComp<c_GenMesh>(self).downcast<HumanoidMesh>().arms.state = HumanoidMesh::Arms::AIMING;
+        pwr += 0.5f; if (pwr > 80.f) pwr = 80.f;
+    }
+    if (kb[GLFW_KEY_T].released) {
         entID ball = state.world.newEntity();
-        // state.world.addComp<c_EntRenderEntry>(ball, Sprites::ball.at);
         Entity::config_for_sprite(ball, state.world, Sprites::ball);
         auto& pm = state.world.addComp<c_pMove>(ball);
         auto& ob = state.world.getComp<c_Object>(ball);

@@ -138,28 +138,28 @@ void c_pMove::execute_moves(float dt, World *const world) {
                 /* collision in (x+y), x */
                 if (tile_col_check(world, {pos.x, pos.y + vec.y}, mov.clip_rad)) {
                     /* collides in (x+y), x, & y, no moving */
-                    vec *= -1.f;
+                    mov.v *= -1.f;
                 } else {
                     /* collision in (x+y) & x only, allow y */
-                    vec.x *= -1.f;
+                    mov.v.x *= -1.f;
                 }
             } else {
                 /* no collision in x alone */
                 if (tile_col_check(world, {pos.x, pos.y + vec.y}, mov.clip_rad)) {
                     /* collision in y only, allow x */
-                    vec.y *= -1.f;
+                    mov.v.y *= -1.f;
                 } else {
                     /* this would mean col in (x+y), not x or y alone. pick random */
                     if (rand()&0x01u)
-                        vec.x *= -1.f;
+                        mov.v.x *= -1.f;
                     else
-                        vec.y *= -1.f;
+                        mov.v.y *= -1.f;
                 }
             }
         }
 
         /* complete move */
-        obj.pos += vec;
+        obj.pos += (mov.v * dt);
         if (length(mov.v) < 0.000001f) world->removeComp<c_pMove>(e);
         else mov.v *= 0.97f;
     }
